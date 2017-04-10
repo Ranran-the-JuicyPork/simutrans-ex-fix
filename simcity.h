@@ -24,6 +24,7 @@
 
 #include <string>
 
+class building_desc_t;
 class karte_ptr_t;
 class player_t;
 class fabrik_t;
@@ -454,6 +455,9 @@ public:
 	 * Returns the data set associated with the pax/mail target factories
 	 */
 	void merke_passagier_ziel(koord ziel, PIXVAL color);
+
+	// calculated the "best" orietation of city buildings, also used by editor, thus public
+	static int orient_city_building(const koord k, const building_desc_t *h );
 
 	// this function removes houses from the city house list
 	// (called when removed by player, or by town)

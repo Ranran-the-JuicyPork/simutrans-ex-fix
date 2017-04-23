@@ -4138,7 +4138,7 @@ int stadt_t::orient_city_building(const koord k, const building_desc_t *h )
 					// look for adjacent buildings
 					gr = welt->lookup_kartenboden(k + neighbors[i]);
 					if(  gr  &&  gr->get_typ()==grund_t::fundament  ){
-						if(  gebaeude_t *gb = gr->find<gebaeude_t>()  ) {
+						if(  gr->find<gebaeude_t>()  ) {
 							gb_dir |= (1<<i);
 						}
 					}

@@ -338,7 +338,7 @@ bool ki_kontroll_t::action_triggered( gui_action_creator_t *comp,value_t p )
 				tooltip_out[i].printf("Allow %s to access your ways and stops", player->get_name());
 			}
 
-			static char param[16];
+			static char param[MAX_PLAYER_COUNT];
 			sprintf(param,"g%hu,%i,%i", (uint16)welt->get_active_player_nr(), i, (int)access_out[i].pressed);
 			tool_t *tool = create_tool( TOOL_ACCESS_TOOL | SIMPLE_TOOL );
 			tool->set_default_param(param);
@@ -353,7 +353,7 @@ bool ki_kontroll_t::action_triggered( gui_action_creator_t *comp,value_t p )
 
 	if (comp == &allow_take_over_of_company)
 	{
-		static char param[16];
+		static char param[MAX_PLAYER_COUNT];
 		sprintf(param, "t, %hi, %hi", welt->get_active_player_nr(), true);
 		tool_t* tool = create_tool(TOOL_CHANGE_PLAYER | SIMPLE_TOOL);
 		tool->set_default_param(param);

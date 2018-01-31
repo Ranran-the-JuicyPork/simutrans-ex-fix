@@ -3936,6 +3936,10 @@ void convoi_t::rdwr(loadsave_t *file)
 	bool dummy_bool=false;
 	file->rdwr_bool(dummy_bool);
 	file->rdwr_long(owner_n);
+	if (file->is_version_ex_less(14,46) && owner_n == OLD_PLAYER_UNOWNED && file->is_loading())
+	{
+		owner_n = PLAYER_UNOWNED;
+	}
 	file->rdwr_long(akt_speed);
 	sint32 akt_speed_soll = 0; // Former variable now unused
 	file->rdwr_long(akt_speed_soll);
@@ -3957,6 +3961,11 @@ void convoi_t::rdwr(loadsave_t *file)
 			vehicle.resize(max_rail_vehicle, NULL);
 		}
 		owner = welt->get_player( owner_n );
+
+		if (file->is_version_ex_less(14,46) && owner_n == OLD_PLAYER_UNOWNED && file->is_loading())
+		{
+			owner_n = PLAYER_UNOWNED;
+		}
 
 		// sanity check for values ... plus correction
 		if(sp_soll < 0) {

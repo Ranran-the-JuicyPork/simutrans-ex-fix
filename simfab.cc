@@ -1587,6 +1587,10 @@ DBG_DEBUG("fabrik_t::rdwr()","loading factory '%s'",s);
 	// restore other information
 	owner_n = welt->sp2num(owner);
 	file->rdwr_long(owner_n);
+	if (file->is_version_ex_less(14,46) && owner_n == OLD_PLAYER_UNOWNED && file->is_loading())
+	{
+		owner_n = PLAYER_UNOWNED;
+	}
 	file->rdwr_long(prodbase);
 	if(  file->is_version_less(110, 5)  ) {
 		// prodfactor saving no longer required

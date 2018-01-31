@@ -67,9 +67,13 @@ private:
 	sint8 yoff;
 
 	/**
-	 * Owner of the object (1 - public player, 15 - unowned)
+	 * Owner of the object (1 - public player, 31 - unowned)
 	 */
+#if MAX_PLAYER_COUNT > 16
+	uint8 owner_n;
+#else
 	uint8 owner_n:4;
+#endif
 
 	/**
 	 * @see flag_values

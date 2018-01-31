@@ -1500,16 +1500,28 @@ void settings_t::rdwr(loadsave_t *file)
 			}
 		}
 
+
+		int player_count;
+		if (file->is_version_ex_atleast(14,46))
+		{
+			player_count = MAX_PLAYER_COUNT;
+		}
+		else
+		{
+			player_count = OLD_MAX_PLAYER_COUNT;
+		}
+
 		if(  file->is_version_atleast(110, 1)  ) {
 			file->rdwr_bool( default_player_color_random );
-			for(  int i=0;  i<MAX_PLAYER_COUNT;  i++  ) {
+
+			for(  int i=0;  i<player_count;  i++  ) {
 				file->rdwr_byte( default_player_color[i][0] );
 				file->rdwr_byte( default_player_color[i][1] );
 			}
 		}
 		else if(  file->is_loading()  ) {
 			default_player_color_random = false;
-			for(  int i=0;  i<MAX_PLAYER_COUNT;  i++  ) {
+			for( int i=0; i<player_count; i++ ) {
 				// default colors for player ...
 				default_player_color[i][0] = 255;
 				default_player_color[i][1] = 255;

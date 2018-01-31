@@ -3859,6 +3859,11 @@ void haltestelle_t::rdwr(loadsave_t *file)
 	}
 	file->rdwr_long(owner_n);
 
+	if (file->is_version_ex_less(14,46) && owner_n == OLD_PLAYER_UNOWNED && file->is_loading())
+	{
+		owner_n = PLAYER_UNOWNED;
+	}
+
 	if(file->is_version_less(88, 6)) {
 		bool dummy;
 		file->rdwr_bool(dummy); // pax
@@ -3868,6 +3873,11 @@ void haltestelle_t::rdwr(loadsave_t *file)
 
 	if(file->is_loading()) {
 		owner = welt->get_player(owner_n);
+
+		if (file->is_version_ex_less(14,46) && owner_n == OLD_PLAYER_UNOWNED && file->is_loading())
+		{
+			owner_n = PLAYER_UNOWNED;
+		}
 		k.rdwr( file );
 		while(k!=koord3d::invalid) {
 			grund_t *gr = welt->lookup(k);

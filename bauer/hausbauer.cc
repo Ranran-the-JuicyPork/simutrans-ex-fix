@@ -74,6 +74,9 @@ static special_obj_tpl<building_desc_t> const special_objects[] = {
 };
 
 
+sint16 hausbauer_t::largest_city_building_area = 1;
+
+
 /**
  * Compares house descriptors.
  * Order of comparison:
@@ -148,12 +151,30 @@ bool hausbauer_t::successfully_loaded()
 		// now insert the desc into the correct list.
 		switch(desc->get_type()) {
 			case building_desc_t::city_res:
+				if(  desc->get_x()*desc->get_y() > 9  ) {
+					dbg->fatal( "hausbauer_t::successfully_loaded()", "maximum city building size (3x3) but %s is (%sx%i)", desc->get_name(), desc->get_x(), desc->get_y() );
+				}
+				if(  desc->get_x()*desc->get_y() > largest_city_building_area  ) {
+					largest_city_building_area = desc->get_x()*desc->get_y();
+				}
 				city_residential.insert_ordered(desc,compare_building_desc);
 				break;
 			case building_desc_t::city_ind:
+				if(  desc->get_x()*desc->get_y() > 9  ) {
+					dbg->fatal( "hausbauer_t::successfully_loaded()", "maximum city building size (3x3) but %s is (%sx%i)", desc->get_name(), desc->get_x(), desc->get_y() );
+				}
+				if(  desc->get_x()*desc->get_y() > largest_city_building_area  ) {
+					largest_city_building_area = desc->get_x()*desc->get_y();
+				}
 				city_industry.insert_ordered(desc,compare_building_desc);
 				break;
 			case building_desc_t::city_com:
+				if(  desc->get_x()*desc->get_y() > 9  ) {
+					dbg->fatal( "hausbauer_t::successfully_loaded()", "maximum city building size (3x3) but %s is (%sx%i)", desc->get_name(), desc->get_x(), desc->get_y() );
+				}
+				if(  desc->get_x()*desc->get_y() > largest_city_building_area  ) {
+					largest_city_building_area = desc->get_x()*desc->get_y();
+				}
 				city_commercial.insert_ordered(desc,compare_building_desc);
 				break;
 
@@ -1013,12 +1034,22 @@ bool is_allowed_size(const building_desc_t* bldg, koord size)
  * This method will never return NULL if there is at least one valid entry in the list.
  * @param cl allowed climates
  */
-static const building_desc_t* get_city_building_from_list(const vector_tpl<const building_desc_t*>& building_list, int level, uint16 time, climate cl, uint8 region, bool allow_earlier, uint32 clusters)
+static const building_desc_t* get_city_building_from_list(const vector_tpl<const building_desc_t*>& list, int level, uint16 time, climate cl, uint8 region, bool allow_earlier, uint32 clusters, koord minsize, koord maxsize)
 {
 	weighted_vector_tpl<const building_desc_t *> selections(16);
+	sint16 area = maxsize.x*maxsize.y;
+	sint16 minarea = minsize.x*minsize.y;
 
-	FOR(vector_tpl<building_desc_t const*>, const desc, building_list) {
+//	DBG_MESSAGE("hausbauer_t::get_aus_liste()","target level %i", level );
+	const building_desc_t *desc_at_least=NULL;
+	FOR(vector_tpl<building_desc_t const*>, const desc, list) {
 		const uint16 random = simrand(100, "static const building_desc_t* get_city_building_from_list");
+		if(  desc->is_allowed_climate(cl)  &&  desc->get_distribution_weight()>0  &&  desc->is_available(time)  &&  desc->get_x()*desc->get_y()<=area  &&  desc->get_x()*desc->get_y()>=minarea  ) {
+			// size check
+			if(  (desc->get_x() <= maxsize.x  ||  desc->get_y() <= maxsize.x)  &&   (desc->get_x() >= minsize.x  ||  desc->get_y() >= minsize.x)  ) {
+				desc_at_least = desc;
+			}
+		}
 
 		const int thislevel = desc->get_level();
 		if(thislevel>level) {
@@ -1034,18 +1065,29 @@ static const building_desc_t* get_city_building_from_list(const vector_tpl<const
 
 		if(  thislevel == level  &&  desc->get_distribution_weight() > 0  ) {
 			if(  (cl==MAX_CLIMATES  ||  desc->is_allowed_climate(cl)) && desc->is_allowed_region(region)  ) {
-				if(  time == 0  ||  (desc->get_intro_year_month() <= time  &&  ((allow_earlier && random > 65) || desc->get_retire_year_month() > time ))  ) {
-					/* Level, time period, and climate are all OK.
-					 * Now modify the distribution_weight rating by a factor based on the clusters.
-					 */
-					int distribution_weight = desc->get_distribution_weight();
-					if(  clusters  ) {
-						uint32 my_clusters = desc->get_clusters();
-						if(  my_clusters & clusters  ) {
-							distribution_weight *= stadt_t::get_cluster_factor();
+				if(  desc->is_available(time) && (allow_earlier && random > 65)  ) {
+					// not too big?
+					if(  desc->get_x()*desc->get_y()<=area  &&  (  desc->get_x() <= maxsize.x  ||  desc->get_y() <= maxsize.x  )  ) {
+						// or too small
+						if(  desc->get_x()*desc->get_y()>=area  &&  (  desc->get_x() >= minsize.x  ||  desc->get_y() >= minsize.x  )  ) {
+		//					DBG_MESSAGE("hausbauer_t::get_city_building_from_list()","appended %s at %i", desc->get_name(), thislevel );
+							/* Level, time period, and climate are all OK.
+							 * Now modify the chance rating by a factor based on the clusters.
+							 */
+							// FIXME: the factor should be configurable by the pakset/
+							int chance = desc->get_distribution_weight();
+							if(  clusters  ) {
+								uint32 my_clusters = desc->get_clusters();
+								if(  my_clusters & clusters  ) {
+									chance *= stadt_t::get_cluster_factor();
+								}
+								else {
+									chance /= stadt_t::get_cluster_factor();
+								}
+							}
+							selections.append(desc, chance);
 						}
 					}
-					selections.append(desc, distribution_weight);
 				}
 			}
 		}
@@ -1062,21 +1104,21 @@ static const building_desc_t* get_city_building_from_list(const vector_tpl<const
 }
 
 
-const building_desc_t* hausbauer_t::get_commercial(int level, uint16 time, climate cl, uint8 region, bool allow_earlier, uint32 clusters)
+const building_desc_t* hausbauer_t::get_commercial(int level, uint16 time, climate cl, uint8 region, uint32 clusters, koord minsize, koord maxsize, bool allow_earlier)
 {
-	return get_city_building_from_list(city_commercial, level, time, cl, region, allow_earlier, clusters);
+	return get_city_building_from_list(city_commercial, level, time, cl, region, allow_earlier, clusters, minsize, maxsize);
 }
 
 
-const building_desc_t* hausbauer_t::get_industrial(int level, uint16 time, climate cl, uint8 region, bool allow_earlier, uint32 clusters)
+const building_desc_t* hausbauer_t::get_industrial(int level, uint16 time, climate cl, uint8 region, uint32 clusters, koord minsize, koord maxsize, bool allow_earlier)
 {
-	return get_city_building_from_list(city_industry, level, time, cl, region, allow_earlier, clusters);
+	return get_city_building_from_list(city_industry, level, time, cl, region, allow_earlier, clusters, minsize, maxsize);
 }
 
 
-const building_desc_t* hausbauer_t::get_residential(int level, uint16 time, climate cl, uint8 region, bool allow_earlier, uint32 clusters)
+const building_desc_t* hausbauer_t::get_residential(int level, uint16 time, climate cl, uint8 region, uint32 clusters, koord minsize, koord maxsize, bool allow_earlier)
 {
-	return get_city_building_from_list(city_residential, level, time, cl, region, allow_earlier, clusters);
+	return get_city_building_from_list(city_residential, level, time, cl, region, allow_earlier, clusters, minsize, maxsize);
 }
 
 

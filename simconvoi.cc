@@ -937,7 +937,7 @@ bool convoi_t::is_sidewalker() const
 	if( front()->get_waytype() != road_wt ) {
 		return false;
 	}
-	for( uint32 i=0; i<vehicle_count; i++ ) {
+	for( uint16 i=1; i<vehicle_count; i++ ) {
 		if( !get_vehicle(i)->get_desc()->is_sidewalker() ) {
 			return false;
 		}

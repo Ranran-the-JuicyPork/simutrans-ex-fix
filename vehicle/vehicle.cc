@@ -600,6 +600,7 @@ vehicle_base_t *vehicle_base_t::get_blocking_vehicle(const grund_t *gr, const co
 		break;
 	}
 	// Search vehicle
+	uint8 count_sidewalker=0;
 	for(  uint8 pos=1;  pos < gr->get_top();  pos++  ) {
 		if(  vehicle_base_t* const v = obj_cast<vehicle_base_t>(gr->obj_bei(pos))  ) {
 			if(  v->get_typ()==obj_t::pedestrian  ) {
@@ -616,6 +617,17 @@ vehicle_base_t *vehicle_base_t::get_blocking_vehicle(const grund_t *gr, const co
 					continue;
 				}
 				other_direction = at->get_direction();
+				if( at->get_desc()->is_sidewalker() ) {
+					if( cnv && cnv->is_sidewalker() ) {
+						if (count_sidewalker >= MAX_SIDEWALKERS_ON_TILE) {
+							return v; // already too many sidewalkers here
+						}
+						if( next_direction==other_direction ) {
+							count_sidewalker++;
+						}
+					}
+					continue;
+				}
 				other_moving = at->get_convoi()->get_akt_speed() > kmh_to_speed(1);
 				other_overtaking = at->get_convoi()->is_overtaking();
 			}

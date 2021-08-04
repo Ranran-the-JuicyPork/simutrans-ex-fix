@@ -1137,6 +1137,9 @@ public:
 
 	bool has_tall_vehicles();
 
+	// For road vehicles only
+	bool is_sidewalker() const;
+
 	inline bool get_allow_clear_reservation() const { return allow_clear_reservation; }
 
 	bool all_vehicles_are_buildable() const;

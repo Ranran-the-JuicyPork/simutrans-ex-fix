@@ -9,6 +9,7 @@
 
 #include "vehicle.h"
 
+#define MAX_SIDEWALKERS_ON_TILE 4
 
 /**
  * A class for road vehicles. Manages the look of the vehicles

@@ -473,6 +473,9 @@ bool road_vehicle_t::can_enter_tile(const grund_t *gr, sint32 &restart_speed, ui
 		ribi_t::ribi next_90direction = calc_direction(pos_next, next);
 		obj = get_blocking_vehicle(gr, cnv, curr_direction, next_direction, next_90direction, NULL, next_lane);
 
+		if (cnv->is_sidewalker() && obj) {
+			return false; // already too many sidewalkers here
+		}
 		//If this convoi is overtaking, the convoi must avoid a head-on crash.
 		if(  cnv->is_overtaking()  ){
 			while(  test_index < route_index + 2u && test_index < r.get_count()  ){
@@ -682,6 +685,10 @@ bool road_vehicle_t::can_enter_tile(const grund_t *gr, sint32 &restart_speed, ui
 					return true;
 				}
 			}
+		}
+
+		if (cnv->is_sidewalker()) {
+			return true;
 		}
 
 		// stuck message ...

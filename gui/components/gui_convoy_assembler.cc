@@ -362,9 +362,9 @@ const char * gui_convoy_assembler_t::get_passenger2_name(waytype_t wt)
 	if (wt==track_wt || wt==tram_wt || wt==narrowgauge_wt) {
 		return "Railcar_tab";
 	}
-	//if (wt==road_wt) {
-	//	return "Bus_tab";
-	//}
+	else if (wt==road_wt) {
+		return "Sidewalker_tab";
+	}
 	return "Pas_tab"; // dummy
 }
 
@@ -1406,8 +1406,11 @@ void gui_convoy_assembler_t::add_to_vehicle_list(const vehicle_desc_t *info)
 			electrics_vec.append(img_data);
 			vehicle_map.set(info, electrics_vec.back());
 		}
-		else if ((info->get_waytype() == track_wt || info->get_waytype() == tram_wt || info->get_waytype() == narrowgauge_wt)
-				&& (info->get_engine_type() != vehicle_desc_t::unknown && info->get_engine_type() != 255))
+		else if (
+				( (info->get_waytype() == track_wt || info->get_waytype() == tram_wt || info->get_waytype() == narrowgauge_wt)
+					&& (info->get_engine_type() != vehicle_desc_t::unknown && info->get_engine_type() != 255) )
+				|| ( info->get_waytype() == road_wt && info->is_sidewalker() )
+			)
 		{
 			pas2_vec.append(img_data);
 			vehicle_map.set(info, pas2_vec.back());

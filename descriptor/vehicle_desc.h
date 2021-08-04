@@ -225,6 +225,10 @@ private:
 	//@jamespetts January 2017
 	bool is_tall;
 
+	// Parameters for road vehicles
+	// If true, the vehicle will not occupy the tile and will always be overtaken. e.g. mailman, cart
+	bool sidewalker = false;
+
 	// if true, can not mix another goods in the same car.  @Ranran, July 2019(v14.6)
 	bool mixed_load_prohibition;
 
@@ -824,6 +828,7 @@ public:
 	uint32 get_way_wear_factor() const { return way_wear_factor; }
 
 	bool get_is_tall() const { return is_tall; }
+	bool is_sidewalker() const { return sidewalker; }
 	bool get_mixed_load_prohibition() const { return mixed_load_prohibition; }
 	bool get_override_way_speed() const { return override_way_speed; }
 

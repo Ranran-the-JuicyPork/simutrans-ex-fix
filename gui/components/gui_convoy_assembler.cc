@@ -73,12 +73,12 @@ gui_convoy_assembler_t::gui_convoy_assembler_t(waytype_t wt, signed char player_
 	convoi(&convoi_pics),
 	scrolly_convoi(&cont_convoi),
 	pas(&pas_vec),
-	pas2(&pas2_vec),
+	extra(&extra_vec),
 	electrics(&electrics_vec),
 	loks(&loks_vec),
 	waggons(&waggons_vec),
 	scrolly_pas(&cont_pas),
-	scrolly_pas2(&cont_pas2),
+	scrolly_extra(&cont_extra),
 	scrolly_electrics(&cont_electrics),
 	scrolly_loks(&cont_loks),
 	scrolly_waggons(&cont_waggons),
@@ -180,12 +180,12 @@ gui_convoy_assembler_t::gui_convoy_assembler_t(waytype_t wt, signed char player_
 		one = true;
 	}
 
-	cont_pas2.add_component(&pas2);
-	scrolly_pas2.set_show_scroll_x(false);
-	scrolly_pas2.set_size_corner(false);
+	cont_extra.add_component(&extra);
+	scrolly_extra.set_show_scroll_x(false);
+	scrolly_extra.set_size_corner(false);
 	// only add, if there are DMUs
-	if (!pas2_vec.empty()) {
-		tabs.add_tab(&scrolly_pas2, translator::translate(get_passenger2_name(wt)));
+	if (!extra_vec.empty()) {
+		tabs.add_tab(&scrolly_extra, translator::translate( get_extra_tab_name(wt) ));
 		one = true;
 	}
 
@@ -228,8 +228,8 @@ gui_convoy_assembler_t::gui_convoy_assembler_t(waytype_t wt, signed char player_
 	pas.set_player_nr(player_nr);
 	pas.add_listener(this);
 
-	pas2.set_player_nr(player_nr);
-	pas2.add_listener(this);
+	extra.set_player_nr(player_nr);
+	extra.add_listener(this);
 
 	electrics.set_player_nr(player_nr);
 	electrics.add_listener(this);
@@ -312,7 +312,7 @@ void gui_convoy_assembler_t::clear_vectors()
 {
 	vehicle_map.clear();
 	clear_ptr_vector(pas_vec);
-	clear_ptr_vector(pas2_vec);
+	clear_ptr_vector(extra_vec);
 	clear_ptr_vector(electrics_vec);
 	clear_ptr_vector(loks_vec);
 	clear_ptr_vector(waggons_vec);
@@ -357,7 +357,7 @@ const char * gui_convoy_assembler_t::get_passenger_name(waytype_t wt)
 	return "Pas_tab";
 }
 
-const char * gui_convoy_assembler_t::get_passenger2_name(waytype_t wt)
+const char * gui_convoy_assembler_t::get_extra_tab_name(waytype_t wt)
 {
 	if (wt==track_wt || wt==tram_wt || wt==narrowgauge_wt) {
 		return "Railcar_tab";
@@ -526,14 +526,14 @@ void gui_convoy_assembler_t::layout()
 	cont_pas.set_size(pas.get_size());
 	scrolly_pas.set_size(scrolly_pas.get_size());
 
-	pas2.set_grid(grid);
-	pas2.set_placement(placement);
-	pas2.set_size(tabs.get_size());
-	pas2.recalc_size();
-	pas2.set_pos(scr_coord(1, 1));
-	cont_pas2.set_pos(scr_coord(0, 0));
-	cont_pas2.set_size(pas2.get_size());
-	scrolly_pas2.set_size(scrolly_pas2.get_size());
+	extra.set_grid(grid);
+	extra.set_placement(placement);
+	extra.set_size(tabs.get_size());
+	extra.recalc_size();
+	extra.set_pos(scr_coord(1, 1));
+	cont_extra.set_pos(scr_coord(0, 0));
+	cont_extra.set_size(extra.get_size());
+	scrolly_extra.set_size(scrolly_extra.get_size());
 
 	electrics.set_grid(grid);
 	electrics.set_placement(placement);
@@ -648,8 +648,8 @@ bool gui_convoy_assembler_t::action_triggered( gui_action_creator_t *comp,value_
 			update_data();
 		} else if(comp == &pas) {
 			image_from_storage_list(pas_vec[p.i]);
-		} else if (comp == &pas2) {
-			image_from_storage_list(pas2_vec[p.i]);
+		} else if (comp == &extra) {
+			image_from_storage_list(extra_vec[p.i]);
 		} else if (comp == &electrics) {
 			image_from_storage_list(electrics_vec[p.i]);
 		} else if(comp == &loks) {
@@ -1089,14 +1089,14 @@ void gui_convoy_assembler_t::build_vehicle_lists()
 
 	vector_tpl<livery_scheme_t*>* schemes = welt->get_settings().get_livery_schemes();
 
-	if(electrics_vec.empty()  &&  pas_vec.empty()  &&  pas2_vec.empty()  &&  loks_vec.empty()  &&  waggons_vec.empty())
+	if(electrics_vec.empty()  &&  pas_vec.empty()  &&  extra_vec.empty()  &&  loks_vec.empty()  &&  waggons_vec.empty())
 	{
 		/*
 		 * The next block calculates upper bounds for the sizes of the vectors.
 		 * If the vectors get resized, the vehicle_map becomes invalid, therefore
 		 * we need to resize them before filling them.
 		 */
-		if(electrics_vec.empty()  &&  pas_vec.empty()  &&  pas2_vec.empty()  &&  loks_vec.empty()  &&  waggons_vec.empty())
+		if(electrics_vec.empty()  &&  pas_vec.empty()  &&  extra_vec.empty()  &&  loks_vec.empty()  &&  waggons_vec.empty())
 		{
 			int loks = 0, waggons = 0, pax=0, electrics = 0, pax2=0;
 			FOR(slist_tpl<vehicle_desc_t *>, const info, vehicle_builder_t::get_info(way_type))
@@ -1124,7 +1124,7 @@ void gui_convoy_assembler_t::build_vehicle_lists()
 				}
 			}
 			pas_vec.resize(pax);
-			pas2_vec.resize(pax2);
+			extra_vec.resize(pax2);
 			electrics_vec.resize(electrics);
 			loks_vec.resize(loks);
 			waggons_vec.resize(waggons);
@@ -1412,8 +1412,8 @@ void gui_convoy_assembler_t::add_to_vehicle_list(const vehicle_desc_t *info)
 				|| ( info->get_waytype() == road_wt && info->is_sidewalker() )
 			)
 		{
-			pas2_vec.append(img_data);
-			vehicle_map.set(info, pas2_vec.back());
+			extra_vec.append(img_data);
+			vehicle_map.set(info, extra_vec.back());
 		}
 		else {
 			pas_vec.append(img_data);
@@ -2031,11 +2031,11 @@ void gui_convoy_assembler_t::update_tabs()
 		one = true;
 	}
 
-	scrolly_pas2.set_show_scroll_x(false);
-	scrolly_pas2.set_size_corner(false);
+	scrolly_extra.set_show_scroll_x(false);
+	scrolly_extra.set_size_corner(false);
 	// add only if there are any
-	if (!pas2_vec.empty()) {
-		tabs.add_tab(&scrolly_pas2, translator::translate(get_passenger2_name(wt)));
+	if (!extra_vec.empty()) {
+		tabs.add_tab(&scrolly_extra, translator::translate( get_extra_tab_name(wt) ));
 		one = true;
 	}
 
@@ -2107,7 +2107,7 @@ void gui_convoy_assembler_t::draw_vehicle_info_text(const scr_coord& pos)
 	gui_component_t const* const tab = tabs.get_aktives_tab();
 	gui_image_list_t const* const lst =
 		tab == &scrolly_pas       ? &pas       :
-		tab == &scrolly_pas2      ? &pas2      :
+		tab == &scrolly_extra     ? &extra      :
 		tab == &scrolly_electrics ? &electrics :
 		tab == &scrolly_loks      ? &loks      :
 		&waggons;
@@ -2123,7 +2123,7 @@ void gui_convoy_assembler_t::draw_vehicle_info_text(const scr_coord& pos)
 
 	if ((sel_index != -1) && (tabs.getroffen(x-pos.x,y-pos.y))) {
 		// cursor over a vehicle in the selection list
-		const vector_tpl<gui_image_list_t::image_data_t*>& vec = (lst == &electrics ? electrics_vec : (lst == &pas ? pas_vec : (lst == &pas2 ? pas2_vec : (lst == &loks ? loks_vec : waggons_vec))));
+		const vector_tpl<gui_image_list_t::image_data_t*>& vec = (lst == &electrics ? electrics_vec : (lst == &pas ? pas_vec : (lst == &extra ? extra_vec : (lst == &loks ? loks_vec : waggons_vec))));
 		veh_type = vehicle_builder_t::get_info(vec[sel_index]->text);
 		if(  vec[sel_index]->lcolor == COL_DANGER ||  veh_action == va_sell || veh_action == va_upgrade) {
 			// don't show new_vehicle_length_sb when can't actually add the highlighted vehicle, or selling from inventory

@@ -174,23 +174,23 @@ class gui_convoy_assembler_t :
 	gui_scrollpane_t scrolly_convoi;
 
 	vector_tpl<gui_image_list_t::image_data_t*> pas_vec;
-	vector_tpl<gui_image_list_t::image_data_t*> pas2_vec;
+	vector_tpl<gui_image_list_t::image_data_t*> extra_vec;     // for railcar, sidewalker
 	vector_tpl<gui_image_list_t::image_data_t*> electrics_vec;
 	vector_tpl<gui_image_list_t::image_data_t*> loks_vec;
 	vector_tpl<gui_image_list_t::image_data_t*> waggons_vec;
 
 	gui_image_list_t pas;
-	gui_image_list_t pas2;
+	gui_image_list_t extra;
 	gui_image_list_t electrics;
 	gui_image_list_t loks;
 	gui_image_list_t waggons;
 	gui_container_t cont_pas;
-	gui_container_t cont_pas2;
+	gui_container_t cont_extra;
 	gui_container_t cont_electrics;
 	gui_container_t cont_loks;
 	gui_container_t cont_waggons;
 	gui_scrollpane_t scrolly_pas;
-	gui_scrollpane_t scrolly_pas2;
+	gui_scrollpane_t scrolly_extra;
 	gui_scrollpane_t scrolly_electrics;
 	gui_scrollpane_t scrolly_loks;
 	gui_scrollpane_t scrolly_waggons;
@@ -227,7 +227,7 @@ class gui_convoy_assembler_t :
 	static const char * get_passenger_name(waytype_t wt);
 	static const char * get_zieher_name(waytype_t wt);
 	static const char * get_haenger_name(waytype_t wt);
-	static const char * get_passenger2_name(waytype_t wt);
+	static const char * get_extra_tab_name(waytype_t wt);
 
 	/**
 	 * A helper map to update loks_vec and waggons_Vec. All entries from

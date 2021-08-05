@@ -249,8 +249,6 @@ class building_desc_t : public obj_desc_timelined_t {
 
 	tool_t *builder;
 
-	static uint8 city_building_max_size;
-
 public:
 
 	koord get_size(uint8 layout = 0) const {
@@ -434,8 +432,6 @@ public:
 	uint32 get_class_proportions_sum_jobs() const { return class_proportions_sum_jobs; }
 
 	void fix_number_of_classes();
-
-	static uint8 get_city_building_max_size() { return city_building_max_size; }
 };
 
 

@@ -592,14 +592,6 @@ obj_desc_t * building_reader_t::read_node(FILE *fp, obj_node_info_t &node)
 		desc->flags |= building_desc_t::FLAG_HAS_CURSOR;
 	}
 
-	// culculate max size of city buildings.
-	if(  desc->is_city_building()  &&  desc->city_building_max_size<desc->size.x  ) {
-		desc->city_building_max_size = desc->size.x;
-	}
-	if(  desc->is_city_building()  &&  desc->city_building_max_size<desc->size.y  ) {
-		desc->city_building_max_size = desc->size.y;
-	}
-
 	if(!extended)
 	{
 		// Set default levels for Extended

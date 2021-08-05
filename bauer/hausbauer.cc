@@ -1013,59 +1013,18 @@ bool is_allowed_size(const building_desc_t* bldg, koord size)
  * This method will never return NULL if there is at least one valid entry in the list.
  * @param cl allowed climates
  */
-const building_desc_t* hausbauer_t::get_city_building_from_list(const vector_tpl<const building_desc_t*>& building_list, koord pos_origin, koord size, uint16 time, climate cl, uint8 region, bool allow_earlier, uint32 clusters)
+static const building_desc_t* get_city_building_from_list(const vector_tpl<const building_desc_t*>& building_list, int level, uint16 time, climate cl, uint8 region, bool allow_earlier, uint32 clusters)
 {
 	weighted_vector_tpl<const building_desc_t *> selections(16);
-	// calculate sum of level of replaced buildings
-	uint16 sum_level = 0;
-	bool checked[64][64];
-	// initialize check flag.
-	for(uint8 i=0; i<size.x; i++) {
-		for(uint8 k=0; k<size.y; k++) {
-			checked[i][k] = false;
-		}
-	}
-	for(uint8 x = 0; x<size.x; x++) {
-		for(uint8 y = 0; y<size.y; y++) {
-			if(checked[x][y]) {
-				// this position is already checked.
-				continue;
-			}
-			const grund_t* gr = welt->lookup_kartenboden(pos_origin + koord(x,y));
-			assert(gr);
-			if(gr->ist_natur()) {
-				continue;
-			}
-			const gebaeude_t* gb = gr->get_building();
-			assert(gb  &&  gb->is_city_building());
-			sum_level += gb->get_tile()->get_desc()->get_level();
-			const uint8 gb_layout = gb->get_tile()->get_layout();
-			koord gb_size = gb->get_tile()->get_desc()->get_size(gb_layout);
-			for(uint8 gx=0; gx<gb_size.x; gx++) {
-				for(uint8 gy=0; gy<gb_size.y; gy++) {
-					// mark as checked tile.
-					if(x+gx<size.x  &&  y+gy<size.y) checked[x+gx][y+gy] = true;
-				}
-			}
-		}
-	}
-	sum_level += 1;
-	const uint16 level_replaced = sum_level;
-	const uint16 area_of_building = size.x*size.y;
 
 	FOR(vector_tpl<building_desc_t const*>, const desc, building_list) {
-		// only allow buildings of the designated size.
-		if(!is_allowed_size(desc, size)) {
-			continue;
-		}
-
 		const uint16 random = simrand(100, "static const building_desc_t* get_city_building_from_list");
 
 		const int thislevel = desc->get_level();
-		if(thislevel>sum_level) {
-			if (selections.empty()  &&  thislevel-level_replaced<=2*area_of_building) {
+		if(thislevel>level) {
+			if (selections.empty()) {
 				// Nothing of the correct level.  Continue with search of next level.
-				sum_level = thislevel;
+				level = thislevel;
 			}
 			else {
 				// We already found something of the correct level; stop.
@@ -1073,7 +1032,7 @@ const building_desc_t* hausbauer_t::get_city_building_from_list(const vector_tpl
 			}
 		}
 
-		if(  thislevel == sum_level  &&  desc->get_distribution_weight() > 0  ) {
+		if(  thislevel == level  &&  desc->get_distribution_weight() > 0  ) {
 			if(  (cl==MAX_CLIMATES  ||  desc->is_allowed_climate(cl)) && desc->is_allowed_region(region)  ) {
 				if(  time == 0  ||  (desc->get_intro_year_month() <= time  &&  ((allow_earlier && random > 65) || desc->get_retire_year_month() > time ))  ) {
 					/* Level, time period, and climate are all OK.
@@ -1103,7 +1062,7 @@ const building_desc_t* hausbauer_t::get_city_building_from_list(const vector_tpl
 }
 
 
-const building_desc_t* hausbauer_t::get_city_building_from_list(const vector_tpl<const building_desc_t*>& building_list, int level, koord size, uint16 time, climate cl, uint8 region, bool allow_earlier, uint32 clusters)
+static const building_desc_t* get_city_building_from_list(const vector_tpl<const building_desc_t*>& building_list, int level, koord size, uint16 time, climate cl, uint8 region, bool allow_earlier, uint32 clusters)
 {
 	weighted_vector_tpl<const building_desc_t *> selections(16);
 
@@ -1162,39 +1121,21 @@ const building_desc_t* hausbauer_t::get_city_building_from_list(const vector_tpl
 }
 
 
-const building_desc_t* hausbauer_t::get_commercial(koord pos_origin, koord size, uint16 time, climate cl, uint8 region, bool allow_earlier, uint32 clusters)
+const building_desc_t* hausbauer_t::get_commercial(int level, uint16 time, climate cl, uint8 region, bool allow_earlier, uint32 clusters)
 {
-	return get_city_building_from_list(city_commercial, pos_origin, size, time, cl, region, allow_earlier, clusters);
+	return get_city_building_from_list(city_commercial, level, time, cl, region, allow_earlier, clusters);
 }
 
 
-const building_desc_t* hausbauer_t::get_commercial(int level, koord size, uint16 time, climate cl, uint8 region, bool allow_earlier, uint32 clusters)
+const building_desc_t* hausbauer_t::get_industrial(int level, uint16 time, climate cl, uint8 region, bool allow_earlier, uint32 clusters)
 {
-	return get_city_building_from_list(city_commercial, level, size, time, cl, region, allow_earlier, clusters);
+	return get_city_building_from_list(city_industry, level, time, cl, region, allow_earlier, clusters);
 }
 
 
-const building_desc_t* hausbauer_t::get_industrial(koord pos_origin, koord size, uint16 time, climate cl, uint8 region, bool allow_earlier, uint32 clusters)
+const building_desc_t* hausbauer_t::get_residential(int level, uint16 time, climate cl, uint8 region, bool allow_earlier, uint32 clusters)
 {
-	return get_city_building_from_list(city_industry, pos_origin, size, time, cl, region, allow_earlier, clusters);
-}
-
-
-const building_desc_t* hausbauer_t::get_industrial(int level, koord size, uint16 time, climate cl, uint8 region, bool allow_earlier, uint32 clusters)
-{
-	return get_city_building_from_list(city_industry, level, size, time, cl, region, allow_earlier, clusters);
-}
-
-
-const building_desc_t* hausbauer_t::get_residential(koord pos_origin, koord size, uint16 time, climate cl, uint8 region, bool allow_earlier, uint32 clusters)
-{
-	return get_city_building_from_list(city_residential, pos_origin, size, time, cl, region, allow_earlier, clusters);
-}
-
-
-const building_desc_t* hausbauer_t::get_residential(int level, koord size, uint16 time, climate cl, uint8 region, bool allow_earlier, uint32 clusters)
-{
-	return get_city_building_from_list(city_residential, level, size, time, cl, region, allow_earlier, clusters);
+	return get_city_building_from_list(city_residential, level, time, cl, region, allow_earlier, clusters);
 }
 
 

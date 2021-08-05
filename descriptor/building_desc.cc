@@ -189,5 +189,3 @@ void building_desc_t::calc_checksum(checksum_t *chk) const
 	chk->input(class_proportions.get_count());
 	chk->input(class_proportions_jobs.get_count());
 }
-
-uint8 building_desc_t::city_building_max_size = 1;

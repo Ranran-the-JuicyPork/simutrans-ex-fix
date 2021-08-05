@@ -400,8 +400,6 @@ private:
 	// @author neroden
 	const gebaeude_t* get_citybuilding_at(const koord k) const;
 	int get_best_layout(const building_desc_t* h, const koord & k) const;
-	void get_available_building_size(const koord k, vector_tpl<koord> &sizes) const;
-	gebaeude_t* check_tiles_height(gebaeude_t* building, koord pos, uint8 layout, bool map_generation);
 
 	/**
 	 * Build a short road bridge extending from bd in direction.

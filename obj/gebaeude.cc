@@ -1100,7 +1100,7 @@ void gebaeude_t::new_year()
 
 void gebaeude_t::rdwr(loadsave_t *file)
 {
-	xml_tag_t d(file, "gebaeude_t");
+	xml_tag_t d( file, "gebaeude_t" );
 
 	obj_t::rdwr(file);
 
@@ -1139,33 +1139,29 @@ void gebaeude_t::rdwr(loadsave_t *file)
 		file->rdwr_longlong(available_jobs_by_time);
 	}
 
-	if (file->is_loading()) {
+	if(file->is_loading()) {
 		tile = hausbauer_t::find_tile(buf, idx);
-		if (tile == NULL) {
+		if(tile==NULL) {
 			// try with compatibility list first
 			tile = hausbauer_t::find_tile(translator::compatibility_name(buf), idx);
-			if (tile == NULL) {
+			if(tile==NULL) {
 				DBG_MESSAGE("gebaeude_t::rdwr()", "neither %s nor %s, tile %i not found, try other replacement", translator::compatibility_name(buf), buf, idx);
 			}
 			else {
 				DBG_MESSAGE("gebaeude_t::rdwr()", "%s replaced by %s, tile %i", buf, translator::compatibility_name(buf), idx);
 			}
 		}
-		if (tile == NULL) {
+		if(tile==NULL) {
 			// first check for special buildings
 			if (strstr(buf, "TrainStop") != NULL) {
 				tile = hausbauer_t::find_tile("TrainStop", idx);
-			}
-			else if (strstr(buf, "BusStop") != NULL) {
+			} else if(strstr(buf,"BusStop")!=NULL) {
 				tile = hausbauer_t::find_tile("BusStop", idx);
-			}
-			else if (strstr(buf, "ShipStop") != NULL) {
+			} else if(strstr(buf,"ShipStop")!=NULL) {
 				tile = hausbauer_t::find_tile("ShipStop", idx);
-			}
-			else if (strstr(buf, "PostOffice") != NULL) {
+			} else if(strstr(buf,"PostOffice")!=NULL) {
 				tile = hausbauer_t::find_tile("PostOffice", idx);
-			}
-			else if (strstr(buf, "StationBlg") != NULL) {
+			} else if(strstr(buf,"StationBlg")!=NULL) {
 				tile = hausbauer_t::find_tile("StationBlg", idx);
 			}
 			else {
@@ -1173,23 +1169,22 @@ void gebaeude_t::rdwr(loadsave_t *file)
 				int level = atoi(buf);
 				building_desc_t::btype type = building_desc_t::unknown;
 
-				if (level>0) {
+				if(level>0) {
 					// May be an old 64er, so we can try some
-					if (strncmp(buf + 3, "WOHN", 4) == 0) {
+					if(strncmp(buf+3, "WOHN",4)==0) {
 						type = building_desc_t::city_res;
-					}
-					else if (strncmp(buf + 3, "FAB", 3) == 0) {
+					} else if(strncmp(buf+3, "FAB",3)==0) {
 						type = building_desc_t::city_ind;
 					}
 					else {
 						type = building_desc_t::city_com;
 					}
-					level--;
+					level --;
 				}
 				else if (buf[3] == '_') {
 					/* should have the form of RES/IND/COM_xx_level
-					* xx is usually a number by can be anything without underscores
-					*/
+					 * xx is usually a number by can be anything without underscores
+					 */
 					level = atoi(strrchr(buf, '_') + 1);
 					if (level>0) {
 						switch (toupper(buf[0])) {
@@ -1202,63 +1197,62 @@ void gebaeude_t::rdwr(loadsave_t *file)
 				}
 				// we try to replace citybuildings with their matching counterparts
 				// if none are matching, we try again without climates and timeline!
-				// only 1x1 buildings can fill the empty tile to avoid overlap.
-				const koord single(1,1);
 				switch (type) {
-				case building_desc_t::city_res:
-				{
-					const building_desc_t *bdsc = hausbauer_t::get_residential(level, single, welt->get_timeline_year_month(), welt->get_climate_at_height(get_pos().z), welt->get_region(get_pos().get_2d()));
-					if (bdsc == NULL) {
-						bdsc = hausbauer_t::get_residential(level, single, 0, MAX_CLIMATES, 0xFFu);
-					}
-					if (bdsc) {
-						dbg->message("gebaeude_t::rwdr", "replace unknown building %s with residence level %i by %s", buf, level, bdsc->get_name());
-						tile = bdsc->get_tile(0);
-					}
-				}
-				break;
-
-				case building_desc_t::city_com:
-				{
-					const building_desc_t *bdsc = hausbauer_t::get_commercial(level, single, welt->get_timeline_year_month(), welt->get_climate_at_height(get_pos().z), welt->get_region(get_pos().get_2d()));
-					if (bdsc == NULL) {
-						bdsc = hausbauer_t::get_commercial(level, single, 0, MAX_CLIMATES, 0xFFu);
-					}
-					if (bdsc) {
-						dbg->message("gebaeude_t::rwdr", "replace unknown building %s with commercial level %i by %s", buf, level, bdsc->get_name());
-						tile = bdsc->get_tile(0);
-					}
-				}
-				break;
-
-				case building_desc_t::city_ind:
-				{
-					const building_desc_t *bdsc = hausbauer_t::get_industrial(level, single, welt->get_timeline_year_month(), welt->get_climate_at_height(get_pos().z), welt->get_region(get_pos().get_2d()));
-					if (bdsc == NULL) {
-						bdsc = hausbauer_t::get_industrial(level, single, 0, MAX_CLIMATES, 0xFFu);
-						if (bdsc == NULL) {
-							bdsc = hausbauer_t::get_residential(level, single, 0, MAX_CLIMATES, 0xFFu);
+					case building_desc_t::city_res:
+						{
+							const building_desc_t *bdsc = hausbauer_t::get_residential(level, welt->get_timeline_year_month(), welt->get_climate_at_height(get_pos().z), welt->get_region(get_pos().get_2d()));
+							if (bdsc == NULL) {
+								bdsc = hausbauer_t::get_residential(level, 0, MAX_CLIMATES, 0xFFu);
+							}
+							if (bdsc) {
+								dbg->message("gebaeude_t::rwdr", "replace unknown building %s with residence level %i by %s", buf, level, bdsc->get_name());
+								tile = bdsc->get_tile(0);
+							}
 						}
-					}
-					if (bdsc) {
-						dbg->message("gebaeude_t::rwdr", "replace unknown building %s with industrie level %i by %s", buf, level, bdsc->get_name());
-						tile = bdsc->get_tile(0);
-					}
-				}
-				break;
+						break;
 
-				default:
-					dbg->warning("gebaeude_t::rwdr", "description %s for building at %d,%d not found (will be removed)!", buf, get_pos().x, get_pos().y);
-					welt->add_missing_paks(buf, karte_t::MISSING_BUILDING);
+					case building_desc_t::city_com:
+						{
+							// for replacement, ignore cluster and size
+							const building_desc_t *bdsc = hausbauer_t::get_commercial( level, welt->get_timeline_year_month(), welt->get_climate_at_height(get_pos().z), welt->get_region(get_pos().get_2d()));
+							if (bdsc == NULL) {
+								bdsc = hausbauer_t::get_commercial(level, 0, MAX_CLIMATES, 0xFFu);
+							}
+							if (bdsc) {
+								dbg->message("gebaeude_t::rwdr", "replace unknown building %s with commercial level %i by %s", buf, level, bdsc->get_name());
+								tile = bdsc->get_tile(0);
+							}
+						}
+						break;
+
+					case building_desc_t::city_ind:
+						{
+							const building_desc_t *bdsc = hausbauer_t::get_industrial(level, welt->get_timeline_year_month(), welt->get_climate_at_height(get_pos().z), welt->get_region(get_pos().get_2d()));
+							if (bdsc == NULL) {
+								bdsc = hausbauer_t::get_industrial(level, 0, MAX_CLIMATES, 0xFFu);
+								if (bdsc == NULL) {
+									bdsc = hausbauer_t::get_residential(level, 0, MAX_CLIMATES, 0xFFu);
+								}
+							}
+							if (bdsc) {
+								dbg->message("gebaeude_t::rwdr", "replace unknown building %s with industrie level %i by %s", buf, level, bdsc->get_name());
+								tile = bdsc->get_tile(0);
+							}
+						}
+						break;
+
+					default:
+						dbg->warning("gebaeude_t::rwdr", "description %s for building at %d,%d not found (will be removed)!", buf, get_pos().x, get_pos().y);
+						welt->add_missing_paks(buf, karte_t::MISSING_BUILDING);
 				}
 			}
 		}
 
 		// here we should have a valid tile pointer or nothing ...
 
-			/* avoid double construction of monuments:
-			* remove them from selection lists
-			*/
+		/* avoid double construction of monuments:
+		 * remove them from selection lists
+		 */
 		if (tile  &&  tile->get_desc()->get_type() == building_desc_t::monument) {
 			hausbauer_t::monument_erected(tile->get_desc());
 		}

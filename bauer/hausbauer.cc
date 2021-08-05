@@ -1062,65 +1062,6 @@ static const building_desc_t* get_city_building_from_list(const vector_tpl<const
 }
 
 
-static const building_desc_t* get_city_building_from_list(const vector_tpl<const building_desc_t*>& building_list, int level, koord size, uint16 time, climate cl, uint8 region, bool allow_earlier, uint32 clusters)
-{
-	weighted_vector_tpl<const building_desc_t *> selections(16);
-
-//	DBG_MESSAGE("hausbauer_t::get_city_building_from_list()","target level %i", level );
-	const building_desc_t *desc_at_least=NULL;
-	FOR(vector_tpl<building_desc_t const*>, const desc, building_list)
-	{
-		const uint16 random = simrand(100, "static const building_desc_t* get_city_building_from_list");
-		if(	desc->is_allowed_climate(cl) && desc->is_allowed_region(region) && is_allowed_size(desc, size)  &&
-			desc->get_distribution_weight()>0  &&
-			(time==0  ||  (desc->get_intro_year_month()<=time  &&  ((allow_earlier && random > 65) || desc->get_retire_year_month()>time)))) {
-			desc_at_least = desc;
-		}
-
-		const int thislevel = desc->get_level();
-		if(thislevel>level) {
-			if (selections.empty()) {
-				// Nothing of the correct level. Continue with search on a higher level.
-				level = thislevel;
-			}
-			else {
-				// We already found something of the correct level; stop.
-				break;
-			}
-		}
-
-		if(  thislevel == level  &&  is_allowed_size(desc, size)  &&  desc->get_distribution_weight() > 0  ) {
-			if(  (cl==MAX_CLIMATES  ||  desc->is_allowed_climate(cl)) && desc->is_allowed_region(region)  ) {
-				if(  time == 0  ||  (desc->get_intro_year_month() <= time  &&  ((allow_earlier && random > 65) || desc->get_retire_year_month() > time ))  ) {
-//					DBG_MESSAGE("hausbauer_t::get_city_building_from_list()","appended %s at %i", desc->get_name(), thislevel );
-					/* Level, time period, region and climate are all OK.
-					 * Now modify the distribution_weight rating by a factor based on the clusters.
-					 */
-					int distribution_weight = desc->get_distribution_weight();
-					if(  clusters  ) {
-						uint32 my_clusters = desc->get_clusters();
-						if(  my_clusters & clusters  ) {
-							distribution_weight *= stadt_t::get_cluster_factor();
-						}
-					}
-					selections.append(desc, distribution_weight);
-				}
-			}
-		}
-	}
-
-	if(selections.get_sum_weight()==0) {
-		// this is some level below, but at least it is something
-		return desc_at_least;
-	}
-	if(selections.get_count()==1) {
-		return selections.front();
-	}
-	// now there is something to choose
-	return pick_any_weighted(selections);
-}
-
-
 const building_desc_t* hausbauer_t::get_commercial(int level, uint16 time, climate cl, uint8 region, bool allow_earlier, uint32 clusters)
 {
 	return get_city_building_from_list(city_commercial, level, time, cl, region, allow_earlier, clusters);

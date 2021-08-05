@@ -3947,7 +3947,9 @@ static int interesting_neighbors_corners[] = {
 };
 
 // return layout
-//static int const building_layout[] = { 0, 0, 1, 4, 2, 0, 5, 1, 3, 7, 1, 0, 6, 3, 2, 0 };
+#define CHECK_NEIGHBOUR (128)
+static int const building_layout[] = { CHECK_NEIGHBOUR | 0, 0, 1, 4, 2, 0, 5, CHECK_NEIGHBOUR | 1, 3, 7, 1, CHECK_NEIGHBOUR | 0, 6, CHECK_NEIGHBOUR | 3, CHECK_NEIGHBOUR | 2, CHECK_NEIGHBOUR | 0 };
+
 
 // This takes a layout (0,1,2,3,4,5,6,7)
 // and returns a "streetsdir" style bitfield indicating which ways that layout is facing

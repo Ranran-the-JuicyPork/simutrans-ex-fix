@@ -3763,11 +3763,11 @@ static int layout_to_orientations[] = {
 };
 
 
-void process_city_street(grund_t& gr, const way_desc_t* cr)
+bool process_city_street(grund_t& gr, const way_desc_t* cr)
 {
 	weg_t* const weg = gr.get_weg(road_wt);
 	if(  weg == NULL  ) {
-		return;
+		return false;
 	}
 
 	player_t *player = weg->get_owner();
@@ -3801,6 +3801,7 @@ void process_city_street(grund_t& gr, const way_desc_t* cr)
 	}
 	gr.calc_image();
 	minimap_t::get_instance()->calc_map_pixel(gr.get_pos().get_2d());
+	return true;
 }
 
 /**

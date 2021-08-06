@@ -4184,7 +4184,7 @@ int stadt_t::orient_city_building(const koord k, const building_desc_t *h, koord
 		int max_layout = h->get_all_layouts()-1;
 		if(  max_layout  ) {
 
-			// we counting the streetiles, but asymmetric buildings will have an uneven number; we init with negative width 
+			// we counting the streetiles, but asymmetric buildings will have an uneven number; we init with negative width
 			int streetdir[4];
 			for(  int i = 0;  i < 4;  i++  ) {
 				streetdir[i] = -h->get_x(i&1);
@@ -4324,7 +4324,7 @@ int stadt_t::orient_city_building(const koord k, const building_desc_t *h, koord
 		}
 
 	}
-			
+
 	return -1;
 }
 
@@ -4745,7 +4745,7 @@ bool stadt_t::renovate_city_building(gebaeude_t* gb, bool map_generation)
 
 		int rotation = 0;
 		if(  h->get_all_layouts()>1  ) {
-		
+
 			// only do this of symmetric of small enough building
 			if(  h->get_x()==h->get_y()  ||  (h->get_x()<maxsize.y  &&  h->get_x()<maxsize.x)  ) {
 				// check for pavement

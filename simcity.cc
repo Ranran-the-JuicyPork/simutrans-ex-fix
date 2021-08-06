@@ -417,116 +417,6 @@ static vector_tpl<rule_t *> road_rules;
  * . = beliebig
  */
 
-//enum {	rule_anything	= 0,	// .
-//	rule_no_road 	= 1, 	// S
-//	rule_is_road 	= 2, 	// s
-// 	rule_is_natur  	= 4, 	// n
-//  	rule_no_house	= 8, 	// H
-//   	rule_is_house	= 16, 	// h
-//   	rule_no_stop 	= 32,	// T
-//	rule_is_stop	= 64, 	// t
-// 	rule_good_slope	= 128, 	// u
-//  	rule_bad_slope	= 256,	// U
-//   	rule_indefinite	= 512,
-//   	rule_known	= 1024,	// location already evaluated
-//    	rule_any_rule = rule_indefinite -1,
-//};
-//
-///*
-// * translation of char rules to the integers
-// */
-//uint16 rule_char_to_int(const char r)
-//{
-//	switch (r) {
-//		case '.': return rule_anything;
-//		case 'S': return rule_no_road;
-//		case 's': return rule_is_road;
-//		case 'h': return rule_is_house;
-//		case 'H': return rule_no_house;
-//		case 'n': return rule_is_natur;
-//		case 'u': return rule_good_slope;
-//		case 'U': return rule_bad_slope;
-//		case 't': return rule_is_stop;
-//		case 'T': return rule_no_stop;
-//		default:  return rule_indefinite;
-//	}
-//}
-//
-//// static array to cache evaluations of locations
-//static sparse_tpl<uint16>*location_cache = NULL;
-//
-//static stadt_t* location_cache_city = NULL;
-//
-//static uint64 cache_hits=0, cache_writes=0;
-//#define use_cache
-//
-//void stadt_t::reset_location_cache(koord size) {
-//#ifdef use_cache
-//	if (location_cache) delete location_cache;
-//	location_cache = new sparse_tpl<uint16> (size);
-//	location_cache_city = NULL;
-//#endif
-//}
-//
-//void stadt_t::disable_location_cache() {
-//	if (location_cache) delete location_cache;
-//	location_cache = NULL;
-//	location_cache_city = NULL;
-//}
-//
-//void clear_location_cache(stadt_t *city)
-//{
-//	printf("Location Cache: hits/writes = %lld/%lld\n", cache_hits, cache_writes);
-//	if(location_cache)
-//	{
-//		location_cache->clear();
-//	}
-//	location_cache_city = city;
-//	cache_hits=0;
-//	cache_writes=0;
-//}
-//
-///*
-// * checks loc against all possible rules, stores this in location_cache
-// * cache must be active (not NULL) - this must be checked before calling
-// */
-//uint16 stadt_t::bewerte_loc_cache(const koord pos, bool force)
-//{
-//	uint16 flag=0;
-//#ifdef use_cache
-////	if (location_cache) {
-//		if (location_cache_city!=this) {
-//			clear_location_cache(this);
-//		}
-//		else if (!force) {
-//			flag = location_cache->get(pos);
-//			cache_hits++;
-//		}
-////	}
-//#endif
-//	if (flag==0) {
-//		const grund_t* gr = welt->lookup_kartenboden(pos);
-//		// outside
-//		if (gr==NULL) return 0;
-//		// now do all the tests
-//		flag |= gr->hat_weg(road_wt) ? rule_is_road : rule_no_road;
-//		flag |= gr->get_typ() == grund_t::fundament ? (gr->obj_bei(0)->get_typ()==obj_t::gebaeude ? rule_is_house :0) : rule_no_house;
-//		if (gr->ist_natur() && gr->kann_alle_obj_entfernen(NULL)== NULL) {
-//			flag |= rule_is_natur;
-//		}
-//		flag |= gr->is_halt() ? rule_is_stop : rule_no_stop;
-//		flag |= slope_t::is_way(gr->get_grund_hang()) ? rule_good_slope : rule_bad_slope;
-//#ifdef use_cache
-//		if (location_cache) {
-//			location_cache->set(pos, flag | rule_known);
-//			cache_writes ++;
-//		}
-//#endif
-//	}
-//	return flag & rule_any_rule;
-//}
-
-
 // here '.' is ignored, since it will not be tested anyway
 static char const* const allowed_chars_in_rule = "SsnHhTtUu";
 
@@ -535,84 +425,6 @@ static char const* const allowed_chars_in_rule = "SsnHhTtUu";
  * @param regel the rule to evaluate
  * @return true on match, false otherwise
  */
-
-//bool stadt_t::bewerte_loc(const koord pos, const rule_t &regel, uint16 rotation)
-//{
-//	//printf("Test for (%s) in rotation %d\n", pos.get_str(), rotation);
-//	koord k;
-//	const bool uses_cache = location_cache != NULL;
-//
-//		for(uint32 i=0; i<regel.rule.get_count(); i++){
-//		rule_entry_t &r = regel.rule[i];
-//		uint8 x,y;
-//		switch (rotation) {
-//			case   0: x=r.x; y=r.y; break;
-//			case  90: x=r.y; y=6-r.x; break;
-//			case 180: x=6-r.x; y=6-r.y; break;
-//			case 270: x=6-r.y; y=r.x; break;
-//		}
-//
-//		if (r.flag!=0) {
-//			const koord k(pos.x+x-3, pos.y+y-3);
-//
-//			if (uses_cache) {
-//				if ((bewerte_loc_cache(k) & r.flag) ==0) return false;
-//			}
-//			else {
-//				const grund_t* gr = welt->lookup_kartenboden(k);
-//				if (gr == NULL) {
-//					// outside of the map => cannot apply this rule
-//					return false;
-//				}
-//
-//				switch (r.flag) {
-//					case rule_is_road:
-//						// road?
-//						if (!gr->hat_weg(road_wt)) return false;
-//						break;
-//
-//					case rule_no_road:
-//						// not road?
-//						if (gr->hat_weg(road_wt)) return false;
-//						break;
-//
-//					case rule_is_house:
-//						// is house
-//						if (gr->get_typ() != grund_t::fundament  ||  gr->obj_bei(0)->get_typ()!=obj_t::gebaeude) return false;
-//						break;
-//
-//					case rule_no_house:
-//						// no house
-//						if (gr->get_typ() == grund_t::fundament) return false;
-//						break;
-//
-//					case rule_is_natur:
-//						// nature/empty
-//						if (!gr->ist_natur() || gr->kann_alle_obj_entfernen(NULL) != NULL) return false;
-//						break;
-//
-// 					case rule_bad_slope:
-// 						// unbuildable for road
-// 						if (!slope_t::is_way(gr->get_grund_hang())) return false;
-// 						break;
-//
-// 					case rule_good_slope:
-// 						// road may be buildable
-// 						if (slope_t::is_way(gr->get_grund_hang())) return false;
-// 						break;
-//
-//					case rule_is_stop:
-//						// here is a stop/extension building
-//						if (!gr->is_halt()) return false;
-//						break;
-//
-//					case rule_no_stop:
-//						// no stop
-//						if (gr->is_halt()) return false;
-//						break;
-//				}
-//			}
-
 
 /*
 * @param pos position to check
@@ -1771,7 +1583,6 @@ void stadt_t::rdwr(loadsave_t* file)
 		owner_n = welt->sp2num(owner);
 	}
 	file->rdwr_str(name);
-	// DBG_DEBUG("stadt_t::rdwr", "city'%s'", name);
 	pos.rdwr(file);
 	uint32 lli = lo.x;
 	uint32 lob = lo.y;
@@ -2421,14 +2232,8 @@ void stadt_t::rdwr(loadsave_t* file)
 }
 
 
-/**
- * Wird am Ende der Laderoutine aufgerufen, wenn die Welt geladen ist
- * und nur noch die Datenstrukturenneu verknuepft werden muessen.
- */
 void stadt_t::finish_rd()
 {
-	//step_count = 0;
-	//next_step = 0;
 	next_growth_step = 0;
 
 	// there might be broken savegames
@@ -2472,7 +2277,6 @@ void stadt_t::finish_rd()
 	}
 	reset_city_borders();
 
-	//next_step = 0;
 	next_growth_step = 0;
 }
 
@@ -3469,7 +3273,6 @@ void stadt_t::check_bau_spezial(bool new_town)
 	const building_desc_t* desc = hausbauer_t::get_special(has_townhall ? bev : 0, building_desc_t::attraction_city, welt->get_timeline_year_month(), (bev == 0) || !has_townhall, welt->get_climate(pos), welt->get_region(pos));
 	if (desc != NULL) {
 		if (simrand(100, "void stadt_t::check_bau_spezial") < (uint)desc->get_distribution_weight()) {
-			// build was immer es ist
 
 			bool big_city = buildings.get_count() >= 10;
 			bool is_rotate = desc->get_all_layouts() > 1;

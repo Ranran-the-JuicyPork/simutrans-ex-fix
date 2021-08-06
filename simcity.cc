@@ -425,41 +425,6 @@ static char const* const allowed_chars_in_rule = "SsnHhTtUu";
  * @param regel the rule to evaluate
  * @return true on match, false otherwise
  */
-
-/*
-* @param pos position to check
-* Checks whether there is a road at the coordinates of pos and if so returns true
-* Returns false if there is no road at pos or if there is and road has noise barriers or a private sign
-*/
-
-bool stadt_t::bewerte_loc_has_public_road(const koord pos)
-{
-	grund_t *gr = welt->lookup_kartenboden(pos);
-	weg_t *weg = gr->get_weg(road_wt);
-
-	if (weg) {
-		wayobj_t *wo = gr->get_wayobj(road_wt);
-		if (wo && wo->get_desc()->is_noise_barrier()) {
-			return false;
-		}
-
-		const roadsign_t* rs = gr->find<roadsign_t>();
-		if (rs && rs->get_desc()->is_private_way()) {
-			return false;
-		}
-
-		return true;
-	}
-
-	return false;
-}
-
-/*
-* @param pos position to check
-* @param regel the rule to evaluate
-* @return true on match, false otherwise
-*/
-
 bool stadt_t::bewerte_loc(const koord pos, const rule_t &regel, int rotation)
 {
 	//printf("Test for (%s) in rotation %d\n", pos.get_str(), rotation);
@@ -546,6 +511,36 @@ sint32 stadt_t::bewerte_pos(const koord pos, const rule_t &regel)
 	return 0;
 }
 
+
+/*
+* @param pos position to check
+* Checks whether there is a road at the coordinates of pos and if so returns true
+* Returns false if there is no road at pos or if there is and road has noise barriers or a private sign
+*/
+
+bool stadt_t::bewerte_loc_has_public_road(const koord pos)
+{
+	grund_t *gr = welt->lookup_kartenboden(pos);
+	weg_t *weg = gr->get_weg(road_wt);
+
+	if (weg) {
+		wayobj_t *wo = gr->get_wayobj(road_wt);
+		if (wo && wo->get_desc()->is_noise_barrier()) {
+			return false;
+		}
+
+		const roadsign_t* rs = gr->find<roadsign_t>();
+		if (rs && rs->get_desc()->is_private_way()) {
+			return false;
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
+
 bool stadt_t::maybe_build_road(koord k, bool map_generation)
 {
 	karte_t::runway_info ri = welt->check_nearby_runways(k);
@@ -613,10 +608,11 @@ bool stadt_t::cityrules_init(const std::string &objfilename)
 
 	char buf[128];
 
-	minimum_city_distance = contents.get_int("minimum_city_distance", 16);
 	cluster_factor = (uint32)contents.get_int("cluster_factor", 100);
-	bridge_success_percentage = (uint32)contents.get_int("bridge_success_percentage", 25);
 	renovation_percentage = (uint32)contents.get_int("renovation_percentage", renovation_percentage);
+
+	minimum_city_distance = contents.get_int("minimum_city_distance", 16);
+	bridge_success_percentage = (uint32)contents.get_int("bridge_success_percentage", 25);
 	renovations_count = (uint32)contents.get_int("renovations_count", renovations_count);
 	renovations_try   = (uint32)contents.get_int("renovations_try", renovations_try);
 	renovation_range = (uint32)contents.get_int("renovation_range", renovation_range);
@@ -1016,8 +1012,7 @@ private:
 // It's therefore not OK to recalc city borders in here.
 void stadt_t::add_gebaeude_to_stadt(gebaeude_t* gb, bool ordered, bool do_not_add_to_world_list, bool do_not_update_stats)
 {
-	if (gb != NULL)
-	{
+	if (gb != NULL) {
 		const building_tile_desc_t* tile = gb->get_tile();
 		koord size = tile->get_desc()->get_size(tile->get_layout());
 		const koord pos = gb->get_pos().get_2d() - tile->get_offset();
@@ -1087,8 +1082,8 @@ void stadt_t::remove_gebaeude_from_stadt(gebaeude_t* gb, bool map_generation, bo
 		}
 		welt->remove_building_from_world_list(gb);
 	}
-	buildings.remove(gb);
 
+	buildings.remove(gb);
 	gb->set_stadt(NULL);
 	reset_city_borders();
 }
@@ -1250,14 +1245,12 @@ bool stadt_t::is_within_players_network(const player_t* player) const
 {
 	vector_tpl<halthandle_t> halts;
 	// Find all stations whose coverage affects this city
-	for (weighted_vector_tpl<gebaeude_t*>::const_iterator i = buildings.begin(); i != buildings.end(); ++i)
-	{
+	for(  weighted_vector_tpl<gebaeude_t*>::const_iterator i = buildings.begin(); i != buildings.end(); ++i  ) {
 		gebaeude_t* gb = *i;
 		const planquadrat_t *plan = welt->access(gb->get_pos().get_2d());
-		if (plan->get_haltlist_count() > 0) {
+		if(  plan->get_haltlist_count() > 0  ) {
 			const nearby_halt_t *const halt_list = plan->get_haltlist();
-			for (int h = 0; h < plan->get_haltlist_count(); h++)
-			{
+			for(  int h = 0; h < plan->get_haltlist_count();  h++  ) {
 				const halthandle_t halt = halt_list[h].halt;
 				if (halt->get_owner()==player) {
 					return true;
@@ -3631,11 +3624,9 @@ void stadt_t::check_bau_townhall(bool new_town)
 void stadt_t::check_bau_factory(bool new_town)
 {
 	uint32 const inc = welt->get_settings().get_industry_increase_every();
-	if (!new_town && inc > 0 && (uint32)bev %inc == 0)
-	{
-		uint32 div = bev / inc;
-		for (uint8 i = 0; i < 8; i++)
-		{
+	if(  !new_town && inc > 0  &&  (uint32)bev % inc == 0  ) {
+		uint32 const div = bev / inc;
+		for( uint8 i = 0; i < 8; i++  ) {
 			if (div == (1u<<i) && welt->get_actual_industry_density() < welt->get_target_industry_density())
 			{
 				// Only add an industry if there is a need for it: if the actual industry density is less than the target density.
@@ -3753,7 +3744,6 @@ static int interesting_neighbors_corners[] = {
 #define CHECK_NEIGHBOUR (128)
 static int const building_layout[] = { CHECK_NEIGHBOUR | 0, 0, 1, 4, 2, 0, 5, CHECK_NEIGHBOUR | 1, 3, 7, 1, CHECK_NEIGHBOUR | 0, 6, CHECK_NEIGHBOUR | 3, CHECK_NEIGHBOUR | 2, CHECK_NEIGHBOUR | 0 };
 
-
 // This takes a layout (0,1,2,3,4,5,6,7)
 // and returns a "streetsdir" style bitfield indicating which ways that layout is facing
 static int layout_to_orientations[] = {
@@ -3766,6 +3756,7 @@ static int layout_to_orientations[] = {
 	12, //NW
 	9   //SW
 };
+
 
 void process_city_street(grund_t& gr, const way_desc_t* cr)
 {

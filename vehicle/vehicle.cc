@@ -600,7 +600,7 @@ vehicle_base_t *vehicle_base_t::get_blocking_vehicle(const grund_t *gr, const co
 		break;
 	}
 	// Search vehicle
-	uint8 count_sidewalker=0;
+	uint8 total_occupied_length_by_sidewalkers = 0;
 	for(  uint8 pos=1;  pos < gr->get_top();  pos++  ) {
 		if(  vehicle_base_t* const v = obj_cast<vehicle_base_t>(gr->obj_bei(pos))  ) {
 			if(  v->get_typ()==obj_t::pedestrian  ) {
@@ -616,14 +616,17 @@ vehicle_base_t *vehicle_base_t::get_blocking_vehicle(const grund_t *gr, const co
 				if(  cnv == at->get_convoi()  ) {
 					continue;
 				}
+				if(  cnv && cnv->is_sidewalker() && !at->get_desc()->is_sidewalker()  ) {
+					continue; // sidewalker does not interfere with cars on the road 
+				}
 				other_direction = at->get_direction();
 				if( at->get_desc()->is_sidewalker() ) {
 					if( cnv && cnv->is_sidewalker() ) {
-						if (count_sidewalker >= MAX_SIDEWALKERS_ON_TILE) {
-							return v; // already too many sidewalkers here
-						}
 						if( next_direction==other_direction ) {
-							count_sidewalker++;
+							total_occupied_length_by_sidewalkers += (cnv->get_true_tile_length()+MARGIN_BETWEEN_ROAD_VEHICLES);
+						}
+						if( total_occupied_length_by_sidewalkers > CARUNITS_PER_TILE ) {
+							return v; // already too many sidewalkers here
 						}
 					}
 					continue;

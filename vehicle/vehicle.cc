@@ -617,7 +617,7 @@ vehicle_base_t *vehicle_base_t::get_blocking_vehicle(const grund_t *gr, const co
 					continue;
 				}
 				if(  cnv && cnv->is_sidewalker() && !at->get_desc()->is_sidewalker()  ) {
-					continue; // sidewalker does not interfere with cars on the road 
+					continue; // sidewalker does not interfere with cars on the road
 				}
 				other_direction = at->get_direction();
 				if( at->get_desc()->is_sidewalker() ) {

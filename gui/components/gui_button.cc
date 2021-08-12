@@ -81,6 +81,7 @@ void button_t::set_typ(enum type t)
 	switch (type&TYPE_MASK) {
 
 		case square:
+		case radio:
 			text_color = SYSCOL_CHECKBOX_TEXT;
 			if(  !strempty(translated_text)  ) {
 				set_text(translated_text);
@@ -156,6 +157,7 @@ scr_size button_t::get_max_size() const
 {
 	switch(type&TYPE_MASK) {
 		case square:
+		case radio:
 		case box:
 		case roundbox:
 		case roundbox_left:
@@ -189,7 +191,8 @@ scr_size button_t::get_min_size() const
 		case arrowdown:
 			return gui_theme_t::gui_arrow_down_size;
 
-		case square: {
+		case square:
+		case radio:	{
 			scr_coord_val w = translated_text ?  D_H_SPACE + proportional_string_width( translated_text ) : 0;
 			return scr_size(w + gui_theme_t::gui_checkbox_size.w, max(gui_theme_t::gui_checkbox_size.h,LINESPACE));
 		}
@@ -234,7 +237,7 @@ void button_t::set_text(const char * text)
 	this->text = text;
 	translated_text = b_no_translate ? text : translator::translate(text);
 
-	if(  (type & TYPE_MASK) == square  &&  !strempty(translated_text)  ) {
+	if(  ( (type & TYPE_MASK) == square  ||  (type & TYPE_MASK) == radio )  &&  !strempty(translated_text)  ) {
 		set_size( scr_size( gui_theme_t::gui_checkbox_size.w + D_H_SPACE + proportional_string_width( translated_text ), max(gui_theme_t::gui_checkbox_size.h, LINESPACE)) );
 	}
 }
@@ -460,8 +463,17 @@ void button_t::draw(scr_coord offset)
 			break;
 
 		case square: // checkbox with text
+		case radio:  // radiobutton with text
 			{
-				display_img_aligned( gui_theme_t::check_button_img[ get_state_offset() ], area, ALIGN_CENTER_V, true );
+				switch (type&TYPE_MASK) {
+					case square:
+					defalt:
+						display_img_aligned( gui_theme_t::check_button_img[ get_state_offset() ], area, ALIGN_CENTER_V, true );
+						break;
+					case radio:
+						display_img_aligned( gui_theme_t::radio_button_img[ get_state_offset() ], area, ALIGN_CENTER_V, true );
+						break;
+				}
 				if(  text  ) {
 					text_color = b_enabled ? this->text_color : SYSCOL_CHECKBOX_TEXT_DISABLED;
 					scr_rect area_text = area;
@@ -521,6 +533,7 @@ void button_t::update_focusability()
 		case box:      // Old, 4-line box
 		case roundbox: // New box with round corners
 		case square:   // Little square in front of text (checkbox)
+		case radio:
 			set_focusable(true);
 			break;
 
@@ -551,7 +564,7 @@ gui_radiobutton_t::gui_radiobutton_t()
 void gui_radiobutton_t::add_selection(const char * text, const image_id imageid, const char * tooltip)
 {
 	button_t* b = new button_t();
-	b->set_typ( button_t::square_state );
+	b->set_typ( button_t::radio_state );
 	if( text ) {
 		b->set_text( text );
 	}
@@ -603,7 +616,7 @@ void gui_radiobutton_t::init()
 			b->set_typ(  i==0? button_t::roundbox_left_state : i==buttons.get_count()-1 ? button_t::roundbox_right_state : button_t::roundbox_middle_state  );
 		}
 		else {
-			b->set_typ(button_t::square_state); // TODO: change to radiobutton_state
+			b->set_typ(button_t::radio_state);
 		}
 		b->pressed = i == selection ? true : false;
 

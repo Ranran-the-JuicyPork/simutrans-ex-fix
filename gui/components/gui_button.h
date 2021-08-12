@@ -39,6 +39,7 @@ public:
 	 */
 	enum type {
 		square = 1,
+		radio,
 		box,
 		roundbox,
 		roundbox_left,
@@ -57,6 +58,7 @@ public:
 
 		state            = 1 << 7,
 		square_state     = square     | state,
+		radio_state      = radio      | state,
 		box_state        = box        | state,
 		roundbox_state   = roundbox   | state,
 		roundbox_left_state   = roundbox_left   | state,

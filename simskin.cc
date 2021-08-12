@@ -23,6 +23,7 @@ const skin_desc_t* skinverwaltung_t::toolbar_background = NULL;
 const skin_desc_t* skinverwaltung_t::button = NULL;
 const skin_desc_t* skinverwaltung_t::round_button = NULL;
 const skin_desc_t* skinverwaltung_t::check_button = NULL;
+const skin_desc_t* skinverwaltung_t::radio_button = NULL;
 const skin_desc_t* skinverwaltung_t::posbutton = NULL;
 const skin_desc_t* skinverwaltung_t::back = NULL;
 const skin_desc_t* skinverwaltung_t::scrollbar = NULL;
@@ -110,6 +111,7 @@ static special_obj_tpl<skin_desc_t> const misc_objekte[] = {
 
 static special_obj_tpl<skin_desc_t> const menu_objekte[] = {
 	// new menu system
+	{ &skinverwaltung_t::radio_button,      "Radiobutton"  },
 	{ &skinverwaltung_t::button,            "Button"   },
 	{ &skinverwaltung_t::round_button,      "Roundbutton"  },
 	{ &skinverwaltung_t::check_button,      "Checkbutton"  },

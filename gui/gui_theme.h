@@ -39,6 +39,10 @@ class image_t;
 #define D_CHECKBOX_WIDTH       (gui_theme_t::gui_checkbox_size.w)
 #define D_CHECKBOX_HEIGHT      (gui_theme_t::gui_checkbox_size.h)
 
+#define D_RADIO_BUTTON_SIZE    (gui_theme_t::gui_radio_button_size  )
+#define D_RADIO_BUTTON_WIDTH   (gui_theme_t::gui_radio_button_size.w)
+#define D_RADIO_BUTTON_HEIGHT  (gui_theme_t::gui_radio_button_size.h)
+
 #define D_POS_BUTTON_SIZE      (gui_theme_t::gui_pos_button_size  )
 #define D_POS_BUTTON_WIDTH     (gui_theme_t::gui_pos_button_size.w)
 #define D_POS_BUTTON_HEIGHT    (gui_theme_t::gui_pos_button_size.h)
@@ -185,6 +189,11 @@ enum {
 	SKIN_BUTTON_CHECKBOX_PRESSED,
 	SKIN_BUTTON_CHECKBOX_DISABLED,
 
+	// radiobutton
+	SKIN_BUTTON_RADIO = 0,
+	SKIN_BUTTON_RADIO_PRESSED,
+	SKIN_BUTTON_RADIO_DISABLED,
+
 	// posbutton
 	SKIN_BUTTON_POS = 0,
 	SKIN_BUTTON_POS_PRESSED,
@@ -266,6 +275,7 @@ public:
 	static scr_size gui_button_text_offset;       // extra offset for the text (in case of asymmetric or buttons with checkmark on the left)
 	static scr_size gui_color_button_size;
 	static scr_size gui_checkbox_size;
+	static scr_size gui_radio_button_size;
 	static scr_size gui_pos_button_size;
 	static scr_size gui_arrow_left_size;
 	static scr_size gui_arrow_right_size;
@@ -316,6 +326,7 @@ public:
 	static image_id arrow_button_up_img[3];
 	static image_id arrow_button_down_img[3];
 	static image_id check_button_img[3];
+	static image_id radio_button_img[3];
 	static image_id pos_button_img[3];
 
 	static bool gui_drop_shadows;

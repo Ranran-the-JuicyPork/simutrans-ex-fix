@@ -55,6 +55,7 @@ public:
 	static const skin_desc_t* button;
 	static const skin_desc_t* round_button;
 	static const skin_desc_t* check_button;
+	static const skin_desc_t* radio_button;
 	static const skin_desc_t* posbutton;
 	static const skin_desc_t* back;
 	static const skin_desc_t* scrollbar;

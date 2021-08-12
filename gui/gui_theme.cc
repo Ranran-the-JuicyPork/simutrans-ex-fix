@@ -79,6 +79,7 @@ scr_size gui_theme_t::gui_color_button_size;
 scr_size gui_theme_t::gui_color_button_text_offset;
 scr_size gui_theme_t::gui_divider_size;
 scr_size gui_theme_t::gui_checkbox_size;
+scr_size gui_theme_t::gui_radio_button_size;
 scr_size gui_theme_t::gui_pos_button_size;
 scr_size gui_theme_t::gui_arrow_left_size;
 scr_size gui_theme_t::gui_arrow_right_size;
@@ -133,6 +134,7 @@ image_id gui_theme_t::arrow_button_right_img[3];
 image_id gui_theme_t::arrow_button_up_img[3];
 image_id gui_theme_t::arrow_button_down_img[3];
 image_id gui_theme_t::check_button_img[3];
+image_id gui_theme_t::radio_button_img[3];
 image_id gui_theme_t::pos_button_img[3];
 
 bool gui_theme_t::gui_drop_shadows;
@@ -211,6 +213,7 @@ void gui_theme_t::init_gui_defaults()
 	gui_color_button_text_offset = scr_size(0,0);
 	gui_divider_size             = scr_size(92,2+D_V_SPACE*2);
 	gui_checkbox_size            = scr_size(10,10);
+	gui_radio_button_size        = scr_size(10,10);
 	gui_pos_button_size          = scr_size(14,LINESPACE);
 	gui_arrow_left_size          = scr_size(14,14);
 	gui_arrow_right_size         = scr_size(14,14);
@@ -264,9 +267,18 @@ void gui_theme_t::init_gui_from_images()
 
 	init_size_from_image( skinverwaltung_t::posbutton->get_image( SKIN_BUTTON_POS ), gui_pos_button_size );
 	init_size_from_image( skinverwaltung_t::check_button->get_image( SKIN_BUTTON_CHECKBOX ), gui_checkbox_size );
+	if(  skinverwaltung_t::radio_button  ) {
+		init_size_from_image( skinverwaltung_t::radio_button->get_image( SKIN_BUTTON_RADIO ), gui_radio_button_size );
+	}
 	for(  int i=0;  i<3;  i++  ) {
 		pos_button_img[i] = skinverwaltung_t::posbutton->get_image_id( SKIN_BUTTON_POS+i );
 		check_button_img[i] = skinverwaltung_t::check_button->get_image_id( SKIN_BUTTON_CHECKBOX+i );
+		if( skinverwaltung_t::radio_button ) {
+			radio_button_img[i] = skinverwaltung_t::radio_button->get_image_id( SKIN_BUTTON_RADIO+i );
+		}
+		else {
+			radio_button_img[i] = check_button_img[i];
+		}
 	}
 
 	// Normal buttons (colorful ones)
@@ -493,6 +505,9 @@ bool gui_theme_t::themes_init(const char *file_name, bool init_fonts, bool init_
 
 	gui_theme_t::gui_checkbox_size.w = (uint32)contents.get_int("gui_checkbox_width",  gui_theme_t::gui_checkbox_size.w );
 	gui_theme_t::gui_checkbox_size.h = (uint32)contents.get_int("gui_checkbox_height", gui_theme_t::gui_checkbox_size.h );
+
+	gui_theme_t::gui_radio_button_size.w = (uint32)contents.get_int("gui_radiobutton_width",  gui_theme_t::gui_radio_button_size.w);
+	gui_theme_t::gui_radio_button_size.h = (uint32)contents.get_int("gui_radiobutton_height", gui_theme_t::gui_radio_button_size.h);
 
 	gui_theme_t::gui_gadget_size.w = (uint32)contents.get_int("gui_gadget_width",  gui_theme_t::gui_gadget_size.w );
 	gui_theme_t::gui_gadget_size.h = (uint32)contents.get_int("gui_gadget_height", gui_theme_t::gui_gadget_size.h );

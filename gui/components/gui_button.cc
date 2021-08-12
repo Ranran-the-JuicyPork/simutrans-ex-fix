@@ -542,3 +542,90 @@ void button_t::update_focusability()
 			break;
 	}
 }
+
+
+gui_radiobutton_t::gui_radiobutton_t()
+{
+}
+
+void gui_radiobutton_t::add_selection(const char * text, const image_id imageid, const char * tooltip)
+{
+	button_t* b = new button_t();
+	b->set_typ( button_t::square_state );
+	if( text ) {
+		b->set_text( text );
+	}
+	else if( imageid ) {
+		b->set_image( imageid );
+	}
+
+	if( tooltip!=NULL ) {
+		b->set_tooltip( tooltip );
+	}
+	b->add_listener(this);
+	buttons.append( b );
+}
+
+void gui_radiobutton_t::set_size(scr_size size)
+{
+	gui_aligned_container_t::set_size(size);
+}
+
+scr_size gui_radiobutton_t::get_min_size() const
+{
+	return gui_aligned_container_t::get_min_size();
+}
+
+bool gui_radiobutton_t::action_triggered(gui_action_creator_t *comp, value_t)
+{
+	uint8 i = 0;
+	FORX(slist_tpl<button_t*>, b, buttons, i++) {
+		if (comp == b) {
+			b->pressed = true;
+			selection = i;
+		}
+		else {
+			b->pressed = false;
+		}
+	}
+	old_selection = selection;
+	return true;
+}
+
+void gui_radiobutton_t::init()
+{
+	remove_all();
+	set_table_layout(buttons.get_count()+1,1);
+	set_spacing( scr_size( style==toggle_button ? 0 : D_H_SPACE, 0 ) );
+	uint8 i=0;
+	FORX(slist_tpl<button_t*>, b, buttons, i++) {
+		if(style == toggle_button){
+			b->set_typ(  i==0? button_t::roundbox_left_state : i==buttons.get_count()-1 ? button_t::roundbox_right_state : button_t::roundbox_middle_state  );
+		}
+		else {
+			b->set_typ(button_t::square_state); // TODO: change to radiobutton_state
+		}
+		b->pressed = i == selection ? true : false;
+
+		add_component(b);
+	}
+}
+
+
+void gui_radiobutton_t::draw(scr_coord offset)
+{
+	if( old_selection ==-1 ) {
+		init();
+	}
+	if( buttons.get_count()>0 ) {
+		gui_aligned_container_t::draw(offset);
+	}
+}
+
+
+void gui_radiobutton_t::clear()
+{
+	buttons.clear();
+	selection = 0;
+	old_selection = -1;
+}

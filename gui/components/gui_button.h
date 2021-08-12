@@ -8,6 +8,7 @@
 
 
 #include "gui_action_creator.h"
+#include "gui_aligned_container.h"
 #include "gui_component.h"
 #include "../../simcolor.h"
 #include "../../dataobj/koord.h"
@@ -195,5 +196,64 @@ public:
 };
 
 ENUM_BITSET(enum button_t::type)
+
+
+class gui_radiobutton_t :
+	public gui_action_creator_t,
+	public gui_aligned_container_t,
+	public action_listener_t
+{
+public:
+	enum radiobutton_style_t {
+		radio_button = 0,
+		toggle_button = 1,
+		MAX_RADIO_BUTTON_STYLES
+	};
+
+private:
+	slist_tpl<button_t*> buttons;
+	int selection = 0, old_selection = -1;
+	uint8 style = (uint8)radio_button;
+
+	void init();
+
+public:
+	gui_radiobutton_t();
+
+	/**
+	 * Add new selection
+	 */
+	void add_selection( const char *text, const image_id imageid = NULL, const char *tooltip = NULL );
+
+	int get_selection() const { return min((int)buttons.get_count()-1, selection); }
+	/**
+	 * sets the selection
+	 */
+	void set_selection(int s) { selection = min((int)buttons.get_count()-1, s); }
+
+	// button stle, 0=radio button, 1=toggle_button (see radiobutton_style_t)
+	void set_style(uint8 s) { style = s%(uint8)MAX_RADIO_BUTTON_STYLES; }
+
+	/**
+	 * Draw buttons
+	 */
+	void draw(scr_coord offset) OVERRIDE;
+
+	void set_size(scr_size size) OVERRIDE;
+
+	/**
+	 * Remove all buttons
+	 */
+	void clear();
+
+	/**
+	 * How many buttons we have?
+	 */
+	uint32 get_count() const { return buttons.get_count(); }
+
+	bool action_triggered(gui_action_creator_t*, value_t) OVERRIDE;
+
+	scr_size get_min_size() const OVERRIDE;
+};
 
 #endif

@@ -159,6 +159,15 @@ Image[1]=> checkbutton-small.0.1
 Image[2]=> checkbutton-small.0.2
 --
 Obj=menu
+name=Radiobutton
+# normal
+Image[0]=> checkbutton-small.1.0
+# pressed
+Image[1]=> checkbutton-small.1.1
+# disabled
+Image[2]=> checkbutton-small.1.2
+--
+Obj=menu
 name=Posbutton
 # normal
 Image[0]=> posbutton-small.0.0

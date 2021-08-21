@@ -246,6 +246,16 @@ void player_t::set_name(const char *new_name)
 	}
 }
 
+void player_t::set_short_name(const char *new_name)
+{
+	tstrncpy( player_short_name_buf, new_name, lengthof(player_short_name_buf) );
+
+	// update player window
+	if (ki_kontroll_t *frame = dynamic_cast<ki_kontroll_t *>(win_get_magic(magic_ki_kontroll_t))) {
+		frame->update_data();
+	}
+}
+
 
 player_t::income_message_t::income_message_t( sint64 betrag, koord p )
 {
@@ -965,6 +975,10 @@ DBG_DEBUG("player_t::rdwr()","player %i: loading %i halts.",welt->sp2num( this )
 	else
 	{
 		allow_voluntary_takeover = false;
+	}
+
+	if( file->is_version_ex_atleast(14,43) )	{
+		file->rdwr_str(player_short_name_buf, lengthof(player_short_name_buf));
 	}
 }
 

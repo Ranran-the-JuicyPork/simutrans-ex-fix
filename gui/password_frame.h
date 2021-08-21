@@ -17,14 +17,15 @@
 class password_frame_t : public gui_frame_t, action_listener_t
 {
 private:
-	char ibuf[256], player_name_str[256];
+	char ibuf[256], player_name_str[256], player_short_name_str[7];
 
 protected:
 	player_t *player;
 
 	gui_textinput_t player_name;
+	gui_textinput_t player_short_name;
 	gui_hidden_textinput_t password;
-	gui_label_t fnlabel, const_player_name;
+	gui_label_t fnlabel, const_player_name, const_player_short_name;
 
 public:
 	password_frame_t( player_t *player );

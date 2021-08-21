@@ -39,6 +39,19 @@ password_frame_t::password_frame_t( player_t *player ) :
 		const_player_name.set_text( player->get_name() );
 		add_component(&const_player_name, 2);
 	}
+	new_component<gui_label_t>("Company abbreviation");
+	if(  !player->is_locked()  ||  (welt->get_active_player_nr()==1  &&  !welt->get_public_player()->is_locked())   ) {
+		tstrncpy( player_short_name_str, player->get_short_name(), lengthof(player_short_name_str) );
+		player_short_name.set_text(player_short_name_str, lengthof(player_short_name_str));
+		player_short_name.add_listener(this);
+		add_component(&player_short_name);
+	}
+	else {
+		const_player_short_name.set_text( player->get_short_name() );
+		const_player_short_name.set_color( color_idx_to_rgb(player->get_player_color1()+env_t::gui_player_color_dark) );
+		const_player_short_name.set_shadow(SYSCOL_SHADOW, true);
+		add_component(&const_player_short_name);
+	}
 	fnlabel.set_text( "Password" ); // so we have a width now
 	add_component(&fnlabel);
 
@@ -111,6 +124,17 @@ bool password_frame_t::action_triggered( gui_action_creator_t *comp, value_t p )
 		welt->set_tool( tmp_tool, player );
 		// since init always returns false, it is safe to delete immediately
 		delete tmp_tool;
+	}
+
+	if(  comp == &player_short_name  ) {
+		if (!player->is_locked() || (welt->get_active_player_nr() == 1 && !welt->get_public_player()->is_locked())) {
+			// set a company abbreviation
+			player->set_short_name(player_short_name.get_text());
+		}
+		else{
+			// permission error, the input field is not displayed for locked players though...
+			dbg->warning("password_frame_t::action_triggered", "The locked player%i's abbreviation was about to change by player%u", player->get_player_nr(), welt->get_active_player_nr());
+		}
 	}
 
 	if(  p.i==1  ) {

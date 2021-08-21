@@ -49,6 +49,7 @@ public:
 
 protected:
 	char player_name_buf[256];
+	char player_short_name_buf[7] = "\0";
 
 	/* "new" finance history */
 	finance_t *finance;
@@ -237,6 +238,10 @@ public:
 	 */
 	const char* get_name() const;
 	void set_name(const char *);
+
+	// @return the player abbreviation
+	const char* get_short_name() const { return player_short_name_buf; }
+	void set_short_name(const char *);
 
 	sint8 get_player_nr() const {return player_nr; }
 

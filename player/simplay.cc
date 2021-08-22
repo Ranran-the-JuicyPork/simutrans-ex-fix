@@ -977,7 +977,7 @@ DBG_DEBUG("player_t::rdwr()","player %i: loading %i halts.",welt->sp2num( this )
 		allow_voluntary_takeover = false;
 	}
 
-	if( file->is_version_ex_atleast(14,43) )	{
+	if( file->is_version_ex_atleast(14,44) ) {
 		file->rdwr_str(player_short_name_buf, lengthof(player_short_name_buf));
 	}
 }

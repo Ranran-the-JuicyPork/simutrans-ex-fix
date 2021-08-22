@@ -335,10 +335,10 @@ void player_t::set_player_color(uint8 col1, uint8 col2)
 		cbuffer_t message;
 		const char* player_name = welt->get_player(player_nr)->get_name();
 		message.printf(player_name);
-		welt->get_message()->add_message(message, koord::invalid, message_t::ai, player_color_1);
+		welt->get_message()->add_message(message, koord::invalid, message_t::ai, color_idx_to_rgb(player_color_1));
 		message.clear();
 		message.printf(translator::translate("has changed its colour scheme."));
-		welt->get_message()->add_message(message, koord::invalid, message_t::ai, col1);
+		welt->get_message()->add_message(message, koord::invalid, message_t::ai, color_idx_to_rgb(col1));
 	}
 	set_player_color_no_message(col1, col2);
 }

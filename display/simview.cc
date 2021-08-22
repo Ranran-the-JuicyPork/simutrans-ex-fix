@@ -133,7 +133,7 @@ void main_view_t::display(bool force_dirty)
 		force_dirty = false;
 	}
 
-	const int dpy_width = clip_rr.w/IMG_SIZE + 2;
+	const int dpy_width = disp_width + 2;
 	const int dpy_height = (disp_real_height*4)/IMG_SIZE;
 
 	const int i_off = viewport->get_world_position().x + viewport->get_viewport_ij_offset().x;
@@ -252,7 +252,7 @@ void main_view_t::display(bool force_dirty)
 		// the last we can run ourselves, setting clip_wh to the screen edge instead of wh_x (in case disp_width % num_threads != 0)
 		clear_all_poly_clip( env_t::num_threads - 1 );
 		display_set_clip_wh( lt_x, clip_rr.y, clip_rr.w, clip_rr.h, env_t::num_threads - 1 );
-		display_region( koord( lt_x - IMG_SIZE / 2, clip_rr.y ), koord( clip_rr.w - lt_x + IMG_SIZE, clip_rr.h ), y_min, dpy_height + 4 * 4, false, true, env_t::num_threads - 1 );
+		display_region( koord( lt_x - IMG_SIZE / 2, clip_rr.y ), koord( clip_rr.x + clip_rr.w + IMG_SIZE, clip_rr.h ), y_min, dpy_height + 4 * 4, false, true, env_t::num_threads - 1 );
 
 		simthread_barrier_wait( &display_barrier_end );
 
@@ -379,7 +379,7 @@ void main_view_t::display_region( koord lt, koord wh, sint16 y_min, sint16 y_max
 	const int const_x_off = viewport->get_x_off();
 	const int const_y_off = viewport->get_y_off();
 
-	const int dpy_width = wh.x / IMG_SIZE + 2;
+	const int dpy_width = display_get_width() / IMG_SIZE + 2;
 
 	// to save calls to grund_t::get_disp_height
 	const sint8 hmax_ground = (grund_t::underground_mode == grund_t::ugm_level) ? grund_t::underground_level : 127;

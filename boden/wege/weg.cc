@@ -1882,19 +1882,20 @@ bool weg_t::renew()
 	else if (public_right_of_way && wtyp == road_wt)
 	{
 		// Roads that are public rights of way should be renewed with the latest type.
-		const way_desc_t* wb = welt->get_timeline_year_month() ? welt->get_settings().get_intercity_road_type(welt->get_timeline_year_month()) : NULL; // This search only works properly when the timeline is enabled
+		const grund_t* gr = welt->lookup(get_pos());
+		const way_desc_t* way_desc = gr ? gr->get_default_road(this) : NULL;
 		bool default_way_is_better_than_current_way = false;
-		if(wb)
+		if(way_desc)
 		{
-			default_way_is_better_than_current_way |= wb->get_topspeed() > desc->get_topspeed();
-			default_way_is_better_than_current_way &= wb->get_max_axle_load() >= desc->get_max_axle_load();
+			default_way_is_better_than_current_way |= way_desc->get_topspeed() > desc->get_topspeed();
+			default_way_is_better_than_current_way &= way_desc->get_max_axle_load() >= desc->get_max_axle_load();
 
-			bool no_worse_stats = wb->get_topspeed() >= desc->get_topspeed() && wb->get_max_axle_load() >= desc->get_max_axle_load();
-			bool current_way_better_cost = (wb->get_maintenance() > desc->get_maintenance()) || (wb->get_base_cost() > desc->get_base_cost()) || (wb->get_wear_capacity() < desc->get_wear_capacity());
+			bool no_worse_stats = way_desc->get_topspeed() >= desc->get_topspeed() && way_desc->get_max_axle_load() >= desc->get_max_axle_load();
+			bool current_way_better_cost = (way_desc->get_maintenance() > desc->get_maintenance()) || (way_desc->get_base_cost() > desc->get_base_cost()) || (way_desc->get_wear_capacity() < desc->get_wear_capacity());
 
 			default_way_is_better_than_current_way &= !(no_worse_stats && current_way_better_cost);
 		}
-		set_desc(wb && (!owner || default_way_is_better_than_current_way) ? wb : desc);
+		set_desc(way_desc && (!owner || default_way_is_better_than_current_way) ? way_desc : desc);
 		success = true;
 	}
 
@@ -1913,10 +1914,9 @@ void weg_t::degrade()
 		{
 			if (!initially_unowned && welt->get_timeline_year_month())
 			{
-				const planquadrat_t* tile = welt->access(get_pos().get_2d());
-				const stadt_t* city = tile ? tile->get_city() : NULL;
-				const way_desc_t* wb = city ? welt->get_settings().get_city_road_type(welt->get_timeline_year_month()) : welt->get_settings().get_intercity_road_type(welt->get_timeline_year_month());
-				set_desc(wb ? wb : desc);
+				const grund_t* gr = welt->lookup(get_pos());
+				const way_desc_t* way_desc = gr ? gr->get_default_road(this) : NULL;
+				set_desc(way_desc ? way_desc : desc);
 			}
 			else
 			{

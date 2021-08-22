@@ -2506,11 +2506,7 @@ bool grund_t::removing_way_would_disrupt_public_right_of_way(waytype_t wt)
 				diversion_checker->set_owner(welt->get_public_player());
 				test_driver_t *driver = diversion_checker;
 				driver = public_driver_t::apply(driver);
-				const way_desc_t* default_road = welt->get_city(w->get_pos().get_2d()) ? welt->get_settings().get_city_road_type(welt->get_timeline_year_month()) : welt->get_settings().get_intercity_road_type(welt->get_timeline_year_month());
-				if(default_road == NULL) // If, for some reason, the default road is not defined
-				{
-					default_road = w->get_desc();
-				}
+				const way_desc_t* default_road = get_default_road(w);
 				const uint32 default_road_axle_load = default_road->get_axle_load();
 				const sint32 default_road_speed = default_road->get_topspeed();
 				const uint32 max_axle_load = w->get_waytype() == road_wt ? min(default_road_axle_load, w->get_max_axle_load()) : w->get_max_axle_load();
@@ -2641,7 +2637,7 @@ bool grund_t::removing_way_would_disrupt_public_right_of_way(waytype_t wt)
 			diversion_checker->set_owner(welt->get_public_player());
 			test_driver_t* driver = diversion_checker;
 			driver = public_driver_t::apply(driver);
-			const way_desc_t* default_road = welt->get_city(w->get_pos().get_2d()) ? welt->get_settings().get_city_road_type(welt->get_timeline_year_month()) : welt->get_settings().get_intercity_road_type(welt->get_timeline_year_month());
+			const way_desc_t* default_road = get_default_road(w);
 			if (default_road == NULL) // If, for some reason, the default road is not defined
 			{
 				default_road = w->get_desc();
@@ -2745,6 +2741,57 @@ bool grund_t::removing_way_would_disrupt_public_right_of_way(waytype_t wt)
 		}
 	}
 	return false;
+}
+
+const way_desc_t* grund_t::get_default_road(weg_t* w) const
+{
+	const way_desc_t* default_road;
+	if (welt->get_city(w->get_pos().get_2d()))
+	{
+		// City road
+		default_road = welt->get_settings().get_city_road_type(welt->get_timeline_year_month());
+	}
+	else
+	{
+		// Either an inter-city or an industry road.
+
+		// Check for connected road routes
+		bool city_destinations = false;
+		for (uint8 i = 0; i < 5; i++)
+		{
+			for (uint32 j = 0; j < w->private_car_routes[w->private_car_routes_currently_reading_element][i].get_count(); j++)
+			{
+				const koord dest = w->private_car_routes[w->private_car_routes_currently_reading_element][i][j];
+				const grund_t* gr = welt->lookup_kartenboden(dest);
+
+				const stadt_t* city = welt->get_city(dest);
+				if (city && dest == city->get_townhall_road())
+				{
+					city_destinations = true;
+					break;
+				}
+			}
+			if (city_destinations)
+			{
+				break;
+			}
+		}
+
+		if (city_destinations)
+		{
+			default_road = welt->get_settings().get_intercity_road_type(welt->get_timeline_year_month());
+		}
+		else
+		{
+			default_road = welt->get_settings().get_industry_road_type(welt->get_timeline_year_month());
+		}
+	}
+
+	if (default_road == NULL) // If, for some reason, the default road is not defined
+	{
+		default_road = w->get_desc();
+	}
+	return default_road;
 }
 
 // this function is called many many times => make it as fast as possible

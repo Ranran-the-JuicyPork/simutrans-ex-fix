@@ -1020,7 +1020,7 @@ bool destroy_win(const gui_frame_t *gui)
 void destroy_all_win(bool destroy_sticky)
 {
 	for(  sint32 curWin = 0;  curWin < (sint32)wins.get_count();  curWin++  ) {
-		if(  !wins[curWin].locked  &&  (  destroy_sticky  ||  !wins[curWin].sticky  )  ) {
+		if(  destroy_sticky  ||  (!wins[curWin].sticky  &&  !wins[curWin].locked)  ) {
 			if(  inside_event_handling == wins[curWin].gui  ) {
 				// only add this, if not already added
 				kill_list.append_unique(wins[curWin]);

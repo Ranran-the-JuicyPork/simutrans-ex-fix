@@ -841,6 +841,21 @@ public:
 	bool is_work_network_safe() const OVERRIDE { return true; }
 };
 
+class tool_show_depot_name_t : public tool_t {
+public:
+	tool_show_depot_name_t() : tool_t(TOOL_SHOW_DEPOT_NAME | SIMPLE_TOOL) {}
+	char const* get_tooltip(player_t const*) const OVERRIDE { return translator::translate("Show depot names"); }
+	bool is_selected() const OVERRIDE { return env_t::show_depot_names; }
+	bool init( player_t * ) OVERRIDE {
+		env_t::show_depot_names = !env_t::show_depot_names;
+		welt->set_dirty();
+		return false;
+	}
+	bool exit(player_t *s ) OVERRIDE { return init(s); }
+	bool is_init_network_safe() const OVERRIDE { return true; }
+	bool is_work_network_safe() const OVERRIDE { return true; }
+};
+
 class tool_show_grid_t : public tool_t {
 public:
 	tool_show_grid_t() : tool_t(TOOL_SHOW_GRID | SIMPLE_TOOL) {}

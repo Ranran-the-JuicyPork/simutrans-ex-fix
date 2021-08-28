@@ -345,6 +345,9 @@ show_delete_buttons = 0
 #   8 = box left of name in yellow outline
 show_names = 3
 
+# Show the name of depot above own depots
+#show_depot_names = 0
+
 # Draw the earth slope to mark the border (default 1 on)
 draw_earth_border = 1
 

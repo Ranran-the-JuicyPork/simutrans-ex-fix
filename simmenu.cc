@@ -295,6 +295,7 @@ tool_t *create_simple_tool(int toolnr)
 		case TOOL_ZOOM_OUT:             tool = new tool_zoom_out_t();             break;
 		case TOOL_SHOW_COVERAGE:        tool = new tool_show_coverage_t();        break;
 		case TOOL_SHOW_NAME:            tool = new tool_show_name_t();            break;
+		case TOOL_SHOW_DEPOT_NAME:      tool = new tool_show_depot_name_t();      break;
 		case TOOL_SHOW_GRID:            tool = new tool_show_grid_t();            break;
 		case TOOL_SHOW_TREES:           tool = new tool_show_trees_t();           break;
 		case TOOL_SHOW_HOUSES:          tool = new tool_show_houses_t();          break;

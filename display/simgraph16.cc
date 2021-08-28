@@ -5078,6 +5078,27 @@ void display_signal_direction_rgb(scr_coord_val x, scr_coord_val y, uint8 way_di
 }
 
 
+
+void display_depot_symbol(scr_coord_val x, scr_coord_val y, scr_coord_val width, const uint8 darkest_pcol_idx, const bool dirty)
+{
+	if (width < 6) { return; } // too small to draw!
+	// first, draw the roof (upper triangle)
+	for (uint8 i = 0; i < width/4; i++) {
+		const scr_coord_val w = i*4 + 2;
+		display_fillbox_wh_clip_rgb(x + (width-w) / 2, y+i, w, 1, color_idx_to_rgb(darkest_pcol_idx+3), dirty);
+	}
+	display_fillbox_wh_clip_rgb(x, y+width/4, width, width-width/3-1, color_idx_to_rgb(darkest_pcol_idx+3), dirty);
+	// draw the door
+	const scr_coord_val y_start = width/4+1;
+	display_vline_wh_rgb(x+1,             y+y_start, width-width/3-2, color_idx_to_rgb(darkest_pcol_idx+6), dirty);
+	display_vline_wh_rgb(x+(width/2)*2-2, y+y_start, width-width/3-2, color_idx_to_rgb(darkest_pcol_idx+6), dirty);
+	if (width < 8) { return; } // too small to draw!
+	for (uint8 i=y_start; i < width-3; i+=2) {
+		const scr_coord_val w = i==y_start ? (width/2)*2-4 : (width/2)*2-6;
+		display_fillbox_wh_clip_rgb(x+3-(i==y_start), y+i, w, 1, color_idx_to_rgb(darkest_pcol_idx+6), dirty);
+	}
+}
+
 /**
  * Print a bezier curve between points A and B
  * @Ax,Ay=start coordinate of Bezier curve

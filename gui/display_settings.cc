@@ -47,6 +47,7 @@ enum {
 	IDBTN_SHOW_THEMEMANAGER,
 	IDBTN_SIMPLE_DRAWING,
 	IDBTN_CHANGE_FONT,
+	IDBTN_SHOW_DEPOT_NAME,
 	COLORS_MAX_BUTTONS
 };
 
@@ -341,6 +342,12 @@ station_settings_t::station_settings_t()
 	buttons[ IDBTN_SHOW_WAITING_BARS ].pressed = env_t::show_names & 2;
 	add_component( buttons + IDBTN_SHOW_WAITING_BARS, 2 );
 
+	// Show own depot name
+	buttons[ IDBTN_SHOW_DEPOT_NAME ].init( button_t::square_state, "Show own depot names" );
+	buttons[ IDBTN_SHOW_DEPOT_NAME ].pressed = env_t::show_depot_names;
+	add_component( buttons + IDBTN_SHOW_DEPOT_NAME );
+
+
 	end_table();
 }
 
@@ -538,6 +545,9 @@ bool color_gui_t::action_triggered( gui_action_creator_t *comp, value_t )
 	case IDBTN_SHOW_STATION_COVERAGE:
 		env_t::station_coverage_show = env_t::station_coverage_show == 0 ? 0xFF : 0;
 		break;
+	case IDBTN_SHOW_DEPOT_NAME:
+		env_t::show_depot_names = !env_t::show_depot_names;
+		break;
 	case IDBTN_UNDERGROUND_VIEW:
 		// see simtool.cc::tool_show_underground_t::init
 		grund_t::set_underground_mode( buttons[ IDBTN_UNDERGROUND_VIEW ].pressed ? grund_t::ugm_none : grund_t::ugm_all, map_settings.inp_underground_level.get_value() );
@@ -618,6 +628,7 @@ void color_gui_t::draw(scr_coord pos, scr_size size)
 	buttons[IDBTN_UNDERGROUND_VIEW].pressed = grund_t::underground_mode == grund_t::ugm_all;
 	buttons[IDBTN_SHOW_GRID].pressed = grund_t::show_grid;
 	buttons[IDBTN_SHOW_WAITING_BARS].pressed = (env_t::show_names&2)!=0;
+	buttons[IDBTN_SHOW_DEPOT_NAME].pressed = env_t::show_depot_names;
 	buttons[IDBTN_SHOW_SLICE_MAP_VIEW].pressed = grund_t::underground_mode == grund_t::ugm_level;
 	buttons[IDBTN_SHOW_SCHEDULES_STOP].pressed = env_t::visualize_schedule;
 	buttons[IDBTN_SIMPLE_DRAWING].pressed = env_t::simple_drawing;

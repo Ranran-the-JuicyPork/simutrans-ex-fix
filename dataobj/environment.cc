@@ -108,6 +108,7 @@ uint16 env_t::cursor_hide_range;
 bool env_t::use_transparency_station_coverage;
 uint8 env_t::station_coverage_show;
 sint32 env_t::show_names;
+bool env_t::show_depot_names;
 sint32 env_t::message_flags[4];
 uint32 env_t::water_animation;
 uint32 env_t::ground_object_probability;
@@ -201,6 +202,7 @@ void env_t::init()
 	station_coverage_show = 0;
 
 	show_names = 3;
+	show_depot_names = false;
 	player_finance_display_account = true;
 
 	water_animation = 250; // 250ms per wave stage
@@ -550,6 +552,7 @@ void env_t::rdwr(loadsave_t *file)
 		file->rdwr_bool( reselect_closes_tool );
 
 		file->rdwr_bool( single_line_gui );
+		file->rdwr_bool( env_t::show_depot_names );
 	}
 
 	// server settings are not saved, since they are server specific

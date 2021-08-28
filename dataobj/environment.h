@@ -326,6 +326,9 @@ public:
 	 */
 	static sint32 show_names;
 
+	/// Show own depot name label
+	static bool show_depot_names;
+
 	/// if a schedule is open, show tiles which are used by it
 	static bool visualize_schedule;
 

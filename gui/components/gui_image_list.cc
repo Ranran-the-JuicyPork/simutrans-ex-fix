@@ -100,7 +100,7 @@ void gui_image_list_t::draw(scr_coord parent_pos)
 				display_veh_form_wh_clip_rgb(xpos+grid.x/2, ypos + grid.y - VEHICLE_BAR_HEIGHT-1, grid.x-grid.x/2-1, VEHICLE_BAR_HEIGHT, idata.rcolor, true, true,  idata.basic_coupling_constraint_next, idata.interactivity);
 			}
 			if (sel_index-- == 0) {
-				display_ddd_box_clip_rgb(xpos, ypos, grid.x, grid.y, color_idx_to_rgb(MN_GREY4), color_idx_to_rgb(MN_GREY0));
+				display_ddd_box_clip_rgb(xpos, ypos, grid.x, grid.y, SYSCOL_INDICATOR_BORDER_BR, SYSCOL_INDICATOR_BORDER_TL);
 			}
 
 			// Get image data

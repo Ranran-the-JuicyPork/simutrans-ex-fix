@@ -43,7 +43,7 @@ public:
 			scr_coord p = get_pos() + offset;
 			scr_size mapsize( gi->get_map()->get_width(), gi->get_map()->get_height() );
 			// 3D border around the map graphic
-			display_ddd_box_clip_rgb(p.x, p.y, mapsize.w + 2, mapsize.h + 2, color_idx_to_rgb(MN_GREY0), color_idx_to_rgb(MN_GREY4) );
+			display_ddd_box_clip_rgb(p.x, p.y, mapsize.w + 2, mapsize.h + 2, SYSCOL_INDICATOR_BORDER_TL, SYSCOL_INDICATOR_BORDER_BR );
 			display_array_wh( p.x + 1, p.y + 1, mapsize.w, mapsize.h, gi->get_map()->to_array() );
 		}
 	}

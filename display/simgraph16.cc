@@ -4273,7 +4273,7 @@ void display_cylinderbar_wh_clip_rgb(scr_coord_val xp, scr_coord_val yp, scr_coo
 
 void display_colorbox_with_tooltip(scr_coord_val xp, scr_coord_val yp, scr_coord_val w, scr_coord_val h, PIXVAL color, bool dirty, const char *text)
 {
-	display_ddd_box_clip_rgb(xp, yp, w, h, color_idx_to_rgb(MN_GREY0), color_idx_to_rgb(MN_GREY4));
+	display_ddd_box_clip_rgb(xp, yp, w, h, SYSCOL_INDICATOR_BORDER_TL, SYSCOL_INDICATOR_BORDER_BR);
 	//display_fb_internal(xp+1, yp+1, w-2, h-2, color, dirty, CR.clip_rect.x, CR.clip_rect.xx, CR.clip_rect.y, CR.clip_rect.yy);
 	display_fillbox_wh_clip_rgb(xp + 1, yp + 1, w - 2, h - 2, color, dirty);
 	if (text) {

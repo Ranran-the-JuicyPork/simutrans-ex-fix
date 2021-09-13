@@ -256,7 +256,7 @@ void factorylist_stats_t::draw(scr_coord offset)
 
 				// staffing
 				if (fab->get_desc()->get_building()->get_class_proportions_sum_jobs()) {
-					display_ddd_box_clip_rgb(xoff + offset_left, yoff+2, 52, D_INDICATOR_HEIGHT+2, color_idx_to_rgb(MN_GREY0), color_idx_to_rgb(MN_GREY4));
+					display_ddd_box_clip_rgb(xoff + offset_left, yoff+2, 52, D_INDICATOR_HEIGHT+1, SYSCOL_INDICATOR_BORDER_TL, SYSCOL_INDICATOR_BORDER_BR);
 					uint32 staff_shortage_factor=0;
 					if (fab->get_sector() == fabrik_t::end_consumer) {
 						staff_shortage_factor = welt->get_settings().get_minimum_staffing_percentage_consumer_industry();

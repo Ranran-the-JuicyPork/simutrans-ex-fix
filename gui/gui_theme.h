@@ -250,6 +250,9 @@ public:
 	static PIXVAL gui_shadow_color;                       //@< Color to draw shadowed dividers (tabs)
 	static PIXVAL gui_color_loadingbar_inner;
 	static PIXVAL gui_color_loadingbar_progress;
+	static PIXVAL gui_color_transferringbar;              //@< Color to draw transferring bar for halt info
+	static PIXVAL gui_color_indicator_border_top_left;    //@< Color for indicator border (color box, view)
+	static PIXVAL gui_color_indicator_border_bottom_right;
 	static PIXVAL gui_color_obsolete;                     //@< Color for obsolete convois/server entries
 	static PIXVAL gui_color_out_of_production;            //@< (EX unique) Color for convoy that is no longer in production (but not obsolete)
 	static PIXVAL gui_color_empty;                        //@< Color for empty entries

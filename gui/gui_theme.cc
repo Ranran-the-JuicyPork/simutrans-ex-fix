@@ -61,6 +61,9 @@ PIXVAL gui_theme_t::gui_highlight_color;
 PIXVAL gui_theme_t::gui_shadow_color;
 PIXVAL gui_theme_t::gui_color_loadingbar_inner;
 PIXVAL gui_theme_t::gui_color_loadingbar_progress;
+PIXVAL gui_theme_t::gui_color_transferringbar;
+PIXVAL gui_theme_t::gui_color_indicator_border_top_left;
+PIXVAL gui_theme_t::gui_color_indicator_border_bottom_right;
 PIXVAL gui_theme_t::gui_color_obsolete;
 PIXVAL gui_theme_t::gui_color_chat_window_network_transparency;
 PIXVAL gui_theme_t::gui_color_out_of_production;
@@ -194,6 +197,10 @@ void gui_theme_t::init_gui_defaults()
 
 	gui_color_loadingbar_inner             = color_idx_to_rgb(COL_GREY5);
 	gui_color_loadingbar_progress          = color_idx_to_rgb(COL_SOFT_BLUE);
+
+	gui_color_transferringbar              = color_idx_to_rgb(MN_GREY1);
+	gui_color_indicator_border_top_left    = color_idx_to_rgb(MN_GREY0);
+	gui_color_indicator_border_bottom_right= color_idx_to_rgb(MN_GREY4);
 
 	gui_color_obsolete                     = color_idx_to_rgb(COL_DARK_BLUE);
 	gui_color_out_of_production            = color_idx_to_rgb(COL_SOFT_BLUE);
@@ -578,6 +585,9 @@ bool gui_theme_t::themes_init(const char *file_name, bool init_fonts, bool init_
 	gui_theme_t::gui_shadow_color                       = (PIXVAL)contents.get_color("gui_shadow_color", SYSCOL_SHADOW);
 	gui_theme_t::gui_color_loadingbar_inner             = (PIXVAL)contents.get_color("gui_color_loadingbar_inner", SYSCOL_LOADINGBAR_INNER);
 	gui_theme_t::gui_color_loadingbar_progress          = (PIXVAL)contents.get_color("gui_color_loadingbar_progress", SYSCOL_LOADINGBAR_PROGRESS);
+	gui_theme_t::gui_color_transferringbar              = (PIXVAL)contents.get_color("gui_color_transferringbar", SYSCOL_LOADINGBAR_PROGRESS);
+	gui_theme_t::gui_color_indicator_border_top_left    = (PIXVAL)contents.get_color("gui_color_indicator_border_top_left", SYSCOL_INDICATOR_BORDER_TL);
+	gui_theme_t::gui_color_indicator_border_bottom_right= (PIXVAL)contents.get_color("gui_color_indicator_border_bottom_right", SYSCOL_INDICATOR_BORDER_BR);
 	gui_theme_t::gui_color_obsolete                     = (PIXVAL)contents.get_color("gui_color_obsolete", SYSCOL_OBSOLETE);
 	gui_theme_t::gui_color_out_of_production            = (PIXVAL)contents.get_color("gui_color_out_of_production", SYSCOL_OUT_OF_PRODUCTION);
 	gui_theme_t::gui_color_empty                        = (PIXVAL)contents.get_color("gui_color_empty", SYSCOL_EMPTY);

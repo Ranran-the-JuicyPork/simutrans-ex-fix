@@ -585,7 +585,7 @@ bool gui_theme_t::themes_init(const char *file_name, bool init_fonts, bool init_
 	gui_theme_t::gui_shadow_color                       = (PIXVAL)contents.get_color("gui_shadow_color", SYSCOL_SHADOW);
 	gui_theme_t::gui_color_loadingbar_inner             = (PIXVAL)contents.get_color("gui_color_loadingbar_inner", SYSCOL_LOADINGBAR_INNER);
 	gui_theme_t::gui_color_loadingbar_progress          = (PIXVAL)contents.get_color("gui_color_loadingbar_progress", SYSCOL_LOADINGBAR_PROGRESS);
-	gui_theme_t::gui_color_transferringbar              = (PIXVAL)contents.get_color("gui_color_transferringbar", SYSCOL_LOADINGBAR_PROGRESS);
+	gui_theme_t::gui_color_transferringbar              = (PIXVAL)contents.get_color("gui_color_transferringbar", SYSCOL_TRANSFERRINGBAR);
 	gui_theme_t::gui_color_indicator_border_top_left    = (PIXVAL)contents.get_color("gui_color_indicator_border_top_left", SYSCOL_INDICATOR_BORDER_TL);
 	gui_theme_t::gui_color_indicator_border_bottom_right= (PIXVAL)contents.get_color("gui_color_indicator_border_bottom_right", SYSCOL_INDICATOR_BORDER_BR);
 	gui_theme_t::gui_color_obsolete                     = (PIXVAL)contents.get_color("gui_color_obsolete", SYSCOL_OBSOLETE);

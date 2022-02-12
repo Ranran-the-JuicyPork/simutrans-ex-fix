@@ -182,6 +182,11 @@ private:
 	gebaeude_t* building;
 
 	/**
+	 * Date of built in
+	 */
+	sint32 built_in_date;
+
+	/**
 	 * Factory statistics
 	 */
 	sint64 statistics[MAX_MONTH][MAX_FAB_STAT];
@@ -425,6 +430,8 @@ public:
 	~fabrik_t();
 
 	gebaeude_t* get_building();
+
+	sint32 get_built_in_date() { return built_in_date; }
 
 	/**
 	 * Return/book statistics

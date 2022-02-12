@@ -830,6 +830,7 @@ fabrik_t::fabrik_t(loadsave_t* file)
 	consumers_active_last_month = 0;
 	city = NULL;
 	building = NULL;
+	built_in_date = welt->get_current_month();
 	pos = koord3d::invalid;
 
 	rdwr(file);
@@ -877,6 +878,7 @@ fabrik_t::fabrik_t(koord3d pos_, player_t* owner, const factory_desc_t* desc, si
 	pos.z = welt->max_hgt(pos.get_2d());
 	pos_origin = pos;
 	building = NULL;
+	built_in_date = welt->get_current_month();
 
 	this->owner = owner;
 	prodfactor_electric = 0;
@@ -1159,6 +1161,10 @@ void fabrik_t::build(sint32 rotate, bool build_fields, bool, bool from_saved)
 	if(!building)
 	{
 		building = hausbauer_t::build(owner, pos_origin, rotate, desc->get_building(), this);
+	}
+
+	if (!from_saved) {
+		built_in_date = welt->get_current_month();
 	}
 
 	city = check_local_city();
@@ -1794,6 +1800,10 @@ DBG_DEBUG("fabrik_t::rdwr()","loading factory '%s'",s);
 		{
 			building->rdwr(file);
 		}
+	}
+
+	if (file->is_version_ex_atleast(14,50)) {
+		file->rdwr_long(built_in_date);
 	}
 
 	if (file->is_loading())
@@ -3501,7 +3511,7 @@ void fabrik_t::info_conn(cbuffer_t& buf) const
 	if (building)
 	{
 		buf.printf("\n");
-		buf.printf("%s: %s\n", translator::translate("Built in"), translator::get_year_month(building->get_purchase_time()));
+		buf.printf("%s: %s\n", translator::translate("Built in"), translator::get_year_month(built_in_date));
 		buf.printf("\n");
 		buf.printf(translator::translate("Constructed by %s"), get_fab(building->get_pos().get_2d())->get_desc()->get_copyright());
 	}

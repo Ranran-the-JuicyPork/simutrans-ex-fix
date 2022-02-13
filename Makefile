@@ -384,6 +384,7 @@ SOURCES += gui/components/gui_destination_building_info.cc
 SOURCES += gui/components/gui_factory_storage_info.cc
 SOURCES += gui/components/gui_halthandled_lines.cc
 SOURCES += gui/components/gui_halt_cargoinfo.cc
+SOURCES += gui/components/gui_halt_indicator.cc
 SOURCES += gui/components/gui_fixedwidth_textarea.cc
 SOURCES += gui/components/gui_flowtext.cc
 SOURCES += gui/components/gui_image.cc

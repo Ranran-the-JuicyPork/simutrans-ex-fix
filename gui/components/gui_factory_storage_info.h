@@ -110,7 +110,7 @@ private:
 	gui_label_buf_t label_name, lb_handling_amount;
 
 	// update trigger
-	uint8 old_month = 0;
+	uint8 old_month = 255;
 
 
 public:

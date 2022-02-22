@@ -4423,6 +4423,10 @@ Do not add vehicles over maximum length!
 ⇔
 line_network
 接続路線
+Open the minimap window to show the network around this stop
+ミニマップダイアログを開き、この駅を中心としたネットワークを表示します
+Opens the minimap window showing the network of selected transport items served at this station
+ミニマップダイアログを開き、この駅を発着している選択中の輸送アイテムのネットワークを表示します
 #_______________________________unnecessary_text________________________________
 #_______________________________unnecessary_text________________________________
 100 km/h = %i tiles/month

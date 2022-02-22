@@ -11,6 +11,7 @@
 #include "messagebox.h"
 #include "schedule_list.h"
 #include "../simmenu.h"
+#include "../display/simgraph.h"
 
 class choose_color_button_t : public button_t
 {

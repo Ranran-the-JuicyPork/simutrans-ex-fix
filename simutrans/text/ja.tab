@@ -1539,6 +1539,8 @@ open_signal_connector_gui
 信号機の接続先を操作する画面を開きます
 Open the player ranking dialog
 プレイヤーランキングを開きます
+Open the minimap window to show the freight network of this stop
+ミニマップダイアログを開き、この駅を中心とした貨物ネットワークを表示します
 Operation
 運行費
 Ops Profit
@@ -2269,6 +2271,8 @@ distance_to_via
 次の降車駅までの距離
 distance_to_origin
 出発駅からの距離
+show_chain_on_minimap
+関連工場マップ
 Show route
 予定ルートを表示
 Show transfer (in)

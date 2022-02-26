@@ -139,7 +139,7 @@ public:
 
 	// Launch the network map from an external dialog
 	void activate_individual_network_mode(koord center_pos = koord::invalid);
-	void set_halt(halthandle_t halt = halthandle_t());
+	void set_halt(halthandle_t halt = halthandle_t(), bool freight_mode=false);
 };
 
 #endif

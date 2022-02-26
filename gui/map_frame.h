@@ -138,7 +138,7 @@ public:
 	void set_title();
 
 	// Launch the network map from an external dialog
-	void activate_individual_network_mode(koord center_pos = koord::invalid);
+	void activate_individual_network_mode(koord center_pos = koord::invalid, bool network_mode=true);
 	void set_halt(halthandle_t halt = halthandle_t());
 };
 

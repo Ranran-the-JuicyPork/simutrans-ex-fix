@@ -2995,6 +2995,8 @@ Next Month:
 来月:
 NO CONTROL TOWER
 空港管制塔なし
+No connection to the freight stop.
+付近に貨物取扱い駅がありません
 No suitable depot found!\nYou need to send the\nconvoi to the depot\nmanually.\n%s\n
 適切な車庫が見つかりません。\手動でn車庫へ編成を送る必要があります。\n%s\n
 no_cargo_capacity

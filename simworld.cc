@@ -7860,7 +7860,7 @@ DBG_MESSAGE("karte_t::save()", "saving game to '%s'", filename);
 
 	const loadsave_t::mode_t mode = autosave ? loadsave_t::autosave_mode : loadsave_t::save_mode;
 	const int level = autosave ? loadsave_t::autosave_level : loadsave_t::save_level;
-	loadsave_t::file_status_t status = file.wr_open( savename.c_str(), mode, level, env_t::objfilename.c_str(), version_str, ex_version_str, ex_revision_str );
+	loadsave_t::file_status_t status = file.wr_open( savename.c_str(), mode, level, env_t::pak_name.c_str(), version_str, ex_version_str, ex_revision_str );
 
 	if(status != loadsave_t::FILE_STATUS_OK) {
 		create_win(new news_img("Kann Spielstand\nnicht speichern.\n"), w_info, magic_none);
@@ -8274,7 +8274,7 @@ void karte_t::rdwr_gamestate(loadsave_t *file, loadingscreen_t *ls)
 			std::string dummy;
 
 			if (read_progdir_simuconf) {
-				dr_chdir( env_t::data_dir );
+				dr_chdir( env_t::base_dir );
 				if(simuconf.open("config/simuconf.tab")) {
 					printf("parse_simuconf() in program dir (%s) for override of save file: ", "config/simuconf.tab");
 					settings.parse_simuconf( simuconf );
@@ -8283,8 +8283,8 @@ void karte_t::rdwr_gamestate(loadsave_t *file, loadingscreen_t *ls)
 				dr_chdir( env_t::user_dir );
 			}
 			if (read_pak_simuconf) {
-				dr_chdir( env_t::data_dir );
-				std::string pak_simuconf = env_t::objfilename + "config/simuconf.tab";
+				dr_chdir( env_t::base_dir );
+				std::string pak_simuconf = env_t::pak_name + "config/simuconf.tab";
 				if(simuconf.open(pak_simuconf.c_str())) {
 					printf("parse_simuconf() in pak dir (%s) for override of save file: ", pak_simuconf.c_str() );
 					settings.parse_simuconf( simuconf );
@@ -8480,9 +8480,9 @@ void karte_t::rdwr_gamestate(loadsave_t *file, loadingscreen_t *ls)
 				stadt_t::cityrules_rdwr(file);
 				if (  !env_t::networkmode || env_t::server  ) {
 					if (pak_overrides) {
-						dr_chdir( env_t::data_dir );
-						printf("stadt_t::cityrules_init in pak dir (%s) for override of save file: ", env_t::objfilename.c_str() );
-						stadt_t::cityrules_init( env_t::objfilename );
+						dr_chdir( env_t::base_dir );
+						printf("stadt_t::cityrules_init in pak dir (%s) for override of save file: ", env_t::pak_name.c_str() );
+						stadt_t::cityrules_init( env_t::pak_name );
 						dr_chdir( env_t::user_dir );
 					}
 				}
@@ -8496,11 +8496,11 @@ void karte_t::rdwr_gamestate(loadsave_t *file, loadingscreen_t *ls)
 					{
 						if(pak_overrides)
 						{
-							dr_chdir(env_t::data_dir);
-							printf("stadt_t::privatecar_init in pak dir (%s) for override of save file: ", env_t::objfilename.c_str());
-							privatecar_init(env_t::objfilename);
-							printf("stadt_t::electricity_consumption_init in pak dir (%s) for override of save file: ", env_t::objfilename.c_str());
-							stadt_t::electricity_consumption_init(env_t::objfilename);
+							dr_chdir(env_t::base_dir);
+							printf("stadt_t::privatecar_init in pak dir (%s) for override of save file: ", env_t::pak_name.c_str());
+							privatecar_init(env_t::pak_name);
+							printf("stadt_t::electricity_consumption_init in pak dir (%s) for override of save file: ", env_t::pak_name.c_str());
+							stadt_t::electricity_consumption_init(env_t::pak_name);
 							dr_chdir(env_t::user_dir);
 						}
 					}
@@ -11038,7 +11038,7 @@ void karte_t::announce_server(int status)
 		}
 		else {
 			// construct from pak name
-			std::string pak_name = env_t::objfilename;
+			std::string pak_name = env_t::pak_name;
 			pak_name.erase( pak_name.length() - 1 );
 			encode_URI( buf, pak_name.c_str() );
 		}

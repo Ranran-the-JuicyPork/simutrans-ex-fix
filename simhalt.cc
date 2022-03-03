@@ -2931,6 +2931,38 @@ uint32 haltestelle_t::get_ware_summe(const goods_desc_t *wtyp, linehandle_t line
 }
 
 
+uint32 haltestelle_t::get_ware_summe(uint8 carg_index, linehandle_t line) const
+{
+	if (gibt_ab(goods_manager_t::get_info_catg_index(carg_index))) {
+		if (carg_index == goods_manager_t::INDEX_PAS) {
+			return get_ware_summe(goods_manager_t::passengers);
+		}
+		if (carg_index == goods_manager_t::INDEX_MAIL) {
+			return get_ware_summe(goods_manager_t::mail);
+		}
+		if (carg_index == goods_manager_t::INDEX_NONE) {
+			return 0;
+		}
+
+		int sum = 0;
+		for (uint8 j = 3; j < goods_manager_t::get_count(); j++) {
+			goods_desc_t const* const wtyp2 = goods_manager_t::get_info(j);
+			if (wtyp2->get_catg_index() != carg_index) {
+				continue;
+			}
+			if (line.is_bound()) {
+				sum += get_ware_summe(wtyp2, line);
+			}
+			else {
+				sum += get_ware_summe(wtyp2);
+			}
+		}
+		return sum;
+	}
+	return 0;
+}
+
+
 uint32 haltestelle_t::get_transferring_goods_sum(const goods_desc_t *wtyp, uint8 g_class) const
 {
 	if (g_class != 255 && g_class >= wtyp->get_number_of_classes()) {

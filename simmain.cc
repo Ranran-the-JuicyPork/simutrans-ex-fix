@@ -1450,9 +1450,7 @@ int simu_main(int argc, char** argv)
 	// init midi before loading sounds
 	if(  dr_init_midi()  ) {
 		dbg->message("simu_main()","Reading midi data ...");
-		char pak_dir[PATH_MAX];
-		sprintf( pak_dir, "%s%s", env_t::base_dir, env_t::pak_name.c_str() );
-		if(  !midi_init( pak_dir )  &&  !midi_init( env_t::user_dir )  &&  !midi_init( env_t::base_dir )  ) {
+		if(  !midi_init( env_t::pak_dir.c_str() )  &&  !midi_init( env_t::user_dir )  &&  !midi_init( env_t::base_dir )  ) {
 			midi_set_mute(true);
 			dbg->message("simu_main()","Midi disabled ...");
 		}

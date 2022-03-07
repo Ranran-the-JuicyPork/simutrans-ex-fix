@@ -1098,7 +1098,7 @@ int simu_main(int argc, char** argv)
 	}
 
 	// now find the pak specific tab file ...
-	obj_conf = env_t::pak_name + path_to_simuconf;
+	obj_conf = env_t::pak_dir + "config" +PATH_SEPARATOR + "simuconf.tab";
 	//obj_conf = env_t::pak_dir + "config" + PATH_SEPARATOR + "simuconf.tab";
 	if(  simuconf.open(obj_conf.c_str())  ) {
 		env_t::default_settings.set_way_height_clearance( 0 );

@@ -983,9 +983,9 @@ public:
 	void show_info();
 
 	/**
-	 * infostring on production
+	 * infostring on targets/sources
 	 */
-	void info_prod(cbuffer_t& buf) const;
+	void info_conn(cbuffer_t& buf) const;
 
 	void rdwr(loadsave_t *file);
 

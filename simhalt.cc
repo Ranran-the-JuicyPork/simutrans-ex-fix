@@ -3516,6 +3516,17 @@ void haltestelle_t::show_detail()
 	}
 }
 
+void haltestelle_t::show_factory_list()
+{
+	factorylist_frame_t *win = dynamic_cast<factorylist_frame_t*>(win_get_magic(magic_factorylist));
+	if (!win) {
+		create_win(-1, -1, new factorylist_frame_t(), w_info, magic_factorylist);
+		win = dynamic_cast<factorylist_frame_t*>(win_get_magic(magic_factorylist));
+	}
+	win->set_haltfilter(self);
+	top_win(win);
+}
+
 
 sint64 haltestelle_t::calc_maintenance() const
 {

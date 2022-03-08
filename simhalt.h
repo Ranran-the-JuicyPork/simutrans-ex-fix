@@ -779,6 +779,7 @@ public:
 	 */
 	void show_info();
 	void show_detail();
+	void show_factory_list();
 
 	/**
 	 * @return the type of a station

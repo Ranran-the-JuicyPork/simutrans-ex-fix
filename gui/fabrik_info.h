@@ -62,7 +62,7 @@ private:
 
 	cbuffer_t details_buf;
 
-	//static sint16 tabstate;
+	static sint16 tabstate;
 
 	factory_chart_t chart;
 
@@ -97,7 +97,7 @@ private:
 
 	void rename_factory();
 
-	//void set_tab_opened();
+	void set_tab_opened();
 
 	void update_components();
 public:

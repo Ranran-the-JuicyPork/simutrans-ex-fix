@@ -9,7 +9,7 @@
 #include "../dataobj/environment.h"
 #include "../utils/cbuffer_t.h"
 #include "../sys/simsys.h"
-
+#include "../pathes.h"
 
 pakselector_t::pakselector_t() :
 	savegame_frame_t( NULL, true, NULL, true ),
@@ -39,7 +39,7 @@ pakselector_t::pakselector_t() :
 		add_path( env_t::install_dir );
 	}
 	dr_chdir( env_t::user_dir );
-	if(dr_chdir("paksets")){
+	if(  !strstr(env_t::install_dir,env_t::user_dir)  &&  dr_chdir(USER_PAK_PATH)){
 		char dummy[PATH_MAX];
 		add_path( dr_getcwd(dummy,lengthof(dummy)) );
 	}

@@ -6,6 +6,7 @@
 #include "fabrik_info.h"
 
 #include "components/gui_label.h"
+#include "components/gui_divider.h"
 
 #include "help_frame.h"
 
@@ -549,6 +550,11 @@ void fabrik_info_t::init(fabrik_t* fab_, const gebaeude_t* gb)
 			f->set_text( (const char*)details_buf);
 		}
 	}
+	if (gb) {
+		container_details.new_component<gui_divider_t>();
+		container_details.new_component<gui_label_buf_t>()->buf().printf("%s: %s\n", translator::translate("Built in"), translator::get_year_month(gb->get_purchase_time()));
+		container_details.new_component<gui_label_buf_t>()->buf().printf(translator::translate("Constructed by %s"), fab->get_desc()->get_copyright());
+	}
 
 	set_windowsize(get_min_windowsize());
 	set_resizemode(gui_frame_t::diagonal_resize);
@@ -777,14 +783,13 @@ void fabrik_info_t::rdwr( loadsave_t *file )
 		gebaeude_t* gb = welt->lookup_kartenboden( fabpos )->find<gebaeude_t>();
 
 		if (fab != NULL  &&  gb != NULL) {
+			container_details.init(gb, get_titlecolor());
 			init(fab, gb);
 			cont_suppliers.set_fab(fab);
 			cont_consumers.set_fab(fab);
 			nearby_halts.set_fab(fab);
-
-			container_details.init(gb, get_titlecolor());
 		}
-		win_set_magic(this, (ptrdiff_t)this);
+		win_set_magic(this, (ptrdiff_t)fab);
 	}
 	chart.rdwr(file);
 	scroll_info.rdwr(file);

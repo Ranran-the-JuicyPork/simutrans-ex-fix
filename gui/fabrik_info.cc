@@ -661,7 +661,7 @@ void fabrik_info_t::set_tab_opened()
 {
 	resize(scr_coord(0, 0));
 	tabstate = switch_mode.get_active_tab_index();
-	const scr_coord_val margin_above_tab = switch_mode.get_pos().y + D_TAB_HEADER_HEIGHT + D_TITLEBAR_HEIGHT;
+	const scr_coord_val margin_above_tab = switch_mode.get_pos().y + D_TAB_HEADER_HEIGHT + D_TITLEBAR_HEIGHT-1;
 	scr_coord_val height = 0;
 	switch (tabstate)
 	{
@@ -677,7 +677,7 @@ void fabrik_info_t::set_tab_opened()
 			height = container_details.get_size().h;
 			break;
 	}
-	set_windowsize(scr_size(get_windowsize().w, min(display_get_height()-margin_above_tab, margin_above_tab+height)));
+	set_windowsize( scr_size(get_windowsize().w, min(display_get_height()-margin_above_tab, margin_above_tab+height)+1) );
 }
 
 

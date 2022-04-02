@@ -443,13 +443,19 @@ gui_freight_halt_stat_t::gui_freight_halt_stat_t(halthandle_t halt)
 		lb_handling_amount.set_tooltip(translator::translate("The number of goods that handling at the stop last month"));
 		new_component<gui_halt_handled_goods_images_t>(halt, true);
 		add_component(&lb_handling_amount);
-		bt_show_halt_network.init( button_t::roundbox, "Networks" );
+		if (skinverwaltung_t::network) {
+			bt_show_halt_network.init( button_t::imagebox, NULL );
+			bt_show_halt_network.set_image(skinverwaltung_t::network->get_image_id(0));
+		}
+		else {
+			bt_show_halt_network.init( button_t::roundbox, "Networks" );
+			if (skinverwaltung_t::open_window) {
+				bt_show_halt_network.set_image(skinverwaltung_t::open_window->get_image_id(0));
+				bt_show_halt_network.set_image_position_right(true);
+			}
+		}
 		bt_show_halt_network.set_tooltip( translator::translate("Open the minimap window to show the freight network of this stop") );
 		bt_show_halt_network.add_listener(this);
-		if (skinverwaltung_t::open_window) {
-			bt_show_halt_network.set_image(skinverwaltung_t::open_window->get_image_id(0));
-			bt_show_halt_network.set_image_position_right(true);
-		}
 		add_component(&bt_show_halt_network);
 	}
 }
@@ -516,6 +522,7 @@ gui_factory_nearby_halt_info_t::gui_factory_nearby_halt_info_t(fabrik_t *factory
 {
 	this->fab = factory;
 	set_table_layout(1,0);
+	set_spacing( scr_size(D_H_SPACE,1) );
 	if (fab) {
 		old_halt_count = fab->get_nearby_freight_halts().get_count();
 		update_table();

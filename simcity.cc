@@ -4929,27 +4929,27 @@ void stadt_t::generate_private_cars(koord pos, uint32 journey_tenths_of_minutes,
 			{
 				if (welt->is_within_limits(k))
 				{
-					grund_t* gr = welt->lookup_kartenboden(k);
-					const weg_t* weg = gr->get_weg(road_wt);
-
-					if (weg != NULL &&
-					    (weg->is_public_right_of_way() || weg->get_owner() == NULL || weg->get_owner()->allows_access_to(1))
-						&& (gr->get_weg_ribi_unmasked(road_wt) == ribi_t::northsouth ||
-					       gr->get_weg_ribi_unmasked(road_wt) == ribi_t::eastwest))
-					{
-						if (!private_car_t::list_empty())
-						{
-							private_car_t* vt = new private_car_t(gr, target);
-							const sint32 time_to_live = ((sint32)journey_tenths_of_minutes * 136584) / (sint32)welt->get_settings().get_meters_per_tile();
-							vt->set_time_to_life(time_to_live);
-							//gr->obj_add(vt);
+					if(  grund_t* gr = welt->lookup_kartenboden(k)  ) {
+						if(  weg_t* weg = gr->get_weg(road_wt)  ) {
+							if( (weg->is_public_right_of_way() || weg->get_owner() == NULL || (weg->get_owner()->allows_access_to(1) && weg->get_way_constraints().get_prohibitive() ) )
+								&& (gr->get_weg_ribi_unmasked(road_wt) == ribi_t::northsouth ||
+									gr->get_weg_ribi_unmasked(road_wt) == ribi_t::eastwest))
+							{
+								if (!private_car_t::list_empty())
+								{
+									private_car_t* vt = new private_car_t(gr, target);
+									const sint32 time_to_live = ((sint32)journey_tenths_of_minutes * 136584) / (sint32)welt->get_settings().get_meters_per_tile();
+									vt->set_time_to_life(time_to_live);
+									//gr->obj_add(vt);
 #ifdef MULTI_THREAD
-							karte_t::private_cars_added_threaded[karte_t::passenger_generation_thread_number].append(vt);
+									karte_t::private_cars_added_threaded[karte_t::passenger_generation_thread_number].append(vt);
 #else
-							welt->sync.add(vt);
+									welt->sync.add(vt);
 #endif
+								}
+								goto outer_loop;
+							}
 						}
-						goto outer_loop;
 					}
 				}
 			}

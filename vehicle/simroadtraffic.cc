@@ -659,7 +659,12 @@ bool private_car_t::can_enter_tile(grund_t *gr)
 		return false;
 	}
 
-	const uint8 overtaking_mode = str->get_overtaking_mode();
+	// Cannot enter a road with entry conditions.
+	// TODO: Prevent private car routing from going through this tile
+	if( str->get_way_constraints().get_prohibitive() ) {
+		time_to_life = 0;
+		return false;
+	}
 
 	// Is this road a bridleway?
 	// An axle limit of zero prevents all private car traffic.
@@ -679,11 +684,12 @@ bool private_car_t::can_enter_tile(grund_t *gr)
 		return false;
 	}
 
+	const uint8 overtaking_mode = str->get_overtaking_mode();
 
 	// calculate new direction
 	// are we just turning around?
 	const uint8 this_direction = get_direction();
-	bool frei = false;
+	bool free = false;
 	vehicle_base_t *dt = NULL;
 	const strasse_t* current_str = (strasse_t*)(welt->lookup(get_pos())->get_weg(road_wt));
 	if(  get_pos()==pos_next_next  ) {
@@ -737,7 +743,7 @@ bool private_car_t::can_enter_tile(grund_t *gr)
 		else {
 			// not a crossing => skip 90 degrees check!
 			dt = get_blocking_vehicle(gr, NULL, this_direction, next_direction, next_90direction, this, next_lane);
-			frei = true;
+			free = true;
 		}
 		//If this car is overtaking, the car must avoid a head-on crash.
 		if(  is_overtaking()  &&  current_str  ) {
@@ -803,7 +809,7 @@ bool private_car_t::can_enter_tile(grund_t *gr)
 				}
 				else {
 					// movingobj ... block road totally
-					frei = false;
+					free = false;
 				}
 			}
 		}
@@ -812,7 +818,7 @@ bool private_car_t::can_enter_tile(grund_t *gr)
 				if(  dt  ) {
 					if(dt->is_stuck()) {
 						// previous vehicle is stuck => end of traffic jam ...
-						frei = false;
+						free = false;
 					}
 					else {
 						overtaker_t *over = dt->get_overtaker();
@@ -845,7 +851,7 @@ bool private_car_t::can_enter_tile(grund_t *gr)
 						}
 						else {
 							// movingobj ... block road totally
-							frei = false;
+							free = false;
 						}
 					}
 				}
@@ -853,7 +859,7 @@ bool private_car_t::can_enter_tile(grund_t *gr)
 		}
 
 		// do not block railroad crossing
-		if(  frei  &&  str->is_crossing()  ) {
+		if(  free  &&  str->is_crossing()  ) {
 			// can we cross?
 			crossing_t* cr = gr->find<crossing_t>(2);
 			if(  cr && !cr->request_crossing(this)) {

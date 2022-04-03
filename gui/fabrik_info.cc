@@ -661,7 +661,6 @@ void fabrik_info_t::set_tab_opened()
 {
 	resize(scr_coord(0, 0));
 	tabstate = switch_mode.get_active_tab_index();
-	const scr_coord_val margin_above_tab = switch_mode.get_pos().y + D_TAB_HEADER_HEIGHT + D_TITLEBAR_HEIGHT-1;
 	scr_coord_val height = 0;
 	switch (tabstate)
 	{
@@ -677,7 +676,9 @@ void fabrik_info_t::set_tab_opened()
 			height = container_details.get_size().h;
 			break;
 	}
-	set_windowsize( scr_size(get_windowsize().w, min(display_get_height()-margin_above_tab, margin_above_tab+height)+1) );
+	if( (get_windowsize().h-get_min_windowsize().h) < height ) {
+		set_windowsize( scr_size(get_windowsize().w, get_min_windowsize().h+min(display_get_height()-get_min_windowsize().h, height)+1) );
+	}
 }
 
 
@@ -761,7 +762,7 @@ void fabrik_info_t::update_components()
 	lb_city.update();
 
 	container_info.set_size(container_info.get_min_size());
-	set_min_windowsize(scr_size(switch_mode.get_min_size().w, switch_mode.get_pos().y+D_TAB_HEADER_HEIGHT+D_TITLEBAR_HEIGHT));
+	set_min_windowsize(scr_size(switch_mode.get_min_size().w, switch_mode.get_pos().y+switch_mode.get_required_size().h+D_TITLEBAR_HEIGHT));
 	resize(scr_size(0,0));
 	set_dirty();
 }

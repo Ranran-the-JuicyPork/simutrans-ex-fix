@@ -5,6 +5,7 @@
 	FIX: Makeobj ignored switch images for tracks with no seasons (e.g. image[new2]=...)
 
 	ADD: map view can be changed with any general tool by dragging the pointer above a threshold
+	CHG: Mouse clicks etc. are now processed every frame (but maybe executed later) to avoid the lagging UI at large zoom out or with week devices
 
 
 Release of 123.0.1 (r10421 on 29-Jan-2022):

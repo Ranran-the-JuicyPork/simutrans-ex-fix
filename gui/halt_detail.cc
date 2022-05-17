@@ -25,6 +25,7 @@
 #include "map_frame.h"
 #include "components/gui_label.h"
 #include "components/gui_line_lettercode.h"
+#include "components/gui_convoi_button.h"
 
 
 #define GOODS_SYMBOL_CELL_WIDTH 14

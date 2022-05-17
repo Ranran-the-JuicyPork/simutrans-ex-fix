@@ -2785,6 +2785,7 @@
     <ClInclude Include="gui\components\gui_chart.h" />
     <ClInclude Include="gui\components\gui_colorbox.h" />
     <ClInclude Include="gui\components\gui_combobox.h" />
+    <ClInclude Include="gui\components\gui_convoi_button.h" />
     <ClInclude Include="gui\components\gui_convoy_assembler.h" />
     <ClInclude Include="gui\components\gui_convoy_label.h" />
     <ClInclude Include="gui\components\gui_divider.h" />

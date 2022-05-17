@@ -121,24 +121,6 @@ class gui_halt_service_info_t : public gui_aligned_container_t, public action_li
 			}
 		}
 	};
-	/**
-	 * Button to open convoi window
-	 */
-	class gui_convoi_button_t : public button_t, public action_listener_t
-	{
-		convoihandle_t convoi;
-	public:
-		gui_convoi_button_t(convoihandle_t convoi) : button_t() {
-			this->convoi = convoi;
-			init(button_t::posbutton, NULL);
-			add_listener(this);
-		}
-
-		bool action_triggered(gui_action_creator_t*, value_t) OVERRIDE {
-			convoi->show_info();
-			return true;
-		}
-	};
 
 private:
 	gui_aligned_container_t container;

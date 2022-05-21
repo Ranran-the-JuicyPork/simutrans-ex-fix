@@ -7,6 +7,7 @@
 #include "simwin.h"
 #include "components/gui_colorbox.h"
 #include "components/gui_divider.h"
+#include "components/gui_waytype_image_box.h"
 #include "../simmenu.h"
 #include "../simworld.h"
 #include "../simcity.h"
@@ -104,7 +105,7 @@ void gui_way_detail_info_t::draw(scr_coord offset)
 			}
 			else if (tunnel) {
 				new_component<gui_margin_t>(10);
-				new_component<gui_label_t>(tunnel->get_desc()->get_name(), tunnel->get_owner() ? color_idx_to_rgb(tunnel->get_owner()->get_player_color1() + env_t::gui_player_color_dark) : color_idx_to_rgb(COL_ORANGE));
+				new_component<gui_label_t>(tunnel->get_desc()->get_name(), color_idx_to_rgb(tunnel->get_owner()->get_player_color1() + env_t::gui_player_color_dark));
 				gui_label_buf_t *lb_tunnel = new_component<gui_label_buf_t>(SYSCOL_TEXT, gui_label_t::right);
 				const double maint_per_tile = (double)world()->calc_adjusted_monthly_figure(tunnel->get_desc()->get_maintenance()) / 100.0;
 				lb_tunnel->buf().printf(translator::translate(" %1.2f$/mon"), way->is_diagonal() ? maint_per_tile * 10 / 14.0 : maint_per_tile);
@@ -799,8 +800,7 @@ void way_info_t::update()
 	// name(s)
 	cont.add_table(3,0)->set_spacing(scr_size(D_H_SPACE, 0));
 	{
-		cont.new_component<gui_image_t>(skinverwaltung_t::get_waytype_skin(way1->get_desc()->get_styp() == type_tram ? tram_wt : way1->get_waytype())->get_image_id(0),
-			way1->get_owner() == NULL ? 1 : way1->get_owner()->get_player_nr(), ALIGN_NONE, true);
+		cont.new_component<gui_waytype_image_box_t>(way1->get_desc()->get_styp() == type_tram ? tram_wt : way1->get_waytype());
 		cont.new_component<gui_label_t>(way1->get_name(), way1->get_owner() == NULL ? SYSCOL_TEXT : color_idx_to_rgb(way1->get_owner()->get_player_color1()+env_t::gui_player_color_dark));
 		if (way1->is_electrified()) {
 			cont.new_component<gui_image_t>(skinverwaltung_t::electricity->get_image_id(0), 0, ALIGN_NONE, true);
@@ -809,8 +809,7 @@ void way_info_t::update()
 			cont.new_component<gui_empty_t>();
 		}
 		if (way2) {
-			cont.new_component<gui_image_t>(skinverwaltung_t::get_waytype_skin(way2->get_desc()->get_styp() == type_tram ? tram_wt : way2->get_waytype())->get_image_id(0),
-				way2->get_owner() == NULL ? 1 : way2->get_owner()->get_player_nr(), ALIGN_NONE, true);
+			cont.new_component<gui_waytype_image_box_t>(way2->get_desc()->get_styp() == type_tram ? tram_wt : way2->get_waytype());
 			cont.new_component<gui_label_t>(way2->get_name(), way2->get_owner() == NULL ? SYSCOL_TEXT : color_idx_to_rgb(way2->get_owner()->get_player_color1()+env_t::gui_player_color_dark));
 			if (way2->is_electrified()) {
 				cont.new_component<gui_image_t>(skinverwaltung_t::electricity->get_image_id(0), 0, ALIGN_NONE, true);
@@ -875,17 +874,13 @@ void way_info_t::update()
 	{
 		// symbol
 		cont.new_component<gui_empty_t>();
-		cont.add_table(3,1); {
-			cont.new_component<gui_fill_t>();
-			cont.new_component<gui_image_t>(skinverwaltung_t::get_waytype_skin(way1->get_desc()->get_styp() == type_tram ? tram_wt : way1->get_waytype())->get_image_id(0),
-				way1->get_owner() == NULL ? 1 : way1->get_owner()->get_player_nr(), ALIGN_NONE, true);
-			cont.new_component<gui_fill_t>();
-		} cont.end_table();
-		cont.add_table(3,1); {
-			cont.new_component<gui_fill_t>();
-			cont.new_component<gui_image_t>(way2 == NULL ? IMG_EMPTY : skinverwaltung_t::get_waytype_skin(way2->get_desc()->get_styp() == type_tram ? tram_wt : way2->get_waytype())->get_image_id(0), 0, ALIGN_NONE, true);
-			cont.new_component<gui_fill_t>();
-		} cont.end_table();
+		cont.new_component<gui_waytype_image_box_t>(way1->get_desc()->get_styp() == type_tram ? tram_wt : way1->get_waytype(), true);
+		if (way2 == NULL) {
+			cont.new_component<gui_empty_t>();
+		}
+		else {
+			cont.new_component<gui_waytype_image_box_t>(way2->get_desc()->get_styp() == type_tram ? tram_wt : way2->get_waytype(), true);
+		}
 		cont.new_component<gui_empty_t>();
 		cont.new_component<gui_empty_t>();
 

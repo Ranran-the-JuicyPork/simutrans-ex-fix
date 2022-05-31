@@ -919,7 +919,8 @@ DBG_MESSAGE("tool_remover()", "removing way");
 			const koord pos = gr->get_pos().get_2d();
 			stadt_t *city = welt->get_city(pos);
 
-			if(city && !player->is_public_service()) {
+			// Roads dedicated to special vehicles are not for private cars or for residents to use normally.
+			if(city && !player->is_public_service() && !(w->get_owner()==player && w->get_way_constraints().get_prohibitive() ) ) {
 				if (gr->removing_road_would_disconnect_city_building()) {
 					msg = "Cannot delete a road where to do so would leave a city building unconnected by road.";
 					return false;

@@ -1211,6 +1211,9 @@ bool weg_t::should_city_adopt_this(const player_t* player)
 		// Cities only adopt roads
 		return false;
 	}
+	if( way_constraints.get_prohibitive() ) {
+		return false;
+	}
 	if(get_desc()->get_styp() == type_elevated)
 	{
 		// It would be too profitable for players if cities adopted elevated roads

@@ -130,6 +130,8 @@ public:
 	// more general functions ...
 	depot_frame_t(depot_t* depot = NULL);
 
+	~depot_frame_t();
+
 	/**
 	 * Set the window size
 	 */

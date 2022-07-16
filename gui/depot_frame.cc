@@ -299,6 +299,13 @@ void depot_frame_t::init_table()
 }
 
 
+// free memory: all the image_data_t
+depot_frame_t::~depot_frame_t()
+{
+	convoy_assembler.clear_vectors();
+}
+
+
 // returns position of depot on the map
 koord3d depot_frame_t::get_weltpos(bool)
 {

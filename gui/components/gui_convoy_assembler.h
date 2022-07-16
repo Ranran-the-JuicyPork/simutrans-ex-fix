@@ -52,7 +52,6 @@ public:
 	// NULL=clear, resale value is used only in va_sell mode
 	void set_vehicle(const vehicle_desc_t* v = NULL, uint8 mode = 0, uint32 resale_value=0) { veh_type = v; update(mode, resale_value); }
 
-	scr_size get_min_size() const OVERRIDE;
 
 	scr_size get_max_size() const OVERRIDE;
 };

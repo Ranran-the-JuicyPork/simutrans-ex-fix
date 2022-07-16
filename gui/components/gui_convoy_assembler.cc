@@ -487,15 +487,14 @@ void gui_vehicle_spec_t::update(uint8 mode, uint32 resale_value)
 	else {
 		new_component<gui_vehicle_bar_legends_t>();
 	}
-	min_h = max(min_h, gui_aligned_container_t::get_min_size().h);
-	set_size(scr_size(gui_aligned_container_t::get_min_size().w,min_h));
+	set_size(get_min_size());
 }
 
-
+/*
 scr_size gui_vehicle_spec_t::get_min_size() const
 {
 	return scr_size(gui_aligned_container_t::get_min_size().w, size.h);
-}
+*/
 
 scr_size gui_vehicle_spec_t::get_max_size() const
 {
@@ -2597,5 +2596,5 @@ gui_vehicle_bar_legends_t::gui_vehicle_bar_legends_t()
 	new_component<gui_margin_t>(1, D_LABEL_HEIGHT);
 	new_component<gui_margin_t>(1, D_LABEL_HEIGHT);
 
-	set_size(get_size());
+	set_size(get_min_size());
 }

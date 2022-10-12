@@ -2132,7 +2132,36 @@ sint32 rail_vehicle_t::block_reserver(route_t *route, uint16 start_index, uint16
 							}
 							else
 							{
-								cnv->set_maximum_signal_speed(signal->get_desc()->get_max_speed());
+								if (signal->get_desc()->get_aspects()>2) {
+									uint32 temp_speed;
+									switch (signal->get_state())
+									{
+										case roadsign_t::preliminary_caution:
+										case roadsign_t::preliminary_caution_no_choose:
+											temp_speed = signal->get_desc()->get_max_speed()>>1;
+											break;
+										case roadsign_t::caution:
+										case roadsign_t::caution_no_choose:
+											if (signal->get_desc()->get_aspects()==3) {
+												temp_speed = (signal->get_desc()->get_max_speed()*3)>>3;
+											}
+											else {
+												temp_speed = signal->get_desc()->get_max_speed()/5;
+											}
+											break;
+										case roadsign_t::advance_caution:
+										case roadsign_t::advance_caution_no_choose:
+											temp_speed = (signal->get_desc()->get_max_speed()*3)>>2;
+											break;
+										default:
+											temp_speed = signal->get_desc()->get_max_speed();
+											break;
+									}
+									cnv->set_maximum_signal_speed( max(min(kmh_to_speed(sch1->get_max_speed()), temp_speed), welt->get_settings().get_max_speed_drive_by_sight()) );
+								}
+								else {
+									cnv->set_maximum_signal_speed(signal->get_desc()->get_max_speed());
+								}
 							}
 							if(next_signal_working_method == track_circuit_block || next_signal_working_method == cab_signalling)
 							{

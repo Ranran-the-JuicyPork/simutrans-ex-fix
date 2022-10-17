@@ -1034,6 +1034,10 @@ void gebaeude_t::info(cbuffer_t & buf) const
 			buf.append(-(cost/100.0),2);
 			buf.append("$\n");
 		}
+#ifdef DEBUG
+		buf.printf("DBG %s: %d\n", translator::translate("Level"), tile->get_desc()->get_level());
+		buf.printf("DBG %s: %d\n", translator::translate("distribution_weight"), tile->get_desc()->get_distribution_weight());
+#endif
 
 		if (char const* const maker = tile->get_desc()->get_copyright()) {
 			buf.printf(translator::translate("Constructed by %s"), maker);

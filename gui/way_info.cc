@@ -8,6 +8,7 @@
 #include "components/gui_colorbox.h"
 #include "components/gui_divider.h"
 #include "components/gui_waytype_image_box.h"
+#include "components/gui_table.h"
 #include "../simmenu.h"
 #include "../simworld.h"
 #include "../simcity.h"
@@ -884,7 +885,7 @@ void way_info_t::update()
 		cont.new_component<gui_empty_t>();
 		cont.new_component<gui_empty_t>();
 
-		cont.new_component<gui_label_t>("Max. speed:");
+		cont.new_component<gui_table_header_t>("Max. speed:", SYSCOL_TH_BACKGROUND_LEFT, gui_label_t::left)->set_flexible(true, false);
 
 		bool has_electrification_speed_limit = false;
 
@@ -976,10 +977,10 @@ void way_info_t::update()
 		// weight limit
 		if (way1->get_desc()->get_styp() == type_elevated || way1->get_waytype() == air_wt || way1->get_waytype() == water_wt
 			|| (way2 && (way2->get_desc()->get_styp() == type_elevated || way2->get_waytype() == air_wt || way2->get_waytype() == water_wt))) {
-			cont.new_component<gui_label_t>("Max. weight:");
+			cont.new_component<gui_table_header_t>("Max. weight:", SYSCOL_TH_BACKGROUND_LEFT, gui_label_t::left)->set_flexible(true, false);
 		}
 		else {
-			cont.new_component<gui_label_t>("Max. axle load:");
+			cont.new_component<gui_table_header_t>("Max. axle load:", SYSCOL_TH_BACKGROUND_LEFT, gui_label_t::left)->set_flexible(true, false);
 		}
 		lb = cont.new_component<gui_label_buf_t>(way1->get_max_axle_load() == 0 ? COL_DANGER : SYSCOL_TEXT, gui_label_t::right);
 		lb->buf().printf("%u%s", way1->get_max_axle_load(), translator::translate("tonnen"));
@@ -998,7 +999,7 @@ void way_info_t::update()
 		// Bridge's weight limit
 		if (way1->get_bridge_weight_limit() < UINT32_MAX_VALUE)
 		{
-			cont.new_component<gui_label_t>("Max. weight:");
+			cont.new_component<gui_table_header_t>("Max. weight:", SYSCOL_TH_BACKGROUND_LEFT, gui_label_t::left)->set_flexible(true, false);
 			lb = cont.new_component<gui_label_buf_t>(SYSCOL_TEXT, gui_label_t::right);
 			lb->buf().printf("%u%s", way1->get_bridge_weight_limit(), translator::translate("tonnen"));
 			lb->update();
@@ -1006,9 +1007,10 @@ void way_info_t::update()
 			cont.new_component<gui_fill_t>();
 		}
 
-		lb = cont.new_component<gui_label_buf_t>();
-		lb->buf().printf("%s:", translator::translate("Condition"));
-		lb->update();
+		gui_table_header_buf_t *th = cont.new_component<gui_table_header_buf_t>("", SYSCOL_TH_BACKGROUND_LEFT, gui_label_t::left);
+		th->buf().printf("%s:", translator::translate("Condition"));
+		th->set_flexible(true, false);
+		th->update();
 		cont.add_table(1,2)->set_spacing(scr_size(0,0));
 		{
 			lb = cont.new_component<gui_label_buf_t>(SYSCOL_TEXT, gui_label_t::right);
@@ -1049,7 +1051,7 @@ void way_info_t::update()
 		cont.new_component<gui_empty_t>(); // for alert
 		cont.new_component<gui_fill_t>();
 
-		cont.new_component<gui_label_t>("convoi passed last month:");
+		cont.new_component<gui_table_header_t>("convoi passed last month:", SYSCOL_TH_BACKGROUND_LEFT, gui_label_t::left)->set_flexible(true, false);
 		lb = cont.new_component<gui_label_buf_t>(SYSCOL_TEXT, gui_label_t::right);
 		lb->buf().printf("%u", way1->get_statistics(WAY_STAT_CONVOIS));
 		lb->update();

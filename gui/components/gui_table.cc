@@ -25,10 +25,7 @@ void gui_table_cell_t::draw(scr_coord offset)
 
 scr_size gui_table_cell_t::get_max_size() const
 {
-	if (fixed_width) {
-		return scr_size(get_min_size().w, scr_size::inf.h);
-	}
-	return scr_size::inf;
+	return scr_size(fixed_width ? get_min_size().w : scr_size::inf.w, fixed_height ? get_min_size().h : scr_size::inf.h);
 }
 
 void gui_table_header_t::draw(scr_coord offset)
@@ -59,10 +56,7 @@ void gui_table_cell_buf_t::draw(scr_coord offset)
 
 scr_size gui_table_cell_buf_t::get_max_size() const
 {
-	if (fixed_width) {
-		return scr_size(get_min_size().w, scr_size::inf.h);
-	}
-	return scr_size::inf;
+	return scr_size(fixed_width ? get_min_size().w : scr_size::inf.w, fixed_height ? get_min_size().h : scr_size::inf.h);
 }
 
 void gui_table_header_buf_t::draw(scr_coord offset)

@@ -193,6 +193,13 @@ void city_info_t::init()
 				new_component<gui_fill_t>();
 			}
 			end_table();
+#ifdef DEBUG
+			gui_label_buf_t *lb = new_component<gui_label_buf_t>(COL_DANGER);
+			lb->buf().printf("DEBUG: ind/com/res = %u/%u/%u", city->get_citybuilding_count(0), city->get_citybuilding_count(1),city->get_citybuilding_count(2));
+			lb->update();
+
+#endif // DEBUG
+
 
 			// minimap link buttons
 			add_table(3, 1);

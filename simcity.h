@@ -676,6 +676,17 @@ public:
 	// @author: jamespetts
 	// September 2010
 	uint16 get_max_dimension();
+
+#ifdef DEBUG
+	uint16 indcomres[3] = {0,0,0};
+
+	uint16 get_citybuilding_count(uint8 type) {
+		if (type > 3) { type = 0; }
+		return indcomres[type];
+	}
+
+#endif // DEBUG
+
 };
 
 #endif

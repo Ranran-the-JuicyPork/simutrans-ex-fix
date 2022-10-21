@@ -1281,6 +1281,22 @@ void stadt_t::remove_gebaeude_from_stadt(gebaeude_t* gb, bool map_generation, bo
 			update_city_stats_with_building(gb, true);
 		}
 		welt->remove_building_from_world_list(gb);
+#ifdef DEBUG
+		switch (gb->get_tile()->get_desc()->get_type())
+		{
+		case building_desc_t::city_ind:
+			indcomres[0]--;
+			break;
+		case building_desc_t::city_com:
+			indcomres[1]--;
+			break;
+		case building_desc_t::city_res:
+			indcomres[2]--;
+			break;
+		default:
+			break;
+		}
+#endif // DEBUG
 	}
 	buildings.remove(gb);
 
@@ -4840,6 +4856,22 @@ void stadt_t::add_building_to_list(gebaeude_t* building, bool ordered, bool do_n
 		// threadedly when the game is loading.
 		welt->add_building_to_world_list(building, ordered);
 	}
+#ifdef DEBUG
+	switch (building->get_tile()->get_desc()->get_type())
+	{
+		case building_desc_t::city_ind:
+			indcomres[0]++;
+			break;
+		case building_desc_t::city_com:
+			indcomres[1]++;
+			break;
+		case building_desc_t::city_res:
+			indcomres[2]++;
+			break;
+		default:
+			break;
+	}
+#endif // DEBUG
 }
 
 

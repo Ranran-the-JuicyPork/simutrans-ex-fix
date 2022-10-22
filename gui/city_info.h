@@ -196,6 +196,10 @@ private:
 	gui_label_buf_t lb_size, lb_buildings, lb_border, lb_powerdemand;
 	gui_label_with_symbol_t lb_allow_growth;
 
+#ifdef DEBUG
+	gui_label_buf_t lb_debug;
+#endif // DEBUG
+
 	gui_tab_panel_t year_month_tabs, tabs;
 	gui_aligned_container_t container_chart, container_year, container_month, cont_destination_map, cont_minimap_legend;
 	gui_chart_t chart, mchart;                ///< Year and month history charts

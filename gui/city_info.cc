@@ -194,12 +194,9 @@ void city_info_t::init()
 			}
 			end_table();
 #ifdef DEBUG
-			gui_label_buf_t *lb = new_component<gui_label_buf_t>(COL_DANGER);
-			lb->buf().printf("DEBUG: ind/com/res = %u/%u/%u", city->get_citybuilding_count(0), city->get_citybuilding_count(1),city->get_citybuilding_count(2));
-			lb->update();
-
+			add_component(&lb_debug);
+			lb_debug.set_color(COL_WARNING);
 #endif // DEBUG
-
 
 			// minimap link buttons
 			add_table(3, 1);
@@ -510,6 +507,12 @@ void city_info_t::update_labels()
 		lb_allow_growth.set_image(skinverwaltung_t::alerts ? (city->get_citygrowth() ? IMG_EMPTY : skinverwaltung_t::alerts->get_image_id(2)) : IMG_EMPTY);
 		lb_allow_growth.update();
 	}
+
+#ifdef DEBUG
+	lb_debug.buf().printf("DEBUG: ind/com/res = %u/%u/%u", city->get_citybuilding_count(0), city->get_citybuilding_count(1), city->get_citybuilding_count(2));
+	lb_debug.update();
+#endif // DEBUG
+
 	resize(scr_size(0,0));
 }
 

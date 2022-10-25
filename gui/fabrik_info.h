@@ -13,10 +13,12 @@
 #include "factory_chart.h"
 #include "components/action_listener.h"
 #include "components/gui_scrollpane.h"
-#include "components/gui_textarea.h"
 #include "components/gui_textinput.h"
 #include "components/gui_obj_view_t.h"
 #include "components/gui_container.h"
+#include "components/gui_colorbox.h"
+#include "components/gui_image.h"
+#include "components/gui_tab_panel.h"
 #include "../utils/cbuffer_t.h"
 #include "components/gui_speedbar.h"
 #include "components/gui_factory_storage_info.h"
@@ -28,18 +30,26 @@ class button_t;
 
 
 /**
- * info on city demand
+ * Helper class: one row of entries in consumer / supplier table
  */
-class gui_fabrik_info_t : public gui_container_t
+class gui_factory_connection_container_t : public gui_aligned_container_t
 {
+	fabrik_t *fab;
+	bool is_supplier_display; // which display is needed? - input or output
+	uint32 old_connection_count;
+
 public:
-	const fabrik_t* fab;
+	gui_factory_connection_container_t(fabrik_t *factory, bool is_supplier_display);
 
-	gui_fabrik_info_t() {}
+	void update_table();
+	// for reload
+	void set_fab(fabrik_t *f) {
+		this->fab = f;
+		update_table();
+	}
 
-	void draw(scr_coord offset);
+	void draw(scr_coord offset) OVERRIDE;
 };
-
 
 /**
  * Info window for factories
@@ -47,54 +57,59 @@ public:
 class fabrik_info_t : public gui_frame_t, public action_listener_t
 {
 private:
+	enum {
+		TAB_CONNECTIONS = 0,
+		TAB_CHART_GOODS = 1,
+		TAB_CHART_PROD  = 2,
+		TAB_BUILDING_INFO = 3
+	};
 	fabrik_t *fab;
 
-	cbuffer_t info_buf, prod_buf;
-	cbuffer_t factory_status;
+	cbuffer_t details_buf;
 
-	gui_tab_panel_t tabs;
 	static sint16 tabstate;
 
-	factory_goods_chart_t goods_chart;
 	factory_chart_t chart;
 
-	gui_label_t lbl_factory_status;
-	gui_speedbar_t staffing_bar;
+	gui_speedbar_fixed_length_t staffing_bar;
 	sint32 staffing_level;
 	sint32 staffing_level2;
 	sint32 staff_shortage_factor;
-
-	button_t details_button;
 
 	obj_view_t view;
 
 	char fabname[256];
 	gui_textinput_t input;
 
-	//button_t *stadtbuttons;
+	gui_label_with_symbol_t lb_staff_shortage;
+	gui_label_buf_t lb_operation_rate, lb_city, lb_alert;
 
-	gui_textarea_t prod, txt;
+	gui_tab_panel_t switch_mode, tabs_factory_link;
 
-	gui_factory_storage_info_t storage;
+	gui_image_t boost_electric, boost_passenger, boost_mail, img_intown;
 
-	gui_container_t container_info;
+	gui_aligned_container_t container_info, *container_top, *container_view;
 	gui_building_stats_t container_details;
-	gui_scrollpane_t scrolly_info, scrolly_details;
-	gui_factory_connection_stat_t all_suppliers, all_consumers;
-	gui_label_t lb_suppliers, lb_consumers, lb_nearby_halts;
+
+	gui_factory_connection_container_t cont_suppliers, cont_consumers;
 	gui_factory_nearby_halt_info_t nearby_halts;
 
-	uint32 old_suppliers_count, old_consumers_count, old_stops_count;
+	uint32 old_suppliers_count, old_consumers_count;
+
+	gui_scrollpane_t scroll_info, scrolly_details;
+
+	button_t bt_access_minimap;
 
 	void rename_factory();
 
-	void update_components();
-
 	void set_tab_opened();
 
+	void update_components();
 public:
-	// refreshes all text and location pointers
+	// refreshes text, images, indicator
 	void update_info();
+
+	void update_factory_link(bool force=false);
 
 	fabrik_info_t(fabrik_t* fab = NULL, const gebaeude_t* gb = NULL);
 
@@ -114,8 +129,6 @@ public:
 
 	bool is_weltpos() OVERRIDE;
 
-	virtual void set_windowsize(scr_size size) OVERRIDE;
-
 	/**
 	* Draw new component. The values to be passed refer to the window
 	* i.e. It's the screen coordinates of the window where the
@@ -124,8 +137,6 @@ public:
 	void draw(scr_coord pos, scr_size size) OVERRIDE;
 
 	bool action_triggered(gui_action_creator_t*, value_t) OVERRIDE;
-
-	bool infowin_event(const event_t *ev) OVERRIDE;
 
 	// rotated map need new info ...
 	void map_rotate90( sint16 ) OVERRIDE;

@@ -4403,6 +4403,12 @@ secondary_spec
 塗装スキーム
 Do not add vehicles over maximum length!
 これ以上車両を追加できません！
+-->
+→
+<=>
+⇔
+line_network
+接続路線
 #_______________________________unnecessary_text________________________________
 #_______________________________unnecessary_text________________________________
 100 km/h = %i tiles/month

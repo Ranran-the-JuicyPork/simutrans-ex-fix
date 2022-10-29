@@ -118,7 +118,9 @@ convoi_info_t::convoi_info_t(convoihandle_t cnv) :
 	next_halt_number(-1),
 	cont_times_history(linehandle_t(), cnv),
 	scroll_freight(&cargo_info, true, true),
+	cont_line_network(cnv),
 	scroll_times_history(&cont_times_history, true),
+	scroll_line_network(&cont_line_network, true, true),
 	lc_preview(0)
 {
 	if (cnv.is_bound()) {
@@ -135,6 +137,7 @@ void convoi_info_t::init(convoihandle_t cnv)
 	gui_frame_t::set_owner(cnv->get_owner());
 	cont_times_history.set_convoy(cnv);
 	cargo_info.set_convoy(cnv);
+	cont_line_network.set_convoy(cnv);
 
 	minimap_t::get_instance()->set_selected_cnv(cnv);
 	set_table_layout(1,0);
@@ -306,6 +309,7 @@ void convoi_info_t::init(convoihandle_t cnv)
 	container_stats.end_table();
 
 	switch_mode.add_tab(&scroll_times_history, translator::translate("times_history"));
+	switch_mode.add_tab(&scroll_line_network, translator::translate("line_network"));
 
 	speed_bar.set_base(max_convoi_speed);
 	speed_bar.set_vertical(false);
@@ -856,6 +860,22 @@ void convoi_info_t::draw(scr_coord pos, scr_size size)
 	route_bar.set_base(cnv->get_route()->get_count()-1);
 	cnv_route_index = cnv->front()->get_route_index() - 1;
 
+	// Hide the x-scrollbar to not hide the tab header.
+	switch (switch_mode.get_active_tab_index()) {
+		case 0: // loaded detail
+			scroll_freight.set_show_scroll_x( scroll_freight.get_size().h > D_SCROLLBAR_HEIGHT );
+			break;
+		default:
+		case 1: // chart
+			break;
+		case 2: // times history
+			scroll_times_history.set_show_scroll_x( scroll_times_history.get_size().h > D_SCROLLBAR_HEIGHT );
+			break;
+		case 3: // notwork
+			scroll_line_network.set_show_scroll_x(scroll_line_network.get_size().h > D_SCROLLBAR_HEIGHT);
+			break;
+	}
+
 	// all gui stuff set => display it
 	gui_frame_t::draw(pos, size);
 }
@@ -887,7 +907,7 @@ void convoi_info_t::set_tab_opened()
 {
 	tabstate = switch_mode.get_active_tab_index();
 
-	const scr_coord_val margin_above_tab = switch_mode.get_pos().y + D_TAB_HEADER_HEIGHT + D_TITLEBAR_HEIGHT;
+	const scr_coord_val margin_above_tab = switch_mode.get_pos().y + D_TAB_HEADER_HEIGHT + D_TITLEBAR_HEIGHT-1;
 
 	scr_coord_val height = 0;
 	switch (tabstate)
@@ -901,6 +921,9 @@ void convoi_info_t::set_tab_opened()
 			break;
 		case 2: // times history
 			height = cont_times_history.get_size().h + D_MARGINS_Y;
+			break;
+		case 3: // line networks
+			height = cont_line_network.get_size().h + D_MARGINS_Y;
 			break;
 	}
 	if( (get_windowsize().h-margin_above_tab) < height ) {

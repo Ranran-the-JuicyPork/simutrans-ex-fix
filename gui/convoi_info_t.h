@@ -32,6 +32,7 @@
 #include "components/gui_colorbox.h"
 #include "components/gui_line_lettercode.h"
 #include "components/gui_vehicle_cargoinfo.h"
+#include "components/gui_line_network.h"
 
 
 #define BUTTON_COUNT convoi_t::MAX_CONVOI_COST
@@ -77,11 +78,12 @@ class convoi_info_t : public gui_frame_t, private action_listener_t
 	gui_schedule_entry_number_t next_halt_number;
 
 	gui_times_history_t cont_times_history;
+	gui_line_network_t cont_line_network;
 
 	static sint16 tabstate;
 	gui_tab_panel_t switch_mode;
-	gui_aligned_container_t container_stats, container_line, *container_top;
-	gui_scrollpane_t scroll_freight, scroll_times_history;
+	gui_aligned_container_t container_freight, container_stats, container_line, *container_top;
+	gui_scrollpane_t scroll_freight, scroll_times_history, scroll_line_network;
 
 	button_t line_button; // goto line ...
 	bool line_bound;

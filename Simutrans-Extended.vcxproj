@@ -2031,6 +2031,7 @@
     <ClCompile Include="gui\components\gui_map_preview.cc" />
     <ClCompile Include="gui\components\gui_obj_view_t.cc" />
     <ClCompile Include="gui\components\gui_schedule_item.cc" />
+    <ClCompile Include="gui\components\gui_line_network.cc" />
     <ClCompile Include="gui\convoy_item.cc" />
     <ClCompile Include="gui\display_settings.cc" />
     <ClCompile Include="gui\factory_chart.cc" />
@@ -2600,6 +2601,7 @@
     <ClInclude Include="gui\components\gui_obj_view_t.h" />
     <ClInclude Include="gui\components\gui_schedule_item.h" />
     <ClInclude Include="gui\components\location_view_t.h" />
+    <ClInclude Include="gui\components\gui_line_network.h" />
     <ClInclude Include="gui\convoy_item.h" />
     <ClInclude Include="gui\display_settings.h" />
     <ClInclude Include="gui\factory_chart.h" />

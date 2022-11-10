@@ -1011,13 +1011,23 @@ void minimap_t::calc_map_pixel(const koord k)
 		// show max speed (if there)
 		case MAX_SPEEDLIMIT:
 			{
-				if (gr->hat_wege() && gr->get_weg_nr(0)->get_desc()->is_mothballed()) {
+				const weg_t* way = transport_type_showed_on_map == simline_t::line ? gr->get_weg_nr(0) : gr->get_weg(simline_t::linetype_to_waytype((simline_t::linetype)transport_type_showed_on_map));
+				if( way==NULL ) {
+					break;
+				}
+				if (way->get_desc()->is_mothballed()) {
 					set_map_color(k, MAP_COL_NODATA);
 					break;
 				}
-				const sint32 speed_factor = 450-gr->get_max_speed() > 0 ? 450 - gr->get_max_speed() : 0;
-				if(gr->get_max_speed()) {
-					set_map_color(k, calc_severity_color(pow(speed_factor,2.0)/100, 2025));
+
+				if(  transport_type_showed_on_map==simline_t::line ) {
+					const sint32 speed_factor = 450-gr->get_max_speed() > 0 ? 450 - gr->get_max_speed() : 0;
+					if(gr->get_max_speed()) {
+						set_map_color(k, calc_severity_color(pow(speed_factor,2.0)/100, 2025));
+					}
+				}
+				else {
+					set_map_color(k, calc_severity_color(gr->get_max_speed(), way_builder_t::get_world_max_way_speed(way->get_waytype()),true));
 				}
 			}
 			break;

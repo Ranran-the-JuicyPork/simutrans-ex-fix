@@ -1095,8 +1095,8 @@ void minimap_t::calc_map_pixel(const koord k)
 						set_map_color(k, calc_severity_color(pow(speed_factor,2.0)/100, 2025));
 					}
 				}
-				else {
-					set_map_color(k, calc_severity_color(gr->get_max_speed(), way_builder_t::get_world_max_way_speed(way->get_waytype()),true));
+				else if (gr->get_max_speed()) {
+					set_map_color(k, calc_severity_color(gr->get_max_speed(), (sint32)max_world_value, true));
 				}
 			}
 			break;
@@ -1107,7 +1107,7 @@ void minimap_t::calc_map_pixel(const koord k)
 				if(gr->hat_wege())
 				{
 					const weg_t* way = transport_type_showed_on_map == simline_t::line ? gr->get_weg_nr(0) : gr->get_weg(simline_t::linetype_to_waytype((simline_t::linetype)transport_type_showed_on_map));
-					if( transport_type_showed_on_map!=simline_t::line  &&  way==NULL ) {
+					if( way==NULL ) {
 						break;
 					}
 					// owner filter
@@ -1137,7 +1137,7 @@ void minimap_t::calc_map_pixel(const koord k)
 					}
 					else
 					{
-						const uint32 world_max_axle_load = transport_type_showed_on_map==simline_t::line ? 30 : way_builder_t::get_world_max_axle_load(simline_t::linetype_to_waytype((simline_t::linetype)transport_type_showed_on_map));
+						const uint32 world_max_axle_load = transport_type_showed_on_map==simline_t::line ? 30 : max_world_value;
 						set_map_color(k, calc_severity_color((sint32)way->get_max_axle_load(), (sint32)world_max_axle_load, true));
 					}
 				}
@@ -1582,7 +1582,21 @@ void minimap_t::draw(scr_coord pos)
 			last_schedule_counter = world->get_schedule_counter()-1;
 		}
 
+		max_world_value = 0;
 		last_mode = mode;
+	}
+
+	if ((mode & MAP_WEIGHTLIMIT)) {
+		if (transport_type_showed_on_map != simline_t::line  &&  (!max_world_value || transport_type_showed_on_map != old_waytype) ) {
+			old_waytype = transport_type_showed_on_map;
+			max_world_value = way_builder_t::get_world_max_axle_load(simline_t::linetype_to_waytype((simline_t::linetype)transport_type_showed_on_map));
+		}
+	}
+	if ((mode & MAX_SPEEDLIMIT)) {
+		if (transport_type_showed_on_map != simline_t::line  && (!max_world_value || transport_type_showed_on_map != old_waytype)) {
+			old_waytype = transport_type_showed_on_map;
+			max_world_value = (uint32)way_builder_t::get_world_max_way_speed(simline_t::linetype_to_waytype((simline_t::linetype)transport_type_showed_on_map));
+		}
 	}
 
 	if(  needs_redraw  ||  cur_off!=new_off  ||  cur_size!=new_size  ) {

@@ -185,6 +185,10 @@ private:
 	static sint32 max_cargo;
 	static sint32 max_passed;
 
+	// waytype filter
+	uint32 max_world_value = 0;
+	sint8 old_waytype = 0;
+
 	/// the zoom factors
 	sint16 zoom_out{1};
 	sint16 zoom_in{1};

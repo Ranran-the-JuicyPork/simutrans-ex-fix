@@ -66,6 +66,8 @@ public:
 
 	static uint32 get_world_max_axle_load(const waytype_t wtyp);
 
+	static sint32 get_world_max_way_speed(const waytype_t wtyp);
+
 	/**
 	 * Fill menu with icons of given waytype
 	 */

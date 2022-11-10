@@ -20,6 +20,7 @@
 #include "../dataobj/schedule.h"
 #include "../dataobj/powernet.h"
 
+#include "../bauer/wegbauer.h"
 #include "../boden/wege/schiene.h"
 #include "../obj/leitung2.h"
 #include "../obj/gebaeude.h"
@@ -1026,7 +1027,10 @@ void minimap_t::calc_map_pixel(const koord k)
 			{
 				if(gr->hat_wege())
 				{
-					const weg_t* way =  gr->get_weg_nr(0);
+					const weg_t* way = transport_type_showed_on_map == simline_t::line ? gr->get_weg_nr(0) : gr->get_weg(simline_t::linetype_to_waytype((simline_t::linetype)transport_type_showed_on_map));
+					if( transport_type_showed_on_map!=simline_t::line  &&  way==NULL ) {
+						break;
+					}
 					if (way->get_desc()->is_mothballed()) {
 						set_map_color(k, MAP_COL_NODATA);
 						break;
@@ -1035,13 +1039,15 @@ void minimap_t::calc_map_pixel(const koord k)
 					{
 						break;
 					}
-					if(gr->ist_bruecke())
+					if(gr->ist_bruecke()  &&  transport_type_showed_on_map==simline_t::line )
 					{
+						// Prioritize axle load if waytype filter is enabled.
 						set_map_color(k, calc_severity_color(350-way->get_bridge_weight_limit()>0 ? 350-way->get_bridge_weight_limit() : 0, 350));
 					}
 					else
 					{
-						set_map_color(k, calc_severity_color(30-way->get_max_axle_load()>0 ? 30-way->get_max_axle_load() : 0, 30));
+						const uint32 world_max_axle_load = transport_type_showed_on_map==simline_t::line ? 30 : way_builder_t::get_world_max_axle_load(simline_t::linetype_to_waytype((simline_t::linetype)transport_type_showed_on_map));
+						set_map_color(k, calc_severity_color((sint32)way->get_max_axle_load(), (sint32)world_max_axle_load, true));
 					}
 				}
 			}

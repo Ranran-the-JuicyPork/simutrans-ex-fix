@@ -215,7 +215,7 @@ public:
 	/**
 	 * returns a color based on an amount (high amount/scale -> color shifts from green to red)
 	 */
-	static PIXVAL calc_severity_color(sint32 amount, sint32 scale);
+	static PIXVAL calc_severity_color(sint32 amount, sint32 scale, bool inverse=false);
 
 	/**
 	 * returns a color based on an amount (high amount/scale -> color shifts from green to red)

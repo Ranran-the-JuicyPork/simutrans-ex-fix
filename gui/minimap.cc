@@ -620,14 +620,15 @@ PIXVAL minimap_t::get_depot_color(obj_t::typ depot_type)
 }
 
 
-PIXVAL minimap_t::calc_severity_color(sint32 amount, sint32 max_value)
+PIXVAL minimap_t::calc_severity_color(sint32 amount, sint32 max_value, bool inverse)
 {
 	if(max_value!=0) {
 		// color array goes from light blue to red
 		sint32 severity = amount * MAX_SEVERITY_COLORS / (max_value+1);
-		return color_idx_to_rgb( minimap_t::severity_color[ clamp( severity, 0, MAX_SEVERITY_COLORS-1 ) ]);
+		const uint8 color_index = clamp(severity, 0, MAX_SEVERITY_COLORS-1);
+		return color_idx_to_rgb( minimap_t::severity_color[ inverse ? MAX_SEVERITY_COLORS-color_index-1 : color_index]);
 	}
-	return color_idx_to_rgb( minimap_t::severity_color[0]);
+	return color_idx_to_rgb( minimap_t::severity_color[inverse ? MAX_SEVERITY_COLORS-1:0]);
 }
 
 

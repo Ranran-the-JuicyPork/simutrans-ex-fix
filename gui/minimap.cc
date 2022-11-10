@@ -911,6 +911,16 @@ void minimap_t::calc_map_pixel(const koord k)
 
 				const weg_t* w = transport_type_showed_on_map == simline_t::line ? gr->get_weg_nr(0) : gr->get_weg(simline_t::linetype_to_waytype((simline_t::linetype)transport_type_showed_on_map));
 				if(w) {
+					// owner filter
+					if( player_showed_on_map==PUBLIC_PLAYER_NR ) {
+						if( w->get_owner_nr()!=PUBLIC_PLAYER_NR  &&  w->get_owner_nr()!=PLAYER_UNOWNED  ) {
+							break;
+						}
+					}
+					else if(  player_showed_on_map!=-1 &&  player_showed_on_map!=w->get_owner_nr()  ) {
+						break;
+					}
+
 					cargo = w->get_statistics(WAY_STAT_GOODS);
 					// maximum two ways for one ground
 					if(  transport_type_showed_on_map==simline_t::line ) {
@@ -940,6 +950,16 @@ void minimap_t::calc_map_pixel(const koord k)
 
 				const weg_t* w = transport_type_showed_on_map == simline_t::line ? gr->get_weg_nr(0) : gr->get_weg(simline_t::linetype_to_waytype((simline_t::linetype)transport_type_showed_on_map));
 				if(w) {
+					// owner filter
+					if( player_showed_on_map==PUBLIC_PLAYER_NR ) {
+						if( w->get_owner_nr()!=PUBLIC_PLAYER_NR  &&  w->get_owner_nr()!=PLAYER_UNOWNED  ) {
+							break;
+						}
+					}
+					else if(  player_showed_on_map!=-1 &&  player_showed_on_map!=w->get_owner_nr()  ) {
+						break;
+					}
+
 					passed = w->get_statistics(WAY_STAT_CONVOIS);
 					// maximum two ways for one ground
 					if(  transport_type_showed_on_map==simline_t::line ){
@@ -966,6 +986,16 @@ void minimap_t::calc_map_pixel(const koord k)
 				if( way==NULL ) {
 					break;
 				}
+				// owner filter
+				if( player_showed_on_map==PUBLIC_PLAYER_NR ) {
+					if( way->get_owner_nr()!=PUBLIC_PLAYER_NR  &&  way->get_owner_nr()!=PLAYER_UNOWNED  ) {
+						break;
+					}
+				}
+				else if(  player_showed_on_map!=-1 &&  player_showed_on_map!=way->get_owner_nr()  ) {
+					break;
+				}
+
 				condition_percent = way->get_condition_percent();
 				if (way->get_desc()->is_mothballed()) {
 					set_map_color(k, MAP_COL_NODATA);
@@ -989,6 +1019,16 @@ void minimap_t::calc_map_pixel(const koord k)
 				const weg_t* road = gr->get_weg(road_wt);
 				if (road)
 				{
+					// owner filter
+					if( player_showed_on_map==PUBLIC_PLAYER_NR ) {
+						if( road->get_owner_nr()!=PUBLIC_PLAYER_NR  &&  road->get_owner_nr()!=PLAYER_UNOWNED  ) {
+							break;
+						}
+					}
+					else if(  player_showed_on_map!=-1 &&  player_showed_on_map!=road->get_owner_nr()  ) {
+						break;
+					}
+
 					// Because it is possible for congestion to be >100% (as 100% merely means that traffic
 					// takes 100% longer than the uncongested time to traverse the tile), set the colour range
 					// based on a maximum of 250% to allow more granularity in congested places.
@@ -1001,15 +1041,25 @@ void minimap_t::calc_map_pixel(const koord k)
 		case MAP_TRACKS:
 			// show track
 			if (gr->hat_weg(track_wt)) {
-				const schiene_t * sch = (const schiene_t *) (gr->get_weg(track_wt));
-				if(sch->is_electrified()) {
+				const schiene_t * rail = (const schiene_t *) (gr->get_weg(track_wt));
+				// owner filter
+				if( player_showed_on_map==PUBLIC_PLAYER_NR ) {
+					if( rail->get_owner_nr()!=PUBLIC_PLAYER_NR  &&  rail->get_owner_nr()!=PLAYER_UNOWNED  ) {
+						break;
+					}
+				}
+				else if(  player_showed_on_map!=-1 &&  player_showed_on_map!=rail->get_owner_nr()  ) {
+					break;
+				}
+
+				if( rail->is_electrified() ) {
 					set_map_color(k, color_idx_to_rgb(COL_RED));
 				}
 				else {
 					set_map_color(k, color_idx_to_rgb(COL_WHITE));
 				}
 				// show signals
-				if(sch->has_sign()  ||  sch->has_signal()) {
+				if( rail->has_sign()  ||  rail->has_signal() ) {
 					set_map_color(k, color_idx_to_rgb(COL_YELLOW));
 				}
 			}

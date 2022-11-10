@@ -909,13 +909,15 @@ void minimap_t::calc_map_pixel(const koord k)
 				// now calc again ...
 				sint32 cargo=0;
 
-				// maximum two ways for one ground
-				const weg_t *w=gr->get_weg_nr(0);
+				const weg_t* w = transport_type_showed_on_map == simline_t::line ? gr->get_weg_nr(0) : gr->get_weg(simline_t::linetype_to_waytype((simline_t::linetype)transport_type_showed_on_map));
 				if(w) {
 					cargo = w->get_statistics(WAY_STAT_GOODS);
-					const weg_t *w=gr->get_weg_nr(1);
-					if(w) {
-						cargo += w->get_statistics(WAY_STAT_GOODS);
+					// maximum two ways for one ground
+					if(  transport_type_showed_on_map==simline_t::line ) {
+						const weg_t *w=gr->get_weg_nr(1);
+						if(w) {
+							cargo += w->get_statistics(WAY_STAT_GOODS);
+						}
 					}
 					if(  cargo > max_cargo  ) {
 						max_cargo = cargo;
@@ -936,12 +938,14 @@ void minimap_t::calc_map_pixel(const koord k)
 				// now calc again ...
 				sint32 passed=0;
 
-				// maximum two ways for one ground
-				const weg_t *w=gr->get_weg_nr(0);
+				const weg_t* w = transport_type_showed_on_map == simline_t::line ? gr->get_weg_nr(0) : gr->get_weg(simline_t::linetype_to_waytype((simline_t::linetype)transport_type_showed_on_map));
 				if(w) {
 					passed = w->get_statistics(WAY_STAT_CONVOIS);
-					if(  weg_t *w=gr->get_weg_nr(1)  ) {
-						passed += w->get_statistics(WAY_STAT_CONVOIS);
+					// maximum two ways for one ground
+					if(  transport_type_showed_on_map==simline_t::line ){
+						if( weg_t *w = gr->get_weg_nr(1) ) {
+							passed += w->get_statistics(WAY_STAT_CONVOIS);
+						}
 					}
 					if(  passed > max_passed  ) {
 						max_passed = passed;
@@ -958,7 +962,10 @@ void minimap_t::calc_map_pixel(const koord k)
 			if(gr->hat_wege())
 			{
 				// maximum two ways for one ground
-				const weg_t *way = gr->get_weg_nr(0);
+				const weg_t* way = transport_type_showed_on_map == simline_t::line ? gr->get_weg_nr(0) : gr->get_weg(simline_t::linetype_to_waytype((simline_t::linetype)transport_type_showed_on_map));
+				if( way==NULL ) {
+					break;
+				}
 				condition_percent = way->get_condition_percent();
 				if (way->get_desc()->is_mothballed()) {
 					set_map_color(k, MAP_COL_NODATA);

@@ -989,8 +989,13 @@ bool convoi_info_t::action_triggered( gui_action_creator_t *comp,value_t /* */)
 
 bool convoi_info_t::infowin_event(const event_t *ev)
 {
-	if(  ev->ev_class == INFOWIN  &&  ev->ev_code == WIN_CLOSE  ) {
-		minimap_t::get_instance()->set_selected_cnv(convoihandle_t());
+	if(  ev->ev_code == INFOWIN  ) {
+		if( ev->ev_code == WIN_CLOSE) {
+			minimap_t::get_instance()->set_selected_cnv(convoihandle_t());
+		}
+		else if ((ev->ev_code == WIN_OPEN || ev->ev_code == WIN_TOP)) {
+			minimap_t::get_instance()->set_selected_cnv(cnv);
+		}
 	}
 	return gui_frame_t::infowin_event(ev);
 }

@@ -694,22 +694,16 @@ void rdwr_all_win(loadsave_t *file)
 				p.rdwr(file);
 				uint8 win_type;
 				file->rdwr_byte( win_type );
-				create_win( p.x, p.y, w, (wintype)win_type, id, true );
+				// restore sticky / rollup status
+				// ensure that the new status is to currently loaded window
 				bool sticky, rollup, locked;
 				file->rdwr_bool( sticky );
 				file->rdwr_bool( locked );
 				file->rdwr_bool( rollup );
+				create_win( p.x, p.y, w, (wintype)win_type, id, true, sticky, rollup, locked );
 				// now load the window
 				uint32 count = wins.get_count();
 				w->rdwr( file );
-
-				// restore sticky / rollup status
-				// ensure that the new status is to currently loaded window
-				if (wins.get_count() >= count) {
-					wins.back().sticky = sticky;
-					wins.back().locked = locked;
-					wins.back().rollup = rollup;
-				}
 			}
 		}
 	}
@@ -765,7 +759,7 @@ void win_clamp_xywh_position( scr_coord_val &x, scr_coord_val &y, scr_size wh, b
 
 
 
-int create_win(scr_coord_val x, scr_coord_val y, gui_frame_t* const gui, wintype const wt, ptrdiff_t const magic, bool move_to_full_view)
+int create_win(scr_coord_val x, scr_coord_val y, gui_frame_t* const gui, wintype const wt, ptrdiff_t const magic, bool move_to_full_view, bool sticky, bool rollup, bool locked)
 {
 	assert(gui!=NULL  &&  magic!=0);
 
@@ -832,9 +826,9 @@ int create_win(scr_coord_val x, scr_coord_val y, gui_frame_t* const gui, wintype
 		win.dauer = (wt&w_time_delete) ? MESG_WAIT : -1;
 		win.magic_number = magic;
 		win.gadget_state = 0;
-		win.rollup = false;
-		win.sticky = false;
-		win.locked = false;
+		win.rollup = rollup;
+		win.sticky = sticky;
+		win.locked = locked;
 		win.dirty = true;
 
 		// Notify window to be shown
@@ -894,6 +888,20 @@ int create_win(scr_coord_val x, scr_coord_val y, gui_frame_t* const gui, wintype
 
 		win.pos = scr_coord(x,y);
 		win.dirty = true;
+
+		// If not sticky, move directly under sticky windows.
+		if (!sticky) {
+			simwin_t tmp = win;
+			wins.remove_at(wins.get_count()-1);
+
+			uint32 win_pos = wins.get_count();
+			while (win_pos > 0) {
+				win_pos--;
+				if (!wins[win_pos].sticky) { break; }
+			}
+			wins.insert_at(win_pos+1, tmp);
+		}
+
 		return wins.get_count();
 	}
 	else {
@@ -1085,7 +1093,7 @@ void rolldown_all_win()
 
 int top_win(int win, bool keep_state )
 {
-	if(  (uint32)win==wins.get_count()-1  ) {
+	if(  wins[win].sticky &&  (uint32)win==wins.get_count()-1  ) {
 		return win;
 	} // already topped
 
@@ -1099,16 +1107,30 @@ int top_win(int win, bool keep_state )
 	if(  !keep_state  ) {
 		tmp.rollup = false; // make visible when topping
 	}
-	wins.append(tmp);
 
-	 // mark new dirty
-	size = wins.back().gui->get_windowsize();
-	mark_rect_dirty_wc( wins.back().pos.x - 1, wins.back().pos.y - 1, wins.back().pos.x + size.w + 2, wins.back().pos.y + size.h + 2 ); // -1, +2 for env_t::window_frame_active
+	if (tmp.sticky) {
+		wins.append(tmp);
+	}
+	else {
+		// If not sticky, move directly under sticky windows.
+		for (uint32 i = wins.get_count(); i>0; i-- ) {
+			if(  !wins[i-1].sticky  ) {
+				wins.insert_at(i, tmp);
+				return i;
+			}
+		}
+		wins.insert_at(0, tmp);
+		return 0;
+	}
+
+	// mark new dirty
+	size = tmp.gui->get_windowsize();
+	mark_rect_dirty_wc( tmp.pos.x - 1, tmp.pos.y - 1, tmp.pos.x + size.w + 2, tmp.pos.y + size.h + 2 ); // -1, +2 for env_t::window_frame_active
 
 	event_t ev;
 
 	ev.ev_class = INFOWIN;
-	ev.ev_code = WIN_TOP;
+	ev.ev_code = tmp==wins.back() ? WIN_TOP : WIN_OPEN;
 	ev.mx = 0;
 	ev.my = 0;
 	ev.cx = 0;

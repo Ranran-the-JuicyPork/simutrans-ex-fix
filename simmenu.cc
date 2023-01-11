@@ -216,6 +216,7 @@ const char *tool_t::id_to_string(uint16 id)
 		CASE_TO_STRING(DIALOG_EDIT_GROUNDOBJ);
 
 		CASE_TO_STRING(DIALOG_LIST_SIGNALBOX);
+		CASE_TO_STRING(DIALOG_MAP_LABEL_CONTROLLER);
 		}
 	}
 
@@ -407,6 +408,7 @@ tool_t *create_dialog_tool(int toolnr)
 		case DIALOG_LIST_DEPOT:      tool = new dialog_list_depot_t();      break;
 		case DIALOG_LIST_VEHICLE:    tool = new dialog_list_vehicle_t();    break;
 		case DIALOG_LIST_SIGNALBOX:  tool = new dialog_list_signalbox_t();  break;
+		case DIALOG_MAP_LABEL_CONTROLLER:  tool = new dialog_map_label_controller_t();   break;
 		case DIALOG_EDIT_GROUNDOBJ:  tool = new dialog_edit_groundobj_t();  break;
 		case DIALOG_SCRIPT_TOOL:
 			return NULL; // Tools reserved by standard

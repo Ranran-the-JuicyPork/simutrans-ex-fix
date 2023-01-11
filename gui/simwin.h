@@ -130,6 +130,7 @@ enum magic_numbers {
 	magic_signalboxlist,
 	magic_pier_rotation_select,
 	magic_depot, // only used to load/save
+	magic_map_label_controller,
 	magic_max
 };
 

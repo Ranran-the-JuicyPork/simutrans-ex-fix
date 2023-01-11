@@ -339,6 +339,17 @@ public:
 	 */
 	static sint32 show_names;
 
+	/// Four states to control hiding of station names
+	enum hide_station_names {
+		ALL_PLAYER_STATION_NAMES = 0,
+		HIDE_OTHERS_STATION_NAMES,
+		HIDE_UNUSED_STATION_NAMES,
+		HIDE_INACCESSIBLE_STATION_NAMES,
+		//MAX_HIDE_STATION_NAME_CONTROL
+	};
+	static uint8 station_name_filter_player;
+	static uint8 station_name_filter_capacity_type; // passenger, mail, goods
+
 	/// Show own depot name label
 	static bool show_depot_names;
 

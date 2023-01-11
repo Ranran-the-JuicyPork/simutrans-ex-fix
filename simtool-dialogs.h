@@ -50,6 +50,7 @@
 #include "gui/depotlist_frame.h"
 #include "gui/vehiclelist_frame.h"
 #include "gui/signalboxlist_frame.h"
+#include "gui/map_label_controller.h"
 
 #include "obj/baum.h"
 
@@ -630,5 +631,26 @@ public:
 	bool exit(player_t*) OVERRIDE{ destroy_win(magic_themes); return false; }
 	bool is_init_network_safe() const OVERRIDE{ return true; }
 	bool is_work_network_safe() const OVERRIDE{ return true; }
+};
+
+/* open map name label settings */
+class dialog_map_label_controller_t : public tool_t {
+public:
+	dialog_map_label_controller_t() : tool_t(DIALOG_MAP_LABEL_CONTROLLER | DIALOG_TOOL) {}
+	char const* get_tooltip(player_t const*) const OVERRIDE { return translator::translate("Map label controll"); }
+	bool is_selected() const OVERRIDE { return win_get_magic(magic_map_label_controller); }
+	bool init(player_t*) OVERRIDE {
+		map_label_controller_t *win = dynamic_cast<map_label_controller_t*>(win_get_magic(magic_map_label_controller));
+		if (win) {
+			destroy_win(magic_map_label_controller);
+		}
+		else {
+			create_win(new map_label_controller_t(), w_info, magic_map_label_controller);
+		}
+		return false;
+	}
+	bool exit(player_t*) OVERRIDE { destroy_win(magic_map_label_controller); return false; }
+	bool is_init_network_safe() const OVERRIDE { return true; }
+	bool is_work_network_safe() const OVERRIDE { return true; }
 };
 #endif

@@ -1840,6 +1840,7 @@ void grund_t::display_overlay(const sint16 xpos, const sint16 ypos)
 #endif
 	// marker/station text
 	if(  get_flag(has_text)  &&  env_t::show_names  ) {
+		const halthandle_t halt = get_halt();
 		if(  env_t::show_names&1  ) {
 			const char *text = get_text();
 			const sint16 raster_tile_width = get_tile_raster_width();
@@ -1847,13 +1848,30 @@ void grund_t::display_overlay(const sint16 xpos, const sint16 ypos)
 			int new_xpos = xpos - (width-raster_tile_width)/2;
 
 			const player_t* owner = get_label_owner();
+			bool skip = false;
 
-			display_text_label(new_xpos, ypos, text, owner, dirty);
+			// station name display filter
+			if(  halt.is_bound() &&  env_t::station_name_filter_player  ) {
+				if( env_t::station_name_filter_player==env_t::HIDE_OTHERS_STATION_NAMES  &&  owner!=world()->get_active_player() ) {
+					skip = true;
+				}
+				else if (env_t::station_name_filter_player>env_t::HIDE_OTHERS_STATION_NAMES) {
+					if (!halt->check_access(world()->get_active_player())) {
+						skip = true;
+					}
+					if (!skip && env_t::station_name_filter_player==env_t::HIDE_UNUSED_STATION_NAMES && !halt->has_available_network(world()->get_active_player())) {
+						skip = true;
+					}
+				}
+			}
+
+			if( !skip ) {
+				display_text_label(new_xpos, ypos, text, owner, dirty);
+			}
 		}
 
 		// display station waiting information/status
 		if(env_t::show_names & 2) {
-			const halthandle_t halt = get_halt();
 			if(halt.is_bound()  &&  halt->get_basis_pos3d()==pos) {
 				halt->display_status(xpos, ypos);
 			}

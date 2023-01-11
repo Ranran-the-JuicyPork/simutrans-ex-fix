@@ -114,6 +114,8 @@ bool env_t::use_transparency_station_coverage;
 uint8 env_t::station_coverage_show;
 uint8 env_t::signalbox_coverage_show;
 sint32 env_t::show_names;
+uint8  env_t::station_name_filter_player;
+uint8  env_t::station_name_filter_capacity_type;
 bool env_t::show_depot_names;
 uint8 env_t::freight_waiting_bar_level;
 bool env_t::classes_waiting_bar;
@@ -232,6 +234,8 @@ void env_t::init()
 	signalbox_coverage_show = 0;
 
 	show_names = 3;
+	station_name_filter_player = 0;
+	station_name_filter_capacity_type = 0;
 	show_depot_names = false;
 	freight_waiting_bar_level = 2;
 	classes_waiting_bar = false;

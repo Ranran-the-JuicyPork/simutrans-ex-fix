@@ -34,7 +34,7 @@ map_label_controller_t::map_label_controller_t() : gui_frame_t("")
 	bt_station_name_enable.init(button_t::square_state, "show station names");
 	bt_station_name_enable.add_listener(this);
 	add_component(&bt_station_name_enable);
-	
+
 	add_table(2,1);
 	{
 		new_component<gui_margin_t>(D_CHECKBOX_WIDTH);

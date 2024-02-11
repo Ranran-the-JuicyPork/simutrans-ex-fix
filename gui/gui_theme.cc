@@ -76,6 +76,7 @@ PIXVAL gui_theme_t::gui_color_down_pointing_triangle;
 
 PIXVAL gui_theme_t::gui_color_table_frame;
 PIXVAL gui_theme_t::gui_color_table_background;
+PIXVAL gui_theme_t::gui_color_table_background_even_row;
 PIXVAL gui_theme_t::gui_color_table_header_border;
 PIXVAL gui_theme_t::gui_color_table_cell_border;
 PIXVAL gui_theme_t::gui_color_table_background_head_row;
@@ -231,6 +232,7 @@ void gui_theme_t::init_gui_defaults()
 
 	gui_color_table_frame                  = gui_shadow_color;
 	gui_color_table_background             = gui_color_chart_background;
+	gui_color_table_background_even_row    = color_idx_to_rgb(MN_GREY3);
 	gui_color_table_header_border          = gui_highlight_color;
 	gui_color_table_cell_border            = gui_color_statusbar_divider;
 	gui_color_table_background_head_row    = gui_color_statusbar_background;
@@ -647,6 +649,7 @@ bool gui_theme_t::themes_init(const char *file_name, bool init_fonts, bool init_
 	gui_theme_t::gui_color_down_pointing_triangle       = (PIXVAL)contents.get_color("gui_color_down_pointing_triangle", SYSCOL_DOWN_TRIANGLE);
 	gui_theme_t::gui_color_table_frame                  = (PIXVAL)contents.get_color("gui_color_table_frame", SYSCOL_TABLE_FRAME);
 	gui_theme_t::gui_color_table_background             = (PIXVAL)contents.get_color("gui_color_table_background", SYSCOL_TABLE_BACKGROUND);
+	gui_theme_t::gui_color_table_background_even_row    = (PIXVAL)contents.get_color("gui_color_table_background_even_row", SYSCOL_TR_BACKGROUND_EVEN);
 	gui_theme_t::gui_color_table_header_border          = (PIXVAL)contents.get_color("gui_color_table_header_border", SYSCOL_TH_BORDER);
 	gui_theme_t::gui_color_table_cell_border            = (PIXVAL)contents.get_color("gui_color_table_cell_border", SYSCOL_TD_BORDER);
 	gui_theme_t::gui_color_table_background_head_row    = (PIXVAL)contents.get_color("gui_color_table_background_head_row", SYSCOL_TH_BACKGROUND_TOP);

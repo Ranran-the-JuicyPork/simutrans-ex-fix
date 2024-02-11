@@ -203,6 +203,7 @@ typedef unsigned int FLAGGED_PIXVAL;
 #define SYSCOL_DOWN_TRIANGLE                gui_theme_t::gui_color_down_pointing_triangle
 #define SYSCOL_TABLE_FRAME                  gui_theme_t::gui_color_table_frame
 #define SYSCOL_TABLE_BACKGROUND             gui_theme_t::gui_color_table_background
+#define SYSCOL_TR_BACKGROUND_EVEN           gui_theme_t::gui_color_table_background_even_row
 #define SYSCOL_TH_BORDER                    gui_theme_t::gui_color_table_header_border
 #define SYSCOL_TD_BORDER                    gui_theme_t::gui_color_table_cell_border
 #define SYSCOL_TH_BACKGROUND_TOP            gui_theme_t::gui_color_table_background_head_row

@@ -305,6 +305,7 @@ public:
 	// table color
 	static PIXVAL gui_color_table_frame;               // table border color
 	static PIXVAL gui_color_table_background;          // table background color
+	static PIXVAL gui_color_table_background_even_row;
 	static PIXVAL gui_color_table_header_border;       // table header border color
 	static PIXVAL gui_color_table_cell_border;         // table cell border color
 	static PIXVAL gui_color_table_background_head_row; //@< Color to draw background of header cell on top row

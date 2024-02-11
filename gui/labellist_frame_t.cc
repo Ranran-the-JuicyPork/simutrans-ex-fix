@@ -27,7 +27,7 @@ public:
 
 labellist_frame_t::labellist_frame_t() :
 	gui_frame_t( translator::translate("labellist_title") ),
-	scrolly(gui_scrolled_list_t::windowskin, labellist_stats_t::compare)
+	scrolly(gui_scrolled_list_t::striped, labellist_stats_t::compare)
 {
 	set_table_layout(1,0);
 	add_table(2,2);

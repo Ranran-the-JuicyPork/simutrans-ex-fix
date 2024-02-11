@@ -31,7 +31,7 @@ public:
 
 curiositylist_frame_t::curiositylist_frame_t(stadt_t* city) :
 	gui_frame_t(translator::translate("curlist_title")),
-	scrolly(gui_scrolled_list_t::windowskin, curiositylist_stats_t::compare),
+	scrolly(gui_scrolled_list_t::striped, curiositylist_stats_t::compare),
 	filter_city(city)
 {
 	attraction_count = 0;

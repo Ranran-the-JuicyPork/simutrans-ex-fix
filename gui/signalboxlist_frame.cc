@@ -179,7 +179,7 @@ static const char *sort_text[SORT_MODES] = {
 
 signalboxlist_frame_t::signalboxlist_frame_t(player_t *player) :
 	gui_frame_t( translator::translate("sb_title"), player ),
-	scrolly(gui_scrolled_list_t::windowskin, signalboxlist_stats_t::compare)
+	scrolly(gui_scrolled_list_t::striped, signalboxlist_stats_t::compare)
 {
 	this->player = player;
 	last_signalbox_count = 0;

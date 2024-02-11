@@ -79,7 +79,7 @@ labellist_stats_t::labellist_stats_t(koord label_pos)
 {
 	this->label_pos = label_pos;
 
-	set_table_layout(2,1);
+	set_table_layout(3,1);
 	button_t *b = new_component<button_t>();
 	b->set_typ(button_t::posbutton_automatic);
 	b->set_targetpos(label_pos);
@@ -91,6 +91,7 @@ labellist_stats_t::labellist_stats_t(koord label_pos)
 	if (const label_t *lb = get_label()) {
 		label.set_color(PLAYER_FLAG | color_idx_to_rgb(lb->get_owner()->get_player_color1()+env_t::gui_player_color_dark));
 	}
+	new_component<gui_fill_t>();
 }
 
 

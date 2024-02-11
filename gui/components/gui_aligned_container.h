@@ -22,6 +22,8 @@ private:
 	// Display the background color specified in the theme
 	bool show_back_ground_color = false;
 
+	bool is_striped_table = false;
+
 	uint16 columns;     ///< column number, if zero then arbitrary many columns possible
 	uint16 rows;        ///< row number, if zero then arbitrary many rows possible
 
@@ -71,9 +73,10 @@ public:
 
 	void set_table_layout(uint16 columns_=0, uint16 rows_=0);
 
-	void set_table_frame(bool show_border, bool use_background_color=false) {
+	void set_table_frame(bool show_border, bool use_background_color = false, bool is_striped_table_=false) {
 		show_frame = show_border;
 		show_back_ground_color = use_background_color;
+		is_striped_table = is_striped_table_;
 	}
 
 	/**

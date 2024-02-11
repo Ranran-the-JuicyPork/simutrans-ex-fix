@@ -583,6 +583,23 @@ void gui_aligned_container_t::draw(scr_coord offset)
 	if (show_back_ground_color) {
 		display_fillbox_wh_clip_rgb(shorten(screen_pos.x+1), shorten(screen_pos.y), shorten(get_size().w-2), shorten(get_size().h), SYSCOL_TABLE_BACKGROUND, false);
 	}
+	if (is_striped_table) {
+		uint16 c = 0, r = 0;
+		for (uint32 i = 0; i < components.get_count(); i++) {
+			if (c==0 && r%2) {
+				gui_component_t* comp = components[i];
+				scr_coord_val r_pos_y = comp->get_pos().y + screen_pos.y;
+				display_fillbox_wh_clip_rgb(screen_pos.x+1, r_pos_y, get_size().w-2, comp->get_size().h, SYSCOL_TR_BACKGROUND_EVEN, false);
+			}
+
+			c++;
+			if (columns && (c % columns) == 0) {
+				r++;
+				c = 0;
+			}
+		}
+	}
+
 	gui_container_t::draw(offset);
 	if (show_frame) {
 		display_ddd_box_clip_rgb(shorten(screen_pos.x), shorten(screen_pos.y), shorten(get_size().w), shorten(get_size().h), SYSCOL_TABLE_FRAME, SYSCOL_TABLE_FRAME);

@@ -88,6 +88,9 @@ gui_scrolled_list_t::gui_scrolled_list_t(enum type type, item_compare_func cmp) 
 	item_list(container.get_components())
 {
 	container.set_table_layout(1,0);
+	if (type==striped) {
+		container.set_table_frame(false,true,true);
+	}
 
 	set_component(&container);
 
@@ -315,6 +318,7 @@ void gui_scrolled_list_t::draw(scr_coord offset)
 		scr_rect rect(pos + offset, get_size());
 		switch(type) {
 			case windowskin:
+			case striped:
 				//display_img_stretch( gui_theme_t::windowback, rect);
 				break;
 			case listskin:

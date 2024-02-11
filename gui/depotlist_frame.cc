@@ -262,7 +262,7 @@ static const char *sort_text[SORT_MODES] = {
 
 depotlist_frame_t::depotlist_frame_t(player_t *player) :
 	gui_frame_t( translator::translate("dp_title"), player ),
-	scrolly(gui_scrolled_list_t::windowskin, depotlist_stats_t::compare)
+	scrolly(gui_scrolled_list_t::striped, depotlist_stats_t::compare)
 {
 	this->player = player;
 
@@ -272,7 +272,7 @@ depotlist_frame_t::depotlist_frame_t(player_t *player) :
 
 depotlist_frame_t::depotlist_frame_t() :
 	gui_frame_t(translator::translate("dp_title"), NULL),
-	scrolly(gui_scrolled_list_t::windowskin, depotlist_stats_t::compare)
+	scrolly(gui_scrolled_list_t::striped, depotlist_stats_t::compare)
 {
 	player = NULL;
 

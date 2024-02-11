@@ -43,7 +43,8 @@ public:
 	enum type {
 		windowskin,
 		listskin,
-		transparent
+		transparent,
+		striped
 	};
 
 	/**

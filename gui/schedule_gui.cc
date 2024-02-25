@@ -625,6 +625,129 @@ void schedule_gui_t::init_components()
 	bt_same_spacing_shift.set_tooltip("Use one spacing shift value for all stops in schedule.");
 	bt_same_spacing_shift.add_listener(this);
 
+	// tab1
+	cont_settings_1.set_table_frame(true);
+	cont_settings_1.set_table_layout(1, 0);
+	cont_settings_1.set_margin(scr_size(D_H_SPACE, D_MARGIN_TOP), scr_size(0, D_V_SPACE));
+	cont_settings_1.add_table(2, 0)->set_spacing(scr_size(0, 0));
+	{
+		// Minimum loading
+		cont_settings_1.new_component<gui_image_t>()->set_image(skinverwaltung_t::goods->get_image_id(0), true);
+		cont_settings_1.add_table(4, 1);
+		{
+			lb_load.buf().append(translator::translate("Full load"));
+			lb_load.update();
+			cont_settings_1.add_component(&lb_load);
+			numimp_load.set_width(70);
+			numimp_load.add_listener(this);
+			cont_settings_1.add_component(&numimp_load);
+			cont_settings_1.new_component<gui_label_t>("%");
+			cont_settings_1.new_component<gui_empty_t>();
+		}
+		cont_settings_1.end_table();
+	}
+	cont_settings_1.end_table();
+
+	cont_settings_1.add_table(5, 0)->set_spacing(scr_size(D_H_SPACE, 0));
+	{
+		if (!cnv.is_bound()) {
+			// Wait for time
+			cont_settings_1.new_component<gui_image_t>()->set_image(skinverwaltung_t::waiting_time ? skinverwaltung_t::waiting_time->get_image_id(0) : IMG_EMPTY, true);
+			bt_wait_for_time.init(button_t::square_automatic, "Wait for time");
+			bt_wait_for_time.set_tooltip("If this is set, convoys will wait until one of the specified times before departing, the specified times being fractions of a month.");
+			bt_wait_for_time.add_listener(this);
+			cont_settings_1.add_component(&bt_wait_for_time, 4);
+			//cont_settings_1.new_component<gui_empty_t>();
+		}
+
+		if (cnv.is_bound()) {
+			cont_settings_1.new_component<gui_image_t>()->set_image(skinverwaltung_t::waiting_time ? skinverwaltung_t::waiting_time->get_image_id(0) : IMG_EMPTY, true);
+		}
+		else {
+			cont_settings_1.new_component<gui_margin_t>(D_CHECKBOX_WIDTH);
+		}
+		// Maximum waiting time
+		lb_wait.buf().append(translator::translate("month wait time"));
+		lb_wait.update();
+		cont_settings_1.add_component(&lb_wait);
+
+		cont_settings_1.add_table(4, 1);
+		{
+			bt_wait_prev.init(button_t::arrowleft, NULL, scr_coord(0, 0));
+			bt_wait_prev.add_listener(this);
+			cont_settings_1.add_component(&bt_wait_prev);
+
+			lb_waitlevel_as_clock.init(SYSCOL_TEXT_HIGHLIGHT, gui_label_t::right);
+			lb_waitlevel_as_clock.buf().append("off");
+			lb_waitlevel_as_clock.set_fixed_width(proportional_string_width("--:--:--"));
+			lb_waitlevel_as_clock.update();
+			cont_settings_1.add_component(&lb_waitlevel_as_clock);
+
+			bt_wait_next.init(button_t::arrowright, NULL, scr_coord(0, 0));
+			bt_wait_next.add_listener(this);
+			cont_settings_1.add_component(&bt_wait_next);
+
+			cont_settings_1.new_component<gui_empty_t>();
+		}
+		cont_settings_1.end_table();
+		cont_settings_1.new_component<gui_empty_t>();
+	}
+	cont_settings_1.end_table();
+
+
+	cont_settings_1.add_table(5, 2)->set_spacing(scr_size(D_H_SPACE, 0));
+	{
+		// Spacing
+		cont_settings_1.new_component<gui_margin_t>(D_CHECKBOX_WIDTH << 1);
+		lb_spacing.set_text("Spacing cnv/month");
+		lb_spacing.set_tooltip(translator::translate("help_txt_departure_per_month"));
+		cont_settings_1.add_component(&lb_spacing);
+
+		// UI TODO: Make it clearer to the player that this is set in increments of 12ths of a fraction of a month.
+		numimp_spacing.add_listener(this);
+		cont_settings_1.add_component(&numimp_spacing);
+
+		lb_spacing_as_clock.init(SYSCOL_TEXT);
+		lb_spacing_as_clock.set_fixed_width(proportional_string_width("--:--:--"));
+		cont_settings_1.add_component(&lb_spacing_as_clock);
+		cont_settings_1.new_component<gui_empty_t>();
+
+		// Spacing shift
+		cont_settings_1.new_component<gui_margin_t>(D_CHECKBOX_WIDTH << 1);
+		lb_shift.init(translator::translate("time shift"), scr_coord(0, 0));
+		lb_shift.set_tooltip(translator::translate("help_txt_departure_time_shift"));
+		cont_settings_1.add_component(&lb_shift);
+
+		const uint8 spacing_shift_mode = welt->get_settings().get_spacing_shift_mode();
+		if (spacing_shift_mode > settings_t::SPACING_SHIFT_DISABLED) {
+			numimp_spacing_shift.add_listener(this);
+			cont_settings_1.add_component(&numimp_spacing_shift);
+		}
+		else {
+			cont_settings_1.new_component<gui_empty_t>();
+		}
+
+		if (spacing_shift_mode > settings_t::SPACING_SHIFT_PER_LINE) {
+			cont_settings_1.add_table(2, 1);
+			{
+				lb_plus.init("+", scr_coord(0, 0));
+				cont_settings_1.add_component(&lb_plus);
+
+				lb_spacing_shift_as_clock.set_align(gui_label_t::right);
+				lb_spacing_shift_as_clock.set_fixed_width(proportional_string_width("--:--:--"));
+				lb_spacing_shift_as_clock.set_text_pointer(str_spacing_shift_as_clock, false);
+				cont_settings_1.add_component(&lb_spacing_shift_as_clock);
+			}
+			cont_settings_1.end_table();
+		}
+		else {
+			cont_settings_1.new_component<gui_empty_t>();
+		}
+		cont_settings_1.new_component<gui_empty_t>();
+
+	}
+	cont_settings_1.end_table();
+
 	build_table();
 }
 
@@ -752,143 +875,31 @@ void schedule_gui_t::build_table()
 
 			add_component(&tabs);
 
-			cont_settings_1.set_table_frame(true);
-			cont_settings_1.set_table_layout(1,0);
-			cont_settings_1.set_margin(scr_size(D_H_SPACE, D_MARGIN_TOP), scr_size(0, D_V_SPACE));
-			cont_settings_1.add_table(2,0)->set_spacing(scr_size(0,0));
-			{
-				// Minimum loading
-				cont_settings_1.new_component<gui_image_t>()->set_image(skinverwaltung_t::goods->get_image_id(0), true);
-				cont_settings_1.add_table(4,1);
-				{
-					lb_load.buf().append(translator::translate("Full load"));
-					lb_load.update();
-					cont_settings_1.add_component(&lb_load);
-					numimp_load.init(schedule->get_current_entry().minimum_loading, 0, 100, 10, false);
-					numimp_load.set_width(70);
-					numimp_load.add_listener(this);
-					cont_settings_1.add_component(&numimp_load);
-					cont_settings_1.new_component<gui_label_t>("%");
-					cont_settings_1.new_component<gui_empty_t>();
-				}
-				cont_settings_1.end_table();
+			// tab1
+			numimp_load.init(schedule->get_current_entry().minimum_loading, 0, 100, 10, false);
+			numimp_spacing.init(schedule->get_spacing(), 0, 999, 1);
+
+			if (spacing_shift_mode > settings_t::SPACING_SHIFT_DISABLED) {
+				numimp_spacing_shift.init(schedule->get_current_entry().spacing_shift, 0, welt->get_settings().get_spacing_shift_divisor(), 1);
 			}
 			cont_settings_1.end_table();
 
-			cont_settings_1.add_table(5,0)->set_spacing(scr_size(D_H_SPACE,0));
-			{
-				if (!cnv.is_bound()) {
-					// Wait for time
-					cont_settings_1.new_component<gui_image_t>()->set_image(skinverwaltung_t::waiting_time ? skinverwaltung_t::waiting_time->get_image_id(0) : IMG_EMPTY, true);
-					bt_wait_for_time.init(button_t::square_automatic, "Wait for time");
-					bt_wait_for_time.set_tooltip("If this is set, convoys will wait until one of the specified times before departing, the specified times being fractions of a month.");
-					bt_wait_for_time.pressed = schedule->get_current_entry().wait_for_time;
-					bt_wait_for_time.add_listener(this);
-					cont_settings_1.add_component(&bt_wait_for_time,4);
-					//cont_settings_1.new_component<gui_empty_t>();
-				}
-
-				if (cnv.is_bound()) {
-					cont_settings_1.new_component<gui_image_t>()->set_image(skinverwaltung_t::waiting_time ? skinverwaltung_t::waiting_time->get_image_id(0) : IMG_EMPTY, true);
-				}
-				else {
-					cont_settings_1.new_component<gui_margin_t>(D_CHECKBOX_WIDTH);
-				}
-				// Maximum waiting time
-				lb_wait.buf().append(translator::translate("month wait time"));
-				lb_wait.update();
-				cont_settings_1.add_component(&lb_wait);
-
-				if (schedule->get_current_entry().waiting_time_shift == 0) {
-					strcpy(str_parts_month, translator::translate("off"));
-					strcpy(str_parts_month_as_clock, translator::translate("off"));
-				}
-				else {
-					sprintf(str_parts_month, "1/%d", 1 << (16 - schedule->get_current_entry().waiting_time_shift));
-					sint64 ticks_waiting = welt->ticks_per_world_month >> (16 - schedule->get_current_entry().waiting_time_shift);
-					welt->sprintf_ticks(str_parts_month_as_clock, sizeof(str_parts_month_as_clock), ticks_waiting + 1);
-				}
-
-				cont_settings_1.add_table(4,1);
-				{
-					bt_wait_prev.init(button_t::arrowleft, NULL, scr_coord(0, 0));
-					bt_wait_prev.add_listener(this);
-					cont_settings_1.add_component(&bt_wait_prev);
-
-					lb_waitlevel_as_clock.init(SYSCOL_TEXT_HIGHLIGHT, gui_label_t::right);
-					lb_waitlevel_as_clock.buf().append("off");
-					lb_waitlevel_as_clock.set_fixed_width(proportional_string_width("--:--:--"));
-					lb_waitlevel_as_clock.update();
-					cont_settings_1.add_component(&lb_waitlevel_as_clock);
-
-					bt_wait_next.init(button_t::arrowright, NULL, scr_coord(0, 0));
-					bt_wait_next.add_listener(this);
-					cont_settings_1.add_component(&bt_wait_next);
-
-					cont_settings_1.new_component<gui_empty_t>();
-				}
-				cont_settings_1.end_table();
-				cont_settings_1.new_component<gui_empty_t>();
+			if (schedule->get_current_entry().waiting_time_shift == 0) {
+				strcpy(str_parts_month, translator::translate("off"));
+				strcpy(str_parts_month_as_clock, translator::translate("off"));
 			}
-			cont_settings_1.end_table();
-
+			else {
+				sprintf(str_parts_month, "1/%d", 1 << (16 - schedule->get_current_entry().waiting_time_shift));
+				sint64 ticks_waiting = welt->ticks_per_world_month >> (16 - schedule->get_current_entry().waiting_time_shift);
+				welt->sprintf_ticks(str_parts_month_as_clock, sizeof(str_parts_month_as_clock), ticks_waiting + 1);
+			}
 
 			if (!cnv.is_bound()) {
-				cont_settings_1.add_table(5,2)->set_spacing(scr_size(D_H_SPACE,0));
-				{
-					// Spacing
-					cont_settings_1.new_component<gui_margin_t>(D_CHECKBOX_WIDTH<<1);
-					lb_spacing.set_text("Spacing cnv/month");
-					lb_spacing.set_tooltip(translator::translate("help_txt_departure_per_month"));
-					cont_settings_1.add_component(&lb_spacing);
+				// Wait for time
+				bt_wait_for_time.pressed = schedule->get_current_entry().wait_for_time;
 
-					// UI TODO: Make it clearer to the player that this is set in increments of 12ths of a fraction of a month.
-					numimp_spacing.init(schedule->get_spacing(), 0, 999, 1);
-					numimp_spacing.add_listener(this);
-					cont_settings_1.add_component(&numimp_spacing);
-
-					lb_spacing_as_clock.init(SYSCOL_TEXT);
-					lb_spacing_as_clock.buf().append(str_spacing_as_clock);
-					lb_spacing_as_clock.set_fixed_width(proportional_string_width("--:--:--"));
-					lb_spacing_as_clock.update();
-					cont_settings_1.add_component(&lb_spacing_as_clock);
-					cont_settings_1.new_component<gui_empty_t>();
-
-					// Spacing shift
-					cont_settings_1.new_component<gui_margin_t>(D_CHECKBOX_WIDTH<<1);
-					lb_shift.init(translator::translate("time shift"), scr_coord(0, 0));
-					lb_shift.set_tooltip(translator::translate("help_txt_departure_time_shift"));
-					cont_settings_1.add_component(&lb_shift);
-
-					if (spacing_shift_mode > settings_t::SPACING_SHIFT_DISABLED) {
-						numimp_spacing_shift.init(schedule->get_current_entry().spacing_shift, 0, welt->get_settings().get_spacing_shift_divisor(), 1);
-						numimp_spacing_shift.add_listener(this);
-						cont_settings_1.add_component(&numimp_spacing_shift);
-					}
-					else {
-						cont_settings_1.new_component<gui_empty_t>();
-					}
-
-					if (spacing_shift_mode > settings_t::SPACING_SHIFT_PER_LINE) {
-						cont_settings_1.add_table(2,1);
-						{
-							lb_plus.init("+", scr_coord(0, 0));
-							cont_settings_1.add_component(&lb_plus);
-
-							lb_spacing_shift_as_clock.set_align(gui_label_t::right);
-							lb_spacing_shift_as_clock.set_fixed_width(proportional_string_width("--:--:--"));
-							lb_spacing_shift_as_clock.set_text_pointer(str_spacing_shift_as_clock, false);
-							cont_settings_1.add_component(&lb_spacing_shift_as_clock);
-						}
-						cont_settings_1.end_table();
-					}
-					else {
-						cont_settings_1.new_component<gui_empty_t>();
-					}
-					cont_settings_1.new_component<gui_empty_t>();
-
-				}
-				cont_settings_1.end_table();
+				lb_spacing_as_clock.buf().append(str_spacing_as_clock);
+				lb_spacing_as_clock.update();
 			}
 		}
 		end_table();

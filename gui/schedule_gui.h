@@ -188,7 +188,7 @@ class schedule_gui_t : public gui_frame_t, public action_listener_t
 
 	// UI TODO: Make the below features work with the new UI (ignore choose, layover, range stop, consist order)
 	// always needed
-	button_t bt_add, bt_insert, bt_remove; // stop management
+	button_t bt_add, bt_insert, bt_revert; // stop management
 	button_t bt_bidirectional, bt_mirror, bt_same_spacing_shift;
 	button_t bt_wait_for_time;
 	button_t filter_btn_all_pas, filter_btn_all_mails, filter_btn_all_freights;

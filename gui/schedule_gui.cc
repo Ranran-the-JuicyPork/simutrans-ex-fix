@@ -606,9 +606,9 @@ void schedule_gui_t::init_components()
 	bt_insert.set_tooltip("Insert stop before the current stop");
 	bt_insert.add_listener(this);
 
-	bt_remove.init(button_t::roundbox_state | button_t::flexible, "Del Stop", scr_coord(0, 0), D_BUTTON_SIZE);
-	bt_remove.set_tooltip("Delete the current stop");
-	bt_remove.add_listener(this);
+	bt_revert.init(button_t::roundbox | button_t::flexible, "Revert schedule");
+	bt_revert.set_tooltip("Revert to original schedule");
+	bt_revert.add_listener(this);
 
 	lb_min_range.set_fixed_width(proportional_string_width("8888km "));
 	lb_min_range.set_rigid(false);
@@ -813,8 +813,9 @@ void schedule_gui_t::build_table()
 				bt_insert.pressed = false;
 				add_component(&bt_insert);
 
-				bt_remove.pressed = false;
-				add_component(&bt_remove);
+				bt_revert.pressed = false;
+				bt_revert.enable(false); // schedule was not changed yet
+				add_component(&bt_revert);
 				end_table();
 			}
 			end_table();
@@ -1153,22 +1154,24 @@ DBG_MESSAGE("schedule_gui_t::action_triggered()","comp=%p combo=%p",comp,&line_s
 		mode = adding;
 		bt_add.pressed = true;
 		bt_insert.pressed = false;
-		bt_remove.pressed = false;
 		update_tool( true );
 	}
 	else if(comp == &bt_insert) {
 		mode = inserting;
 		bt_add.pressed = false;
 		bt_insert.pressed = true;
-		bt_remove.pressed = false;
 		update_tool( true );
 	}
-	else if(comp == &bt_remove) {
-		mode = removing;
-		bt_add.pressed = false;
-		bt_insert.pressed = false;
-		bt_remove.pressed = true;
-		update_tool( false );
+	else if(comp == &bt_revert) {
+		// revert changes and tell listener
+		if (schedule) {
+			stats->highlight_schedule(schedule, false);
+			delete schedule;
+			schedule = NULL;
+		}
+		remove_all();
+		build_table();
+
 	}
 	else if (comp == &bt_mirror) {
 		schedule->set_mirrored(bt_mirror.pressed);
@@ -1374,6 +1377,8 @@ void schedule_gui_t::init_line_selector()
 
 void schedule_gui_t::draw(scr_coord pos, scr_size size)
 {
+	bool is_allowed = player == welt->get_active_player() && !welt->get_active_player()->is_locked();
+
 	if (cnv.is_bound()) {
 		if (cnv->get_goods_catg_index().is_contained(goods_manager_t::INDEX_PAS)) {
 			filter_btn_all_pas.enable();
@@ -1402,6 +1407,7 @@ void schedule_gui_t::draw(scr_coord pos, scr_size size)
 		schedule->start_editing();
 		cnv->call_convoi_tool( 's', "1" );
 	}
+	bt_revert.enable( !old_schedule->matches(world(), schedule) &&  is_allowed );
 
 	// always dirty, to cater for shortening of halt names and change of selections
 	set_dirty();

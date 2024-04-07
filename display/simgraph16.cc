@@ -3800,13 +3800,13 @@ bool has_character(utf16 char_code)
 static PIXVAL handle_color_sequences(utf32 code, PIXVAL default_color)
 {
 	PIXVAL color;
-	
+
 	if(code == 'd') {
 		color = default_color;
 	} else {
 		color = get_system_color({ 255, 255, 255 });
 	}
-	
+
 	return color;
 }
 
@@ -3918,7 +3918,7 @@ int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, control_alignment_t
 		// nothing to see here, move on
 		return 0;
 	}
-	
+
 	PIXVAL color = default_color;
 
 	scr_coord_val cL, cR, cT, cB;
@@ -3942,8 +3942,8 @@ int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, control_alignment_t
 	if (x >= cR || y >= cB || y + fnt->get_linespace() <= cT) {
 		// nothing to display
 		return 0;
-	}	
-	
+	}
+
 
 	// get the data from the font
 	const font_t::glyph_t& glyph = fnt->get_glyph(c);
@@ -3983,9 +3983,9 @@ int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, control_alignment_t
  * len parameter added - use -1 for previous behaviour.
  * completely renovated for unicode and 10 bit width and variable height
  */
-int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y, 
-	                                       const char* txt, control_alignment_t flags, 
-	                                       const PIXVAL default_color, bool dirty, 
+int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y,
+	                                       const char* txt, control_alignment_t flags,
+	                                       const PIXVAL default_color, bool dirty,
 	                                       sint32 len, sint32 spacing  CLIP_NUM_DEF)
 {
 	PIXVAL color = default_color;
@@ -4032,9 +4032,9 @@ int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y,
 			// advance to next tab stop
 			int p = (x - x0) % tabsize;
 			x = x - p + tabsize;
-			continue; // nothing to see 
+			continue; // nothing to see
 		}
-		
+
 		const int gw = display_glyph(x, y, c, flags, color);
 		x += gw + spacing;
 	}
@@ -4163,7 +4163,7 @@ int display_text_bold(scr_coord_val xpos, scr_coord_val ypos, PIXVAL color, cons
 {
 	const int flags = ALIGN_LEFT | DT_CLIP;
 	display_text_proportional_len_clip_rgb(xpos, ypos, text, flags, color, dirty, len, 1  CLIP_NUM_DEFAULT);
-	int width = display_text_proportional_len_clip_rgb(xpos+1, ypos, text, flags, color, dirty, len, 1  CLIP_NUM_DEFAULT);	
+	int width = display_text_proportional_len_clip_rgb(xpos+1, ypos, text, flags, color, dirty, len, 1  CLIP_NUM_DEFAULT);
 	return width + 1;
 }
 

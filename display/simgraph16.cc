@@ -3797,6 +3797,18 @@ bool has_character(utf16 char_code)
 }
 
 
+static PIXVAL handle_color_sequences(utf32 code, PIXVAL default_color)
+{
+	PIXVAL color;
+	
+	if(code == 'd') {
+		color = default_color;
+	} else {
+		color = get_system_color({ 255, 255, 255 });
+	}
+	
+	return color;
+}
 
 /*
  * returns the index of the last character that would fit within the width
@@ -3852,7 +3864,7 @@ utf32 get_prev_char_with_metrics(const char* &text, const char *const text_start
 /* proportional_string_width with a text of a given length
 * extended for universal font routines with unicode support
 */
-int display_calc_proportional_string_len_width(const char *text, size_t len)
+int display_calc_proportional_string_len_width(const char *text, size_t len, int spacing)
 {
 	uint8 byte_length = 0;
 	uint8 pixel_width = 0;
@@ -3860,7 +3872,7 @@ int display_calc_proportional_string_len_width(const char *text, size_t len)
 	scr_coord_val width = 0;
 
 	while (get_next_char_with_metrics(text, byte_length, pixel_width)  &&  idx < len) {
-		width += pixel_width;
+		width += pixel_width + spacing;
 		idx += byte_length;
 	}
 
@@ -3897,12 +3909,18 @@ void display_calc_proportional_multiline_string_len_width(int &xw, int &yh, cons
 }
 
 
-/**
- * len parameter added - use -1 for previous behaviour.
- * completely renovated for unicode and 10 bit width and variable height
- */
-int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y, const char* txt, control_alignment_t flags, const PIXVAL color, bool dirty, sint32 len  CLIP_NUM_DEF)
+int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, control_alignment_t flags, PIXVAL default_color  CLIP_NUM_DEF)
 {
+	const font_t *const fnt = &default_font;
+
+	// print unknown character?
+	if(!fnt->is_valid_glyph(c)) {
+		// nothing to see here, move on
+		return 0;
+	}
+	
+	PIXVAL color = default_color;
+
 	scr_coord_val cL, cR, cT, cB;
 
 	// TAKE CARE: Clipping area may be larger than actual screen size
@@ -3919,6 +3937,59 @@ int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y, con
 		cB = disp_height;
 	}
 
+	// still something to display?
+
+	if (x >= cR || y >= cB || y + fnt->get_linespace() <= cT) {
+		// nothing to display
+		return 0;
+	}	
+	
+
+	// get the data from the font
+	const font_t::glyph_t& glyph = fnt->get_glyph(c);
+	const uint8 *p = glyph.bitmap;
+	int screen_pos = (y + glyph.top) * disp_width + x + glyph.left;
+	// glyph x clipping
+	int g_left  = max(cL - x - glyph.left, 0);
+	int g_right = min(cR - x - glyph.left, glyph.width);
+	// all visible rows
+
+	// currently max character width 16 bit supported by font.h/font.cc
+	for (int h = 0; h < glyph.height; h++) {
+		const int line = y + glyph.top + h;
+		if(line >= cT && line < cB) {
+			PIXVAL* dst = textur + screen_pos + g_left;
+			// all columns
+			for(int gx=g_left; gx<g_right; gx++) {
+				int alpha = p[h*glyph.width + gx];
+				if(alpha > 31) {
+					// opaque
+					*dst++ = color;
+				} else {
+					// partially transparent -> blend it
+					PIXVAL old_color = *dst;
+					*dst++ = colors_blend_alpha32(old_color, color, alpha);
+				}
+			}
+		}
+		screen_pos += disp_width;
+	}
+
+	return fnt->get_glyph_advance(c);
+}
+
+
+/**
+ * len parameter added - use -1 for previous behaviour.
+ * completely renovated for unicode and 10 bit width and variable height
+ */
+int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y, 
+	                                       const char* txt, control_alignment_t flags, 
+	                                       const PIXVAL default_color, bool dirty, 
+	                                       sint32 len, sint32 spacing  CLIP_NUM_DEF)
+{
+	PIXVAL color = default_color;
+
 	if (len < 0) {
 		// don't know len yet
 		len = 0x7FFF;
@@ -3931,20 +4002,12 @@ int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y, con
 			break;
 
 		case ALIGN_CENTER_H:
-			x -= display_calc_proportional_string_len_width(txt, len) / 2;
+			x -= display_calc_proportional_string_len_width(txt, len, spacing) / 2;
 			break;
 
 		case ALIGN_RIGHT:
-			x -= display_calc_proportional_string_len_width(txt, len);
+			x -= display_calc_proportional_string_len_width(txt, len, spacing);
 			break;
-	}
-
-	// still something to display?
-	const font_t *const fnt = &default_font;
-
-	if (x >= cR || y >= cB || y + fnt->get_linespace() <= cT) {
-		// nothing to display
-		return 0;
 	}
 
 	// store the initial x (for dirty marking)
@@ -3963,42 +4026,17 @@ int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y, con
 			// stop at linebreak
 			break;
 		}
-		// print unknown character?
-		else if(  !fnt->is_valid_glyph(c)  ) {
-			c = 0;
+
+		if(c == '\t') {
+			int tabsize = BASE_TAB_WIDTH  * LINESPACE / 11;
+			// advance to next tab stop
+			int p = (x - x0) % tabsize;
+			x = x - p + tabsize;
+			continue; // nothing to see 
 		}
-
-		// get the data from the font
-		const font_t::glyph_t& glyph = fnt->get_glyph(c);
-		const uint8 *p = glyph.bitmap;
-		int screen_pos = (y + glyph.top) * disp_width + x + glyph.left;
-		// glyph x clipping
-		int g_left  = max(cL - x - glyph.left, 0);
-		int g_right = min(cR - x - glyph.left, glyph.width);
-		// all visible rows
-
-		// currently max character width 16 bit supported by font.h/font.cc
-		for (int h = 0; h < glyph.height; h++) {
-			const int line = y + glyph.top + h;
-			if(line >= cT && line < cB) {
-				PIXVAL* dst = textur + screen_pos + g_left;
-				// all columns
-				for(int gx=g_left; gx<g_right; gx++) {
-					int alpha = p[h*glyph.width + gx];
-					if(alpha > 31) {
-						// opaque
-						*dst++ = color;
-					} else {
-						// partially transparent -> blend it
-						PIXVAL old_color = *dst;
-						*dst++ = colors_blend_alpha32(old_color, color, alpha);
-					}
-				}
-			}
-			screen_pos += disp_width;
-		}
-
-		x += fnt->get_glyph_advance(c);
+		
+		const int gw = display_glyph(x, y, c, flags, color);
+		x += gw + spacing;
 	}
 
 	if(  dirty  ) {
@@ -4107,17 +4145,26 @@ void display_ddd_box_rgb(scr_coord_val x1, scr_coord_val y1, scr_coord_val w, sc
 void display_outline_proportional_rgb(scr_coord_val xpos, scr_coord_val ypos, PIXVAL text_color, PIXVAL shadow_color, const char *text, int dirty, sint32 len)
 {
 	const int flags = ALIGN_LEFT | DT_CLIP;
-	display_text_proportional_len_clip_rgb(xpos - 1, ypos - 1 + (12 - LINESPACE) / 2, text, flags, shadow_color, dirty, len  CLIP_NUM_DEFAULT);
-	display_text_proportional_len_clip_rgb(xpos + 1, ypos + 1 + (12 - LINESPACE) / 2, text, flags, shadow_color, dirty, len  CLIP_NUM_DEFAULT);
-	display_text_proportional_len_clip_rgb(xpos, ypos + (12 - LINESPACE) / 2, text, flags, text_color, dirty, len  CLIP_NUM_DEFAULT);
+	display_text_proportional_len_clip_rgb(xpos - 1, ypos - 1 + (12 - LINESPACE) / 2, text, flags, shadow_color, dirty, len, 0  CLIP_NUM_DEFAULT);
+	display_text_proportional_len_clip_rgb(xpos + 1, ypos + 1 + (12 - LINESPACE) / 2, text, flags, shadow_color, dirty, len, 0  CLIP_NUM_DEFAULT);
+	display_text_proportional_len_clip_rgb(xpos, ypos + (12 - LINESPACE) / 2, text, flags, text_color, dirty, len, 0  CLIP_NUM_DEFAULT);
 }
 
 
 void display_shadow_proportional_rgb(scr_coord_val xpos, scr_coord_val ypos, PIXVAL text_color, PIXVAL shadow_color, const char *text, int dirty, sint32 len)
 {
 	const int flags = ALIGN_LEFT | DT_CLIP;
-	display_text_proportional_len_clip_rgb(xpos + 1, ypos + 1 + (12 - LINESPACE) / 2, text, flags, shadow_color, dirty, len  CLIP_NUM_DEFAULT);
-	display_text_proportional_len_clip_rgb(xpos, ypos + (12 - LINESPACE) / 2, text, flags, text_color, dirty, len  CLIP_NUM_DEFAULT);
+	display_text_proportional_len_clip_rgb(xpos + 1, ypos + 1 + (12 - LINESPACE) / 2, text, flags, shadow_color, dirty, len, 0  CLIP_NUM_DEFAULT);
+	display_text_proportional_len_clip_rgb(xpos, ypos + (12 - LINESPACE) / 2, text, flags, text_color, dirty, len, 0  CLIP_NUM_DEFAULT);
+}
+
+
+int display_text_bold(scr_coord_val xpos, scr_coord_val ypos, PIXVAL color, const char *text, int dirty, sint32 len)
+{
+	const int flags = ALIGN_LEFT | DT_CLIP;
+	display_text_proportional_len_clip_rgb(xpos, ypos, text, flags, color, dirty, len, 1  CLIP_NUM_DEFAULT);
+	int width = display_text_proportional_len_clip_rgb(xpos+1, ypos, text, flags, color, dirty, len, 1  CLIP_NUM_DEFAULT);	
+	return width + 1;
 }
 
 
@@ -4300,7 +4347,7 @@ void display_ddd_proportional_clip(scr_coord_val xpos, scr_coord_val ypos, scr_c
 	display_vline_wh_clip_rgb( xpos - 2,         ypos - halfheight - 1 - hgt, halfheight * 2 + 2, lighter, dirty );
 	display_vline_wh_clip_rgb( xpos + width - 3, ypos - halfheight - 1 - hgt, halfheight * 2 + 2, darker,  dirty );
 
-	display_text_proportional_len_clip_rgb( xpos + 2, ypos - 5 + (12 - LINESPACE) / 2, text, ALIGN_LEFT | DT_CLIP, text_color, dirty, -1);
+	display_text_proportional_len_clip_rgb( xpos + 2, ypos - 5 + (12 - LINESPACE) / 2, text, ALIGN_LEFT | DT_CLIP, text_color, dirty, -1, 0);
 }
 
 
@@ -4318,8 +4365,8 @@ int display_multiline_text_rgb(scr_coord_val x, scr_coord_val y, const char *buf
 			const int px_len = display_text_proportional_len_clip_rgb(
 				x, y, buf,
 				ALIGN_LEFT | DT_CLIP, color, true,
-				next != NULL ? (int)(size_t)(next - buf) : -1
-			);
+				next != NULL ? (int)(size_t)(next - buf) : -1,
+				0);
 			if(  px_len>max_px_len  ) {
 				max_px_len = px_len;
 			}

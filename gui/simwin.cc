@@ -372,7 +372,9 @@ static void win_draw_window_title(const scr_coord pos, const scr_size size,
 	if (sticky) {
 		display_proportional_clip_rgb(pos.x + (REVERSE_GADGETS?width+4:4)+1, pos.y+(D_TITLEBAR_HEIGHT-LINEASCENT)/2+1, text, ALIGN_LEFT, title_color, false);
 	}
-	int titlewidth = display_proportional_clip_rgb( pos.x + (REVERSE_GADGETS?width+4:4), pos.y+(D_TITLEBAR_HEIGHT-LINEASCENT)/2, text, ALIGN_LEFT, text_color, false );
+	const int left = (REVERSE_GADGETS ? width + 4 : 4);
+	const int top = (D_TITLEBAR_HEIGHT-LINEASCENT)/2;
+	int titlewidth = display_text_bold(pos.x + left, pos.y + top, text_color, text, false);
 	if(  flags.gotopos  ) {
 		display_proportional_clip_rgb( pos.x + (REVERSE_GADGETS?width+4:4)+titlewidth+8, pos.y+(D_TITLEBAR_HEIGHT-LINEASCENT)/2, welt_pos.get_2d().get_fullstr(), ALIGN_LEFT, text_color, false );
 	}

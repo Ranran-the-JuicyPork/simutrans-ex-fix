@@ -1821,7 +1821,9 @@ void display_text_label(sint16 xpos, sint16 ypos, const char* text, const player
 			display_ddd_proportional_clip( xpos, ypos, proportional_string_width(text)+7, 0, color_idx_to_rgb(pc), color_idx_to_rgb(COL_BLACK), text, dirty );
 			break;
 		case 1:
-			display_outline_proportional_rgb( xpos, ypos-(LINESPACE/2), color_idx_to_rgb(pc+3), color_idx_to_rgb(COL_BLACK), text, dirty );
+			display_text_bold( xpos+1, ypos+1-(LINESPACE/2), color_idx_to_rgb(COL_BLACK), text, dirty);
+			display_text_bold( xpos-1, ypos-1-(LINESPACE/2), color_idx_to_rgb(COL_BLACK), text, dirty);
+			display_text_bold( xpos, ypos-(LINESPACE/2), color_idx_to_rgb(pc+3), text, dirty);
 			break;
 		case 2:
 			display_outline_proportional_rgb( xpos + LINESPACE + D_H_SPACE, ypos-(LINESPACE/4),   color_idx_to_rgb(COL_YELLOW), color_idx_to_rgb(COL_BLACK), text, dirty );

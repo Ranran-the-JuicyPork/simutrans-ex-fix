@@ -27,6 +27,7 @@ extern int default_font_linespace;
 #  define LINESPACE  1
 #endif
 
+#define BASE_TAB_WIDTH (40)
 
 // Basic size of small symbols such as alerts, goods categories, evaluations, etc.
 // Same value for height
@@ -316,6 +317,7 @@ void display_array_wh(scr_coord_val xp, scr_coord_val yp, scr_coord_val w, scr_c
 // compound painting routines
 void display_outline_proportional_rgb(scr_coord_val xpos, scr_coord_val ypos, PIXVAL text_color, PIXVAL shadow_color, const char *text, int dirty, sint32 len=-1);
 void display_shadow_proportional_rgb(scr_coord_val xpos, scr_coord_val ypos, PIXVAL text_color, PIXVAL shadow_color, const char *text, int dirty, sint32 len=-1);
+int display_text_bold(scr_coord_val xpos, scr_coord_val ypos, PIXVAL color, const char *text, int dirty, sint32 len = -1);
 void display_ddd_box_rgb(scr_coord_val x1, scr_coord_val y1, scr_coord_val w, scr_coord_val h, PIXVAL tl_color, PIXVAL rd_color, bool dirty);
 void display_ddd_box_clip_rgb(scr_coord_val x1, scr_coord_val y1, scr_coord_val w, scr_coord_val h, PIXVAL tl_color, PIXVAL rd_color);
 void display_heading_rgb(scr_coord_val xp, scr_coord_val yp, scr_coord_val w, scr_coord_val h, PIXVAL text_color, PIXVAL frame_color, const char *text, int dirty, uint8 style);
@@ -352,11 +354,11 @@ utf32 get_prev_char_with_metrics(const char* &text, const char *const text_start
 size_t display_fit_proportional( const char *text, scr_coord_val max_width);
 
 /* routines for string len (macros for compatibility with old calls) */
-#define proportional_string_width(text)          display_calc_proportional_string_len_width(text, 0x7FFF)
-#define proportional_string_len_width(text, len) display_calc_proportional_string_len_width(text, len)
+#define proportional_string_width(text)          display_calc_proportional_string_len_width(text, 0x7FFF, 0)
+#define proportional_string_len_width(text, len) display_calc_proportional_string_len_width(text, len, 0)
 
 // length of a string in pixel
-int display_calc_proportional_string_len_width(const char* text, size_t len);
+int display_calc_proportional_string_len_width(const char* text, size_t len, int spacing=0);
 
 // box which will contain the multi (or single) line of text
 void display_calc_proportional_multiline_string_len_width( int &xw, int &yh, const char *text);
@@ -367,10 +369,11 @@ void display_calc_proportional_multiline_string_len_width( int &xw, int &yh, con
  */
 
 // #ifdef MULTI_THREAD
-int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y, const char* txt, control_alignment_t flags, const PIXVAL color, bool dirty, sint32 len  CLIP_NUM_DEF  CLIP_NUM_DEFAULT_ZERO);
+int display_glyph(scr_coord_val x, scr_coord_val y, utf32 c, control_alignment_t flags, PIXVAL default_color CLIP_NUM_DEF CLIP_NUM_DEFAULT_ZERO);
+int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y, const char* txt, control_alignment_t flags, const PIXVAL color, bool dirty, sint32 len, sint32 spacing=0  CLIP_NUM_DEF  CLIP_NUM_DEFAULT_ZERO);
 /* macro are for compatibility */
-#define display_proportional_rgb(               x, y, txt, align, color, dirty)       display_text_proportional_len_clip_rgb( x, y, txt, align,           color, dirty, -1 )
-#define display_proportional_clip_rgb(          x, y, txt, align, color, dirty)       display_text_proportional_len_clip_rgb( x, y, txt, align | DT_CLIP, color, dirty, -1 )
+#define display_proportional_rgb(               x, y, txt, align, color, dirty)       display_text_proportional_len_clip_rgb( x, y, txt, align,           color, dirty, -1, 0 )
+#define display_proportional_clip_rgb(          x, y, txt, align, color, dirty)       display_text_proportional_len_clip_rgb( x, y, txt, align | DT_CLIP, color, dirty, -1, 0 )
 
 int display_line_lettercode_rgb(scr_coord_val xpos, scr_coord_val ypos, PIXVAL line_color, uint8 style, const char *text1, const char *text2, bool dirty = true);
 

@@ -325,7 +325,7 @@ size_t display_fit_proportional(const char *, scr_coord_val)
 	return 0;
 }
 
-int display_calc_proportional_string_len_width(const char*, size_t)
+int display_calc_proportional_string_len_width(const char*, size_t, int)
 {
 	return 0;
 }
@@ -337,7 +337,12 @@ void display_calc_proportional_multiline_string_len_width( int &xw, int &yh, con
 }
 
 
-int display_text_proportional_len_clip_rgb(scr_coord_val, scr_coord_val, const char*, control_alignment_t , const PIXVAL, bool, sint32  CLIP_NUM_DEF_NOUSE)
+int display_glyph(scr_coord_val, scr_coord_val, utf32, control_alignment_t, PIXVAL)
+{
+	return 0;
+}
+
+int display_text_proportional_len_clip_rgb(scr_coord_val, scr_coord_val, const char*, control_alignment_t , const PIXVAL, bool, sint32, sint32  CLIP_NUM_DEF_NOUSE)
 {
 	return 0;
 }
@@ -353,6 +358,11 @@ void display_outline_proportional_rgb(scr_coord_val, scr_coord_val, PIXVAL, PIXV
 
 void display_shadow_proportional_rgb(scr_coord_val, scr_coord_val, PIXVAL, PIXVAL, const char *, int, sint32)
 {
+}
+
+int display_text_bold(scr_coord_val, scr_coord_val, PIXVAL, const char *, int, sint32)
+{
+	return 0;
 }
 
 void display_heading_rgb(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val, PIXVAL, PIXVAL, const char *, int, uint8)

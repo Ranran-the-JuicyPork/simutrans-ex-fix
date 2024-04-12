@@ -250,6 +250,7 @@ clipping_info_t clips;
 #define CR clips CLIP_NUM_INDEX
 
 static font_t default_font;
+static font_t bold_font;
 
 // needed for resizing gui
 int default_font_ascent = 0;
@@ -3750,6 +3751,7 @@ bool display_load_font(const char *fname, bool reload)
 		default_font_linespace = default_font.get_linespace();
 
 		env_t::fontname = fname;
+		bold_font.load_from_file(fname,true);
 
 		return default_font.is_loaded();
 	}
@@ -3901,7 +3903,7 @@ void display_calc_proportional_multiline_string_len_width(int &xw, int &yh, cons
  * len parameter added - use -1 for previous behaviour.
  * completely renovated for unicode and 10 bit width and variable height
  */
-int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y, const char* txt, control_alignment_t flags, const PIXVAL color, bool dirty, sint32 len  CLIP_NUM_DEF)
+int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y, const char* txt, control_alignment_t flags, const PIXVAL color, bool dirty, sint32 len, bool bold  CLIP_NUM_DEF)
 {
 	scr_coord_val cL, cR, cT, cB;
 
@@ -3940,7 +3942,7 @@ int display_text_proportional_len_clip_rgb(scr_coord_val x, scr_coord_val y, con
 	}
 
 	// still something to display?
-	const font_t *const fnt = &default_font;
+	const font_t *const fnt = bold ? &bold_font : &default_font;
 
 	if (x >= cR || y >= cB || y + fnt->get_linespace() <= cT) {
 		// nothing to display
@@ -4104,12 +4106,12 @@ void display_ddd_box_rgb(scr_coord_val x1, scr_coord_val y1, scr_coord_val w, sc
 }
 
 
-void display_outline_proportional_rgb(scr_coord_val xpos, scr_coord_val ypos, PIXVAL text_color, PIXVAL shadow_color, const char *text, int dirty, sint32 len)
+void display_outline_proportional_rgb(scr_coord_val xpos, scr_coord_val ypos, PIXVAL text_color, PIXVAL shadow_color, const char *text, int dirty, sint32 len, bool bold)
 {
 	const int flags = ALIGN_LEFT | DT_CLIP;
-	display_text_proportional_len_clip_rgb(xpos - 1, ypos - 1 + (12 - LINESPACE) / 2, text, flags, shadow_color, dirty, len  CLIP_NUM_DEFAULT);
-	display_text_proportional_len_clip_rgb(xpos + 1, ypos + 1 + (12 - LINESPACE) / 2, text, flags, shadow_color, dirty, len  CLIP_NUM_DEFAULT);
-	display_text_proportional_len_clip_rgb(xpos, ypos + (12 - LINESPACE) / 2, text, flags, text_color, dirty, len  CLIP_NUM_DEFAULT);
+	display_text_proportional_len_clip_rgb(xpos - 1, ypos - 1 + (12 - LINESPACE) / 2, text, flags, shadow_color, dirty, len, bold  CLIP_NUM_DEFAULT);
+	display_text_proportional_len_clip_rgb(xpos + 1, ypos + 1 + (12 - LINESPACE) / 2, text, flags, shadow_color, dirty, len, bold  CLIP_NUM_DEFAULT);
+	display_text_proportional_len_clip_rgb(xpos, ypos + (12 - LINESPACE) / 2, text, flags, text_color, dirty, len, bold  CLIP_NUM_DEFAULT);
 }
 
 

@@ -45,7 +45,7 @@ public:
 
 public:
 	/// @returns true on success
-	bool load_from_file(const char *fname);
+	bool load_from_file(const char *fname, bool bold_font = false);
 	bool is_loaded() const { return !glyphs.empty(); }
 
 	const char *get_fname() const { return fname; }
@@ -64,7 +64,7 @@ public:
 private:
 #ifdef USE_FREETYPE
 	/// Load a freetype font
-	bool load_from_freetype(const char *fname, int pixel_height);
+	bool load_from_freetype(const char *fname, int pixel_height, bool embolden = false);
 #endif
 
 	void print_debug() const;

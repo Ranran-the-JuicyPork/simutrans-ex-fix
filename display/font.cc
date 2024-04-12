@@ -237,13 +237,14 @@ bool font_t::load_from_bdf(FILE *bdf_file)
 #ifdef USE_FREETYPE
 
 #include <ft2build.h>
+#include <freetype/ftsynth.h>
 #include FT_FREETYPE_H
 #include FT_GLYPH_H
 #include FT_TRUETYPE_TABLES_H
 #include FT_BITMAP_H
 
 
-bool font_t::load_from_freetype(const char *fname, int pixel_height)
+bool font_t::load_from_freetype(const char *fname, int pixel_height, bool embolden)
 {
 	dbg->message("font_t::load_from_freetype", "trying to load '%s' in size %d", fname, pixel_height);
 
@@ -332,6 +333,10 @@ bool font_t::load_from_freetype(const char *fname, int pixel_height)
 		 */
 
 		glyph_t & glyph = glyphs[glyph_nr];
+
+		if (embolden) {
+			FT_GlyphSlot_Embolden(face->glyph);
+		}
 
 		FT_Bitmap *bitmap = &face->glyph->bitmap;
 		bool one_bit_pp = false;
@@ -445,12 +450,12 @@ void font_t::print_debug() const
 }
 
 
-bool font_t::load_from_file(const char *srcfilename)
+bool font_t::load_from_file(const char *srcfilename, bool bold_font)
 {
 	tstrncpy( fname, srcfilename, lengthof(fname) );
 
 #ifdef USE_FREETYPE
-	bool ok = load_from_freetype( fname, env_t::fontsize );
+	bool ok = load_from_freetype( fname, env_t::fontsize, bold_font );
 #if MSG_LEVEL>=4
 	if(  ok  ) {
 		print_debug();

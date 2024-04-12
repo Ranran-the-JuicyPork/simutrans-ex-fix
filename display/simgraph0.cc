@@ -337,7 +337,7 @@ void display_calc_proportional_multiline_string_len_width( int &xw, int &yh, con
 }
 
 
-int display_text_proportional_len_clip_rgb(scr_coord_val, scr_coord_val, const char*, control_alignment_t , const PIXVAL, bool, sint32  CLIP_NUM_DEF_NOUSE)
+int display_text_proportional_len_clip_rgb(scr_coord_val, scr_coord_val, const char*, control_alignment_t , const PIXVAL, bool, sint32, bool  CLIP_NUM_DEF_NOUSE)
 {
 	return 0;
 }
@@ -347,7 +347,7 @@ int display_line_lettercode_rgb(scr_coord_val, scr_coord_val, PIXVAL, uint8, con
 	return 0;
 }
 
-void display_outline_proportional_rgb(scr_coord_val, scr_coord_val, PIXVAL, PIXVAL, const char *, int, sint32)
+void display_outline_proportional_rgb(scr_coord_val, scr_coord_val, PIXVAL, PIXVAL, const char *, int, sint32, bool)
 {
 }
 

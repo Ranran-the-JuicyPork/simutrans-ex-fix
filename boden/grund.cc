@@ -1824,7 +1824,7 @@ void display_text_label(sint16 xpos, sint16 ypos, const char* text, const player
 		}
 		case 1: {
 			const PIXVAL text_color = player ? color_idx_to_rgb(player->get_player_color1()+7) : SYSCOL_TEXT_HIGHLIGHT;
-			display_outline_proportional_rgb( xpos, ypos, text_color, color_idx_to_rgb(COL_BLACK), text, dirty );
+			display_outline_proportional_rgb( xpos, ypos, text_color, color_idx_to_rgb(COL_BLACK), text, dirty, -1, true );
 			break;
 		}
 		case 2: {

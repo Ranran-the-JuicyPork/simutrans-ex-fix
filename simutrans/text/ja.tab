@@ -1454,7 +1454,7 @@ New line created!\nYou can assign the line now\nby selecting it from the\nline s
 New Vehicles
 購入費
 Nickname:
-名前：
+プレイヤー名：
 no buildings hidden
 すべての建物を表示
 no convois
@@ -3565,6 +3565,12 @@ Welcome to Simutrans-Extended (formerly Simutrans-Experimental), a fork of Simut
 ようこそSimutrans-Extendedへ! Simutrans-StandardはHj. MalthanerとSimutransコミュニティによって開発されました。Simutrans-ExtendedはSimutrans-Standardを元にしてJames E. PettsとSimutransコミュニティによって開発が続けられている派生版です。
 Welcome to Simutrans-Extended (formerly Simutrans-Experimental)
 ようこそ、Simutrans-Extendedへ
+Welcome, %s!
+%s がゲームに接続しました。
+%s has left.
+%s がオフラインになりました。
+%s now known as %s.
+%s はプレイヤー名を %s に変更しました。
 West To East
 東西方向
 When adding convoys to the line, every second convoy will follow it in the reverse direction.

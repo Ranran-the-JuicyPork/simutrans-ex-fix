@@ -96,6 +96,7 @@ target_sources(simutrans-extended PRIVATE
 	gui/base_info.cc
 	gui/baum_edit.cc
 	gui/building_info.cc
+	gui/chat_frame.cc
 	gui/citybuilding_edit.cc
 	gui/city_info.cc
 	gui/citylist_frame_t.cc

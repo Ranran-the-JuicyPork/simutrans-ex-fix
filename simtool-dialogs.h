@@ -31,6 +31,7 @@
 #include "gui/kennfarbe.h"
 #include "gui/help_frame.h"
 #include "gui/message_frame_t.h"
+#include "gui/chat_frame.h"
 #include "gui/messagebox.h"
 #include "gui/convoi_frame.h"
 #include "gui/halt_list_frame.h"
@@ -132,6 +133,21 @@ public:
 		return false;
 	}
 	bool exit(player_t*) OVERRIDE{ destroy_win(magic_messageframe); return false; }
+	bool is_init_keeps_game_state() const OVERRIDE{ return true; }
+	bool is_work_keeps_game_state() const OVERRIDE{ return true; }
+};
+
+// open chat window
+class dialog_chat_t : public tool_t {
+public:
+	dialog_chat_t() : tool_t(DIALOG_CHAT | DIALOG_TOOL) {}
+	char const* get_tooltip(player_t const*) const OVERRIDE{ return translator::translate("Chat"); }
+	bool is_selected() const OVERRIDE{ return win_get_magic(magic_chatframe); }
+	bool init(player_t*) OVERRIDE{
+		create_win(new chat_frame_t(), w_info, magic_chatframe);
+		return false;
+	}
+	bool exit(player_t*) OVERRIDE{ destroy_win(magic_chatframe); return false; }
 	bool is_init_keeps_game_state() const OVERRIDE{ return true; }
 	bool is_work_keeps_game_state() const OVERRIDE{ return true; }
 };

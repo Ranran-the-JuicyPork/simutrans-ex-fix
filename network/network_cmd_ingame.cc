@@ -193,7 +193,7 @@ void nwc_nick_t::server_tools(karte_t *welt, uint32 client_id, uint8 what, const
 	socket_info_t &info = socket_list_t::get_client(client_id);
 
 	cbuffer_t buf;
-	buf.printf("%d,", message_t::general | message_t::playermsg_flag);
+	buf.printf("%d,", chat_message_t::do_not_rdwr_flag);
 
 	switch(what) {
 		case WELCOME: {
@@ -283,6 +283,9 @@ void nwc_chat_t::rdwr()
 	packet->rdwr_byte( player_nr );
 	packet->rdwr_str( clientname );
 	packet->rdwr_str( destination );
+	packet->rdwr_byte( channel_nr );
+	packet->rdwr_short(pos.x);
+	packet->rdwr_short(pos.y);
 
 	if (packet->is_loading() && env_t::server) {
 		const SOCKET sock = packet->get_sender();
@@ -293,38 +296,9 @@ void nwc_chat_t::rdwr()
 		}
 	}
 
-	dbg->message("nwc_chat_t::rdwr", "rdwr message=%s plnr=%d clientname=%s destination=%s", message.c_str(), player_nr, clientname.c_str(), destination.c_str());
+	dbg->message("nwc_chat_t::rdwr", "rdwr message=%s plnr=%d chnr=%d clientname=%s destination=%s pos=(%d,%d)", message.c_str(), player_nr, channel_nr, clientname.c_str(), destination.c_str(), pos.x, pos.y);
 }
 
-
-void nwc_chat_t::add_message (karte_t* welt) const
-{
-	dbg->warning("nwc_chat_t::add_message", "");
-	cbuffer_t buf;  // Output which will be printed to chat window
-
-	FLAGGED_PIXVAL color = color_idx_to_rgb(player_nr < PLAYER_UNOWNED  ?  welt->get_player( player_nr )->get_player_color1()+env_t::gui_player_color_dark  :  COL_WHITE);
-	uint16 flag = message_t::chat;
-
-	if (  destination == NULL  ) {
-		if (  player_nr < PLAYER_UNOWNED  ) {
-			buf.printf( "%s <%s>: %s", clientname.c_str(), welt->get_player( player_nr )->get_name(), message.c_str() );
-		}
-		else {
-			buf.printf( "%s: %s", clientname.c_str(), message.c_str() );
-		}
-	}
-	else {
-		// Whisper, do not store message in savegame
-		flag |= message_t::playermsg_flag;
-		if (  player_nr < PLAYER_UNOWNED  ) {
-			buf.printf( "%s <%s> --> %s: %s", clientname.c_str(), welt->get_player( player_nr )->get_name(), destination.c_str(), message.c_str() );
-		}
-		else {
-			buf.printf( "%s --> %s: %s", clientname.c_str(), destination.c_str(), message.c_str() );
-		}
-	}
-	welt->get_message()->add_message( buf.get_str(), koord::invalid, flag, color, IMG_EMPTY );
-}
 
 
 bool nwc_chat_t::execute (karte_t* welt)
@@ -349,14 +323,14 @@ bool nwc_chat_t::execute (karte_t* welt)
 		// Otherwise forward message as appropriate
 		socket_info_t &info = socket_list_t::get_client( client_id );
 
-		nwc_chat_t* nwchat = new nwc_chat_t( message, player_nr, info.nickname.c_str(), destination );
+		nwc_chat_t* nwchat = new nwc_chat_t( message, player_nr, channel_nr, info.nickname.c_str(), destination );
 
 		if (  destination == NULL  ) {
 			// Do not send messages to ourself (server)
 			network_send_all( nwchat, true );
 
 			// Act on message (for display of messages on server, and to keep record of messages for new clients joining)
-			add_message(welt);
+			welt->get_chat_message()->add_chat_message(message.c_str(), channel_nr, player_nr, info.nickname, destination, pos);
 
 			// Log chat message - please don't change order of fields
 			CSV_t csv;
@@ -403,7 +377,7 @@ bool nwc_chat_t::execute (karte_t* welt)
 		}
 	}
 	else {
-		add_message(welt);
+		welt->get_chat_message()->add_chat_message(message.c_str(), channel_nr, player_nr, clientname, destination, pos);
 	}
 	return true;
 }
@@ -1497,7 +1471,7 @@ bool nwc_service_t::execute(karte_t *welt)
 			if (text) {
 				// Send message to all clients as Public Service
 				// with reserved username Admin
-				nwc_chat_t* nwchat = new nwc_chat_t( text, 1, "Admin" );
+				nwc_chat_t* nwchat = new nwc_chat_t( text, 1, -1, "Admin" );
 				network_send_all( nwchat, false );
 
 				// Log chat message - please don't change order of fields

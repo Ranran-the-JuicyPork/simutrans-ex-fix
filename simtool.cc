@@ -11147,19 +11147,18 @@ bool tool_access_t::init(player_t *)
 
 
 /*
- * Add a message to the message queue
+ * Add a message to the network-game system message queue
  */
 const char* tool_add_message_t::work(player_t* player, koord3d pos )
 {
 	if (default_param  &&  *default_param  ) {
-		uint32 type = atoi(default_param);
+		uint8 flags = atoi(default_param);
 		const char* text = strchr(default_param, ',');
-		if ((type & message_t::MESSAGE_TYPE_MASK) >= message_t::MAX_MESSAGE_TYPE  ||  text == NULL) {
+		if ( text == NULL ) {
 			return "";
 		}
-		welt->get_message()->add_message( text+1, pos.get_2d(), type,
-								player == NULL || ( (type & message_t::playermsg_flag) != 0)  ? color_idx_to_rgb(COL_BLACK) : PLAYER_FLAG|player->get_player_nr(), IMG_EMPTY );
-
+		sint8 player_nr = player ? player->get_player_nr() : PLAYER_UNOWNED;
+		welt->get_chat_message()->add_chat_message( text+1, -1, player_nr, "", 0, pos.get_2d(), flags);
 	}
 	return NULL;
 }

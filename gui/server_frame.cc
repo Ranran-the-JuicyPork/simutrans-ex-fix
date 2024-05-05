@@ -473,6 +473,7 @@ bool server_frame_t::action_triggered (gui_action_creator_t *comp, value_t p)
 			}
 		}
 		else {
+			world()->get_chat_message()->rename_client(env_t::nickname.c_str(), nickname);
 			env_t::nickname = nickname;
 		}
 	}

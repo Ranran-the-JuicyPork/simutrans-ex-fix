@@ -58,6 +58,7 @@
 #include "citylist_frame_t.h"
 #include "message_frame_t.h"
 #include "message_option_t.h"
+#include "chat_frame.h"
 #include "fabrik_info.h"
 #include "themeselector.h"
 #include "goods_frame_t.h"
@@ -638,6 +639,7 @@ void rdwr_all_win(loadsave_t *file)
 					case magic_city_info_t:    w = new city_info_t(); break;
 					case magic_messageframe:   w = new message_frame_t(); break;
 					case magic_message_options: w = new message_option_t(); break;
+					case magic_chatframe:      w = new chat_frame_t(); break;
 					case magic_factory_info:   w = new fabrik_info_t(); break;
 					case magic_goodslist:      w = new goods_frame_t(); break;
 					case magic_font:           w = new loadfont_frame_t(); break;

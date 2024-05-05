@@ -2378,6 +2378,7 @@
     <ClCompile Include="gui\map_frame.cc" />
     <ClCompile Include="dataobj\marker.cc" />
     <ClCompile Include="gui\message_frame_t.cc" />
+    <ClCompile Include="gui\chat_frame.cc" />
     <ClCompile Include="gui\message_option_t.cc" />
     <ClCompile Include="gui\message_stats_t.cc" />
     <ClCompile Include="gui\messagebox.cc" />
@@ -2879,6 +2880,7 @@
     <ClInclude Include="gui\map_frame.h" />
     <ClInclude Include="dataobj\marker.h" />
     <ClInclude Include="gui\message_frame_t.h" />
+    <ClInclude Include="gui\chat_frame.h" />
     <ClInclude Include="gui\message_option_t.h" />
     <ClInclude Include="gui\message_stats_t.h" />
     <ClInclude Include="gui\messagebox.h" />

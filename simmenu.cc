@@ -186,6 +186,7 @@ const char *tool_t::id_to_string(uint16 id)
 		CASE_TO_STRING(DIALOG_MINIMAP);
 		CASE_TO_STRING(DIALOG_LINEOVERVIEW);
 		CASE_TO_STRING(DIALOG_MESSAGES);
+		CASE_TO_STRING(DIALOG_CHAT);
 		CASE_TO_STRING(DIALOG_FINANCES);
 		CASE_TO_STRING(DIALOG_PLAYERS);
 		CASE_TO_STRING(DIALOG_DISPLAYOPTIONS);
@@ -380,6 +381,7 @@ tool_t *create_dialog_tool(int toolnr)
 		case DIALOG_MINIMAP:         tool = new dialog_minimap_t();         break;
 		case DIALOG_LINEOVERVIEW:    tool = new dialog_lines_t();           break;
 		case DIALOG_MESSAGES:        tool = new dialog_messages_t();        break;
+		case DIALOG_CHAT:            tool = new dialog_chat_t();            break;
 		case DIALOG_FINANCES:        tool = new dialog_finances_t();        break;
 		case DIALOG_PLAYERS:         tool = new dialog_players_t();         break;
 		case DIALOG_DISPLAYOPTIONS:  tool = new dialog_displayoptions_t();  break;
@@ -599,7 +601,15 @@ static utf32 str_to_key( const char *str, uint8 *modifier )
 		if (strstart(str, "END")) {
 			return SIM_KEY_END;
 		}
-		// END
+		// SPACE
+		if (strstart(str, "SPACE")) {
+			return SIM_KEY_SPACE;
+		}
+		// ENTER
+		//if (strstart(str, "ENTER")) {
+		//	return SIM_KEY_ENTER
+		//}
+		// ESC
 		if (strstart(str, "ESC")) {
 			// but currently fixed binding!
 			return SIM_KEY_ESCAPE;

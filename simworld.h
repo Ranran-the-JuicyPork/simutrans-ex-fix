@@ -27,6 +27,7 @@
 #include "simware.h"
 #include "simplan.h"
 #include "simdebug.h"
+#include "simmesg.h"
 
 #include "utils/checklist.h"
 
@@ -54,6 +55,7 @@ class sync_steppable;
 class tool_t;
 class scenario_t;
 class message_t;
+class chat_message_t;
 class way_desc_t;
 class tunnel_desc_t;
 class network_world_command_t;
@@ -635,6 +637,7 @@ private:
 	 * Holds all the text messages in the messagebox (chat, new vehicle etc).
 	 */
 	message_t *msg;
+	chat_message_t* chat_msg;
 
 	/**
 	 * Used to distribute the workload when changing seasons to several steps.
@@ -974,6 +977,7 @@ public:
 	 * Returns the messagebox message container.
 	 */
 	message_t *get_message() const { return msg; }
+	chat_message_t* get_chat_message() const { return chat_msg; }
 
 	/**
 	 * Set to something useful, if there is a total distance != 0 to show in the bar below.

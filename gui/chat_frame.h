@@ -45,11 +45,11 @@ public:
 };
 
 
-class gui_chat_baloon_t : public gui_aligned_container_t, public gui_action_creator_t
+class gui_chat_balloon_t : public gui_aligned_container_t, public gui_action_creator_t
 {
 
 public:
-	enum baloon_tale_t {
+	enum balloon_tale_t {
 		left  = 0, // for others post
 		right = 1, // for own post
 		none  = 2  // for system message
@@ -58,7 +58,7 @@ public:
 private:
 	PIXVAL bgcol;
 	sint64 date;
-	baloon_tale_t tale_dir;
+	balloon_tale_t tale_dir;
 	const char* text;
 
 	gui_aligned_container_t cont_body;
@@ -69,7 +69,7 @@ private:
 	void update_time_diff(time_t now);
 
 public:
-	gui_chat_baloon_t(const char* text_, sint64 date_, sint8 player_nr = 1, baloon_tale_t tale_dir_ = left);
+	gui_chat_balloon_t(const char* text_, sint64 date_, sint8 player_nr = 1, balloon_tale_t tale_dir_ = left);
 
 	void draw(scr_coord offset) OVERRIDE;
 
@@ -89,7 +89,7 @@ private:
 
 	button_t bt_whisper_to, bt_pos;
 	gui_aligned_container_t cont_time;
-	gui_chat_baloon_t baloon;
+	gui_chat_balloon_t balloon;
 	scr_coord_val preferred_height;
 
 public:

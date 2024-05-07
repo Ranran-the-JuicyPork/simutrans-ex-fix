@@ -33,7 +33,7 @@ static char const* const tab_strings[MAX_CHAT_TABS]=
 };
 
 
-class gui_baloon_tale_t : public gui_component_t
+class gui_balloon_tale_t : public gui_component_t
 {
 	PIXVAL color;
 
@@ -42,7 +42,7 @@ class gui_baloon_tale_t : public gui_component_t
 	bool right_aligned;
 
 public:
-	gui_baloon_tale_t(PIXVAL c, bool right_aligned_=false, scr_coord_val width_ = LINEASCENT*2/3)
+	gui_balloon_tale_t(PIXVAL c, bool right_aligned_=false, scr_coord_val width_ = LINEASCENT*2/3)
 	{
 		color = c;
 		width = width_;
@@ -60,7 +60,7 @@ public:
 	scr_size get_max_size() const OVERRIDE { return get_min_size(); }
 };
 
-void gui_baloon_tale_t::draw(scr_coord offset)
+void gui_balloon_tale_t::draw(scr_coord offset)
 {
 	offset += pos;
 	for (scr_coord_val x = 0; x < width; x++) {
@@ -100,7 +100,7 @@ void gui_chat_flowtext_t::draw(scr_coord offset)
 
 
 
-gui_chat_baloon_t::gui_chat_baloon_t(const char* text_, sint64 date_, sint8 player_nr, baloon_tale_t tale_dir_) : message(text_)
+gui_chat_balloon_t::gui_chat_balloon_t(const char* text_, sint64 date_, sint8 player_nr, balloon_tale_t tale_dir_) : message(text_)
 {
 	text = text_[0]==0 ? translator::translate("(deleted)") : text_;
 	date = date_;
@@ -137,7 +137,7 @@ gui_chat_baloon_t::gui_chat_baloon_t(const char* text_, sint64 date_, sint8 play
 		add_table(1,3)->set_spacing(NO_SPACING);
 		{
 			new_component<gui_margin_t>(LINEASCENT/2, LINEASCENT/2);
-			new_component<gui_baloon_tale_t>(bgcol);
+			new_component<gui_balloon_tale_t>(bgcol);
 			new_component<gui_fill_t>(false, true);
 		}
 		end_table();
@@ -153,7 +153,7 @@ gui_chat_baloon_t::gui_chat_baloon_t(const char* text_, sint64 date_, sint8 play
 		add_table(1,3)->set_spacing(NO_SPACING);
 		{
 			new_component<gui_fill_t>(false, true);
-			new_component<gui_baloon_tale_t>(bgcol, true);
+			new_component<gui_balloon_tale_t>(bgcol, true);
 			new_component<gui_margin_t>(LINEASCENT/2, LINEASCENT/2);
 		}
 		end_table();
@@ -169,7 +169,7 @@ gui_chat_baloon_t::gui_chat_baloon_t(const char* text_, sint64 date_, sint8 play
 	}
 }
 
-void gui_chat_baloon_t::update_time_diff(time_t now)
+void gui_chat_balloon_t::update_time_diff(time_t now)
 {
 	lb_time_diff.buf().append(" (");
 	lb_time_diff.set_color(SYSCOL_TEXT_WEAK);
@@ -213,7 +213,7 @@ void gui_chat_baloon_t::update_time_diff(time_t now)
 	set_size(scr_size(get_size().w, get_min_size().h));
 }
 
-void gui_chat_baloon_t::draw(scr_coord offset)
+void gui_chat_balloon_t::draw(scr_coord offset)
 {
 	if (date) { // old save messages does not have date
 		time_t now = time(NULL);
@@ -232,7 +232,7 @@ void gui_chat_baloon_t::draw(scr_coord offset)
 }
 
 
-bool gui_chat_baloon_t::infowin_event(const event_t* ev)
+bool gui_chat_balloon_t::infowin_event(const event_t* ev)
 {
 	bool swallowed = gui_aligned_container_t::infowin_event(ev);
 	if (!swallowed && IS_LEFTRELEASE(ev)) {
@@ -262,19 +262,19 @@ bool gui_chat_baloon_t::infowin_event(const event_t* ev)
 
 chat_stats_t::chat_stats_t(const chat_message_t::chat_node* m, bool continuous) :
 	msg(m),
-	baloon(m->msg, m->local_time, m->player_nr,
-		msg->sender == "" ? gui_chat_baloon_t::none
-			: (strcmp(msg->sender, env_t::nickname.c_str()) == 0) ? gui_chat_baloon_t::right : gui_chat_baloon_t::left)
+	balloon(m->msg, m->local_time, m->player_nr,
+		msg->sender == "" ? gui_chat_balloon_t::none
+			: (strcmp(msg->sender, env_t::nickname.c_str()) == 0) ? gui_chat_balloon_t::right : gui_chat_balloon_t::left)
 {
 	preferred_height = D_LABEL_HEIGHT + 4;
-	gui_chat_baloon_t::baloon_tale_t tale_dir = msg->sender == "" ? gui_chat_baloon_t::none
-		: (strcmp(msg->sender, env_t::nickname.c_str())==0) ? gui_chat_baloon_t::right : gui_chat_baloon_t::left;
+	gui_chat_balloon_t::balloon_tale_t tale_dir = msg->sender == "" ? gui_chat_balloon_t::none
+		: (strcmp(msg->sender, env_t::nickname.c_str())==0) ? gui_chat_balloon_t::right : gui_chat_balloon_t::left;
 
 	set_focusable(false);
 	set_table_layout(1,0);
 	bt_whisper_to.set_visible(false);
 	// name <company>
-	if (!continuous && tale_dir==gui_chat_baloon_t::left) {
+	if (!continuous && tale_dir==gui_chat_balloon_t::left) {
 		add_table(3, 1)->set_focusable(false);
 		{
 			bt_whisper_to.set_visible(true);
@@ -334,12 +334,12 @@ chat_stats_t::chat_stats_t(const chat_message_t::chat_node* m, bool continuous) 
 	}
 	cont_time.set_size(cont_time.get_min_size());
 
-	// message baloon
+	// message balloon
 	add_table(3,1)->set_alignment(ALIGN_TOP);
 	{
 		// text
-		if (tale_dir != gui_chat_baloon_t::right) {
-			add_component(&baloon);
+		if (tale_dir != gui_chat_balloon_t::right) {
+			add_component(&balloon);
 		}
 		else {
 			new_component<gui_margin_t>(D_MARGIN_LEFT);
@@ -347,8 +347,8 @@ chat_stats_t::chat_stats_t(const chat_message_t::chat_node* m, bool continuous) 
 
 		add_component(&cont_time);
 
-		if (tale_dir == gui_chat_baloon_t::right) {
-			add_component(&baloon);
+		if (tale_dir == gui_chat_balloon_t::right) {
+			add_component(&balloon);
 		}
 		else {
 			new_component<gui_margin_t>(D_MARGIN_RIGHT);
@@ -361,7 +361,7 @@ chat_stats_t::chat_stats_t(const chat_message_t::chat_node* m, bool continuous) 
 
 void chat_stats_t::draw(scr_coord offset)
 {
-	scr_coord_val temp_heght = (D_LABEL_HEIGHT+D_V_SPACE)*bt_whisper_to.is_visible() + max(cont_time.get_min_size().h, baloon.get_min_size().h);
+	scr_coord_val temp_heght = (D_LABEL_HEIGHT+D_V_SPACE)*bt_whisper_to.is_visible() + max(cont_time.get_min_size().h, balloon.get_min_size().h);
 	if (temp_heght!=preferred_height) {
 		preferred_height = temp_heght;
 		set_size(scr_size(get_size().w, preferred_height));

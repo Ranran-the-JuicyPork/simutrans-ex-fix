@@ -33,22 +33,29 @@ static char const* const tab_strings[MAX_CHAT_TABS]=
 };
 
 
-class gui_baloon_tale_t : public gui_colorbox_t
+class gui_baloon_tale_t : public gui_component_t
 {
+	PIXVAL color;
+
+	scr_coord_val width;
+
 	bool right_aligned;
 
 public:
-	gui_baloon_tale_t(PIXVAL c, bool right_aligned_=false, scr_coord_val width_ = LINEASCENT*2/3) : gui_colorbox_t(c)
+	gui_baloon_tale_t(PIXVAL c, bool right_aligned_=false, scr_coord_val width_ = LINEASCENT*2/3)
 	{
-		size_fixed = true;
-		show_frame = false;
+		color = c;
 		width = width_;
-		height = width_+1;
 		right_aligned = right_aligned_;
-		set_size(scr_size(width, height));
+		set_size(scr_size(width, width+1));
 	}
 
 	void draw(scr_coord offset) OVERRIDE;
+
+	scr_size get_min_size() const OVERRIDE
+	{
+		return scr_size(width, width+1);
+	}
 
 	scr_size get_max_size() const OVERRIDE { return get_min_size(); }
 };
@@ -58,14 +65,14 @@ void gui_baloon_tale_t::draw(scr_coord offset)
 	offset += pos;
 	for (scr_coord_val x = 0; x < width; x++) {
 		if (right_aligned) {
-			display_vline_wh_clip_rgb(offset.x + x, offset.y + x, height-x, color, true);
+			display_vline_wh_clip_rgb(offset.x + x, offset.y + x, width-x+1, color, true);
 		}
 		else {
 			display_vline_wh_clip_rgb(offset.x + x, offset.y, x + 1, color, true);
 		}
 	}
 	if (right_aligned) {
-		display_fillbox_wh_clip_rgb(offset.x, offset.y+height-1, width, 1, display_blend_colors(color, SYSCOL_SHADOW, 75), true);
+		display_fillbox_wh_clip_rgb(offset.x, offset.y+width, width, 1, display_blend_colors(color, SYSCOL_SHADOW, 75), true);
 	}
 }
 

@@ -20,7 +20,8 @@
 #include "gui/messagebox.h"
 #include <string.h>
 #include <time.h>
-
+#include "simsound.h"
+#include "descriptor/sound_desc.h"
 
 #define MAX_SAVED_MESSAGES (2000)
 
@@ -368,23 +369,33 @@ void chat_message_t::convert_old_message(const char* text, const char* name, sin
 
 void chat_message_t::add_chat_message(const char* text, sint8 channel, sint8 sender_nr, plainstring sender_, plainstring recipient, koord pos, uint8 flags)
 {
+	cbuffer_t buf;  // Output which will be printed to ticker
+	player_t* player = world()->get_player(sender_nr);
 	// send this message to a ticker if public channel message
 	if( channel == -1 ) {
-		PIXVAL text_color = SYSCOL_TEXT;
 		if( sender_nr>=0  &&  sender_nr!=PLAYER_UNOWNED ) {
-			player_t* player = world()->get_player(sender_nr);
 			if (player) {
-				text_color= color_idx_to_rgb(player->get_player_color1() + env_t::gui_player_color_dark);
+				if( player!=world()->get_active_player() ) {
+					buf.printf("%s: %s", sender_.c_str(), text);
+					ticker::add_msg(buf, koord::invalid, SYSCOL_TEXT);
+					env_t::chat_unread_public++;
+					sound_play(sound_desc_t::message_sound, 255, TOOL_SOUND);
+				}
 			}
 		}
-		ticker::add_msg(text, koord::invalid, text_color);
-		env_t::chat_unread_public++;
 	}
-	else if (recipient && strcmp(recipient, env_t::nickname.c_str())==0) {
+	else if( recipient  &&  strcmp(recipient,env_t::nickname.c_str())==0  &&  sender_nr!=world()->get_active_player_nr() ) {
+		buf.printf("%s>> %s", sender_.c_str(), text);
+		ticker::add_msg(buf, koord::invalid, color_idx_to_rgb(COL_RED));
 		env_t::chat_unread_whisper++;
+		sound_play(sound_desc_t::message_sound, 255, TOOL_SOUND);
 	}
-	else if (channel == world()->get_active_player_nr()) {
+	else if( channel==world()->get_active_player_nr()  &&  sender_nr!=world()->get_active_player_nr() ) {
+		PIXVAL text_color = player ? color_idx_to_rgb(player->get_player_color1() + env_t::gui_player_color_dark) : SYSCOL_TEXT;
+		buf.printf("%s: %s", sender_.c_str(), text);
+		ticker::add_msg(buf, koord::invalid, text_color);
 		env_t::chat_unread_company++;
+		sound_play(sound_desc_t::message_sound, 255, TOOL_SOUND);
 	}
 
 	if( !(flags&do_not_log_flag) ) {

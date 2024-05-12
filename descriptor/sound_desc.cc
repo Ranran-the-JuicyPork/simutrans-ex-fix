@@ -51,6 +51,7 @@ sint16 sound_desc_t::beach_sound;
 sint16 sound_desc_t::forest_sound;
 sint16 sound_desc_t::climate_sounds[MAX_CLIMATES];
 
+sint16 sound_desc_t::message_sound;
 
 /* init sounds */
 /* standard sounds and old sounds are found in the file pak/sound/sound.tab */
@@ -85,6 +86,7 @@ DBG_MESSAGE("sound_desc_t::init()","assigned system sound %d to sound %s (id=%i)
 			sprintf( name, "%s.wav", ground_desc_t::get_climate_name_from_bit((climate)i) );
 			climate_sounds[i] = get_sound_id( name );
 		}
+		message_sound = get_sound_id("message.wav");
 	}
 }
 

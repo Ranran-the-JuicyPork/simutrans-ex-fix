@@ -378,6 +378,13 @@ void chat_message_t::add_chat_message(const char* text, sint8 channel, sint8 sen
 			}
 		}
 		ticker::add_msg(text, koord::invalid, text_color);
+		env_t::chat_unread_public++;
+	}
+	else if (recipient && strcmp(recipient, env_t::nickname.c_str())==0) {
+		env_t::chat_unread_whisper++;
+	}
+	else if (channel == world()->get_active_player_nr()) {
+		env_t::chat_unread_company++;
 	}
 
 	if( !(flags&do_not_log_flag) ) {

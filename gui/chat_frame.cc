@@ -568,11 +568,13 @@ void chat_frame_t::fill_list()
 		default:
 		case CH_PUBLIC:
 			// system message and public chats
+			env_t::chat_unread_public = 0;
 			lb_channel.set_visible(false);
 			//cont_chat_log[0].set_size(cont_chat_log[0].get_min_size());
 			//scrolly_public.set_size(scrolly_public.get_size());
 			break;
 		case CH_COMPANY:
+			env_t::chat_unread_company = 0;
 			lb_channel.buf().append( current_player->get_name() );
 			lb_channel.set_color( color_idx_to_rgb( current_player->get_player_color1()+env_t::gui_player_color_dark ));
 			lb_channel.set_visible(true);
@@ -583,6 +585,7 @@ void chat_frame_t::fill_list()
 			scrolly_company.set_scroll_position(0, cont_chat_log[1].get_min_size().h);
 			break;
 		case CH_WHISPER:
+			env_t::chat_unread_whisper = 0;
 			if (cb_direct_chat_targets.count_elements() != chat_history.get_count()) {
 				cb_direct_chat_targets.clear_elements();
 				for (uint32 i=0; i<chat_history.get_count(); i++) {

@@ -118,13 +118,20 @@ class gui_chat_balloon_t :
 //	public action_listener_t
 {
 private:
+	enum {
+		no_tail    = 0, // for system message
+		tail_left  = 1, // for others post
+		tail_right = 2  // for own post
+	};
+	uint8 tail_dir;
+
 	sint64 msg_time;
 	sint8 player_nr;
 	PIXVAL bgcolor;
 	cbuffer_t text;
 	scr_coord_val width;
 
-	gui_label_buf_t lb_time_diff, lb_date;
+	gui_label_buf_t lb_time_diff, lb_date, lb_local_time;
 	gui_fixedwidth_textarea_t message;
 
 	int old_min;
@@ -170,6 +177,7 @@ private:
 		}
 		lb_time_diff.buf().append(") ");
 		lb_time_diff.update();
+		lb_time_diff.set_size(lb_time_diff.get_min_size());
 	}
 
 
@@ -181,6 +189,8 @@ public:
 	{
 		msg_time = m->local_time;
 		player_nr = m->player_nr;
+		tail_dir = m->sender == "" ? no_tail
+			: (strcmp(m->sender, env_t::nickname.c_str()) == 0) ? tail_right : tail_left;
 		old_min = -1;
 		const bool is_dark_theme = (env_t::gui_player_color_dark >= env_t::gui_player_color_bright);
 		player_t* player = world()->get_player(player_nr);
@@ -188,10 +198,19 @@ public:
 		bgcolor=display_blend_colors(base_color,color_idx_to_rgb(COL_WHITE),is_dark_theme ? (95 - base_blend_percent) : base_blend_percent);
 		if (msg_time) { // old save messages does not have date
 			update_time_diff(time(NULL));
-			lb_time_diff.set_size(lb_time_diff.get_min_size());
+			char date[18];
+			// add the time too
+			struct tm* tm_event = localtime(&msg_time);
+			if (tm_event) {
+				strftime(date, 18, "%m-%d %H:%M", tm_event);
+			}
+			lb_local_time.buf().append(date);
+			lb_local_time.update();
+			lb_local_time.set_size(lb_local_time.get_min_size());
 		}
 		else {
 			lb_time_diff.set_size(scr_size(1, 0));
+			lb_local_time.set_size(scr_size(1, 0));
 		}
 		lb_date.buf().append(translator::get_short_date(m->time / 12, m->time % 12));
 		lb_date.update();
@@ -205,14 +224,15 @@ public:
 
 	void set_size(scr_size new_size) OVERRIDE {
 		width = new_size.w;
-		scr_coord_val labelwidth = max(lb_date.get_size().w, lb_time_diff.get_size().w);
-		message.set_width(new_size.w - (D_MARGIN_LEFT+D_MARGIN_RIGHT+D_H_SPACE*2+LINESPACE/2+4+labelwidth));
-		new_size.h = max(message.get_size().h + 4 + D_V_SPACE, lb_date.get_size().h+D_V_SPACE+lb_time_diff.get_size().h);
+		scr_coord_val labelwidth = max(lb_date.get_size().w, lb_local_time.get_size().w);
+		message.set_width(max(new_size.w - (D_MARGIN_LEFT+D_MARGIN_RIGHT+D_H_SPACE*2+LINESPACE/2+4+labelwidth), lb_time_diff.get_size().w));
+		new_size.h = max(message.get_size().h+lb_time_diff.get_size().h + 4 + D_V_SPACE, lb_date.get_size().h+lb_local_time.get_size().h + D_V_SPACE);
+		new_size.w = message.get_size().w + labelwidth + D_MARGINS_X + D_H_SPACE;
 		gui_component_t::set_size( new_size );
 	}
 
 	scr_size get_min_size() const OVERRIDE {
-		return scr_size(100+lb_time_diff.get_size().w, message.get_min_size().h + 4 + D_V_SPACE);
+		return scr_size(100+lb_time_diff.get_size().w, size.h);
 	}
 
 	scr_size get_max_size() const OVERRIDE {
@@ -235,38 +255,42 @@ public:
 			}
 		}
 
-		bool left_aligned = player_nr != world()->get_active_player_nr();
-		scr_coord_val labelwidth = max(lb_date.get_size().w, lb_time_diff.get_size().w);
+		scr_coord_val labelwidth = max(lb_date.get_size().w, lb_local_time.get_size().w);
 		scr_size bsize = get_size() - scr_size(D_MARGIN_LEFT + D_MARGIN_RIGHT + D_H_SPACE*2 + LINESPACE/2 + labelwidth, D_V_SPACE);
 		scr_coord_val off_w = D_H_SPACE;
 
-		if (left_aligned) {
+		if (tail_dir == tail_left) {
 			message.set_pos(scr_coord(off_w+2, 2));
 			lb_date.set_pos(scr_coord(bsize.w + LINESPACE/2, 0));
-			lb_time_diff.set_pos(scr_coord(bsize.w + LINESPACE/2, lb_date.get_size().h + D_V_SPACE));
+			lb_local_time.set_pos(scr_coord(bsize.w + LINESPACE/2, lb_date.get_size().h));
+			lb_time_diff.set_pos(scr_coord(message.get_size().w - lb_time_diff.get_size().w-D_MARGIN_RIGHT, message.get_size().h + D_V_SPACE));
 		}
 		else {
 			off_w = labelwidth;
 			lb_date.set_pos(scr_coord(0, 0));
-			lb_time_diff.set_pos(scr_coord(0, lb_date.get_size().h + D_V_SPACE));
+			lb_local_time.set_pos(scr_coord(0, lb_date.get_size().h));
+			lb_time_diff.set_pos(scr_coord(get_size().w - lb_time_diff.get_size().w - D_MARGIN_RIGHT - LINESPACE/2 - D_H_SPACE*3, message.get_size().h + D_V_SPACE));
 			message.set_pos(scr_coord(off_w + 2, 2));
 		}
 
 		// draw ballon
 		display_filled_roundbox_clip(offset.x + off_w + 1, offset.y + 1, bsize.w, bsize.h, display_blend_colors(bgcolor, SYSCOL_SHADOW, 75), false);
 		display_filled_roundbox_clip(offset.x + off_w, offset.y, bsize.w, bsize.h, bgcolor, false);
-		scr_coord_val h = LINESPACE / 2;
-		for (scr_coord_val x = 0; x < h; x++) {
-			if (!left_aligned) {
-				display_vline_wh_clip_rgb(offset.x + off_w + bsize.w + h - x - 1, offset.y + bsize.h - 10 - h, x, bgcolor, true);
-				display_vline_wh_clip_rgb(offset.x + off_w + bsize.w + x, offset.y + bsize.h - 10 - x, 1, display_blend_colors(bgcolor, SYSCOL_SHADOW, 75), true);
-			}
-			else {
-				display_vline_wh_clip_rgb(offset.x + off_w - x, offset.y + h, h-x, bgcolor, true);
+		if(tail_dir) {
+			scr_coord_val h = LINESPACE / 2;
+			for (scr_coord_val x = 0; x < h; x++) {
+				if (tail_dir==tail_right) {
+					display_vline_wh_clip_rgb(offset.x + off_w + bsize.w + h - x - 1, offset.y + bsize.h - 10 - h, x, bgcolor, true);
+					display_vline_wh_clip_rgb(offset.x + off_w + bsize.w + x, offset.y + bsize.h - 10 - x, 1, display_blend_colors(bgcolor, SYSCOL_SHADOW, 75), true);
+				}
+				else {
+					display_vline_wh_clip_rgb(offset.x + off_w - x, offset.y + h, h-x, bgcolor, true);
+				}
 			}
 		}
 		scr_coord_val old_h = message.get_size().h;
 		message.draw(offset);
+		lb_local_time.draw(offset);
 		lb_date.draw(offset);
 		lb_time_diff.draw(offset);
 		if (old_h != message.get_size().h) {
@@ -328,6 +352,9 @@ chat_frame_t::chat_frame_t() :
 	}
 	end_table();
 
+	cont_chat_log[0].set_show_scroll_x(false);
+	cont_chat_log[1].set_show_scroll_x(false);
+	cont_chat_log[2].set_show_scroll_x(false);
 	cont_chat_log[0].set_maximize(true);
 	cont_chat_log[1].set_maximize(true);
 	cont_chat_log[2].set_maximize(true);

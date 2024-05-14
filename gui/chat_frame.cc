@@ -135,7 +135,6 @@ private:
 	gui_fixedwidth_textarea_t message;
 
 	int old_min;
-	int base_blend_percent = 10;
 
 	void update_time_diff(time_t now)
 	{
@@ -193,6 +192,7 @@ public:
 			: (strcmp(m->sender, env_t::nickname.c_str()) == 0) ? tail_right : tail_left;
 		old_min = -1;
 		const bool is_dark_theme = (env_t::gui_player_color_dark >= env_t::gui_player_color_bright);
+		const int base_blend_percent = tail_dir == tail_right ? 60 : 80;
 		player_t* player = world()->get_player(player_nr);
 		const PIXVAL base_color = color_idx_to_rgb(player ? player->get_player_color1() + env_t::gui_player_color_bright : COL_GREY4);
 		bgcolor=display_blend_colors(base_color,color_idx_to_rgb(COL_WHITE),is_dark_theme ? (95 - base_blend_percent) : base_blend_percent);

@@ -27,8 +27,7 @@ public:
 		UNKNOWN,
 		CALL_SCRIPT,        /// client asks for an update
 		CALL_SCRIPT_ANSWER, /// client wants string, server sends string
-		UPDATE_WON_LOST,    /// update win/lose flags of the scenario
-		OPEN_SCEN_WIN       /// open scenario info window
+		UPDATE_WON_LOST     /// update win/lose flags of the scenario
 	};
 	uint16 what;
 

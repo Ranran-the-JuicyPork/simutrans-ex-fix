@@ -15,6 +15,7 @@ class script_vm_t;
 class player_t;
 class loadsave_t;
 
+
 /**
  * Class of strings to hold result of text-returning script functions.
  *

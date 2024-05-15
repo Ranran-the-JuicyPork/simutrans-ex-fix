@@ -13,9 +13,9 @@
 #include "api/api.h"
 
 
-void register_export_function(HSQUIRRELVM vm, bool scenario)
+void register_export_function(HSQUIRRELVM vm)
 {
-	script_api::start_squirrel_type_logging(scenario ? "scenario" : "ai");
+	script_api::start_squirrel_type_logging();
 
 	sq_pushroottable(vm);
 
@@ -24,23 +24,17 @@ void register_export_function(HSQUIRRELVM vm, bool scenario)
 	export_convoy(vm);
 	export_factory(vm);
 	export_goods_desc(vm);
-	export_gui(vm, scenario);
+	export_gui(vm);
 	export_halt(vm);
 	export_line(vm);
 	export_map_objects(vm);
-	export_player(vm, scenario);
-	if (scenario) {
-		export_scenario(vm);
-	}
+	export_player(vm);
+	export_scenario(vm);
 	export_schedule(vm);
 	export_settings(vm);
 	export_simple(vm);
-	export_string_methods(vm);
 	export_tiles(vm);
-	export_world(vm, scenario);
-	export_pathfinding(vm);
-
-	export_commands(vm);
+	export_world(vm);
 
 	sq_pop(vm, 1); // root table
 

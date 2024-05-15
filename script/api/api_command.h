@@ -113,7 +113,7 @@ namespace script_api {
 
 		call_tool_work(uint16 id, const char* dp, uint8 f, player_t* pl, koord3d pos1, koord3d pos2)
 		: call_tool_base_t(id, dp, f, pl),
-		  start(pos1), end(pos2), twoclick(true) {
+		  start(pos1), end(pos2), twoclick(false) {
 		}
 
 		call_tool_work(const char* err)
@@ -130,8 +130,8 @@ namespace script_api {
 		 * Returns error string at the end of the day.
 		 */
 		static SQInteger push(HSQUIRRELVM vm, call_tool_init v);
-		// returns nothing sensible
-		static const char* squirrel_type() { return "void"; }
+		// returns strings
+		static const char* squirrel_type() { return param<const char*>::squirrel_type(); }
 	};
 
 	template<> struct param<call_tool_work> {

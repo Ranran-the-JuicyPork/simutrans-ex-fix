@@ -133,6 +133,7 @@ private:
 
 	gui_label_buf_t lb_time_diff, lb_date, lb_local_time;
 	gui_fixedwidth_textarea_t message;
+	button_t bt_pos;
 
 	int old_min;
 
@@ -191,6 +192,17 @@ public:
 		tail_dir = m->sender == "" ? no_tail
 			: (strcmp(m->sender, env_t::nickname.c_str()) == 0) ? tail_right : tail_left;
 		old_min = -1;
+
+		bt_pos.set_typ(button_t::posbutton_automatic);
+		bt_pos.set_targetpos(m->pos);
+		if (m->pos == koord::invalid) {
+			bt_pos.set_visible(false);
+			bt_pos.set_size(scr_size(1, 0));
+		}
+		else {
+			bt_pos.set_visible(true);
+		}
+
 		const bool is_dark_theme = (env_t::gui_player_color_dark >= env_t::gui_player_color_bright);
 		const int base_blend_percent = tail_dir == tail_right ? 60 : 80;
 		player_t* player = world()->get_player(player_nr);
@@ -261,13 +273,15 @@ public:
 
 		if (tail_dir == tail_left) {
 			message.set_pos(scr_coord(off_w+2, 2));
-			lb_date.set_pos(scr_coord(bsize.w + LINESPACE/2, 0));
+			bt_pos.set_pos(scr_coord(bsize.w + LINESPACE/2, 0));
+			lb_date.set_pos(scr_coord(bt_pos.get_pos().x + bt_pos.get_size().w, 0));
 			lb_local_time.set_pos(scr_coord(bsize.w + LINESPACE/2, lb_date.get_size().h));
 			lb_time_diff.set_pos(scr_coord(message.get_size().w - lb_time_diff.get_size().w-D_MARGIN_RIGHT, message.get_size().h + D_V_SPACE));
 		}
 		else {
 			off_w = labelwidth;
-			lb_date.set_pos(scr_coord(0, 0));
+			bt_pos.set_pos(scr_coord(0, 0));
+			lb_date.set_pos(scr_coord(bt_pos.get_size().w, 0));
 			lb_local_time.set_pos(scr_coord(0, lb_date.get_size().h));
 			lb_time_diff.set_pos(scr_coord(get_size().w - lb_time_diff.get_size().w - D_MARGIN_RIGHT - LINESPACE/2 - D_H_SPACE*3, message.get_size().h + D_V_SPACE));
 			message.set_pos(scr_coord(off_w + 2, 2));

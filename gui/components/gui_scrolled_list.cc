@@ -186,18 +186,16 @@ void gui_scrolled_list_t::set_size(scr_size new_size)
 	// smaller margins
 	container.set_margin(scr_size(D_H_SPACE, 0), scr_size(D_H_SPACE, 0));
 	container.set_spacing(scr_size(D_H_SPACE, 0));
-	scr_coord_val scrollbar_w = gui_scrollpane_t::scroll_y.is_visible() * D_SCROLLBAR_WIDTH;
-	container.gui_component_t::set_size(new_size);
-	gui_scrollpane_t::set_size(new_size);
-
+	gui_component_t::set_size(new_size); // just the outer dimensions of the scrollpane
+#if 0
 	// set all elements in list to same width
 	scr_coord_val width = new_size.w - D_H_SPACE * 2 - scrollbar_w;
-	if (new_size.w==0  || new_size.w != get_size().w) {
+	if (new_size.w == 0 || new_size.h == 0 || new_size.w != get_size().w) {
 		for(  vector_tpl<gui_component_t*>::iterator iter = item_list.begin();  iter != item_list.end();  ++iter) {
-			width = max( (*iter)->get_size().w, width);
+			width = max( (*iter)->get_min_size().w, width);
 		}
 	}
-	if (width< new_size.w - D_H_SPACE * 2- scrollbar_w) {
+	if (width < new_size.w - D_H_SPACE * 2- scrollbar_w) {
 		width = new_size.w - D_H_SPACE * 2- scrollbar_w;
 	}
 	for (vector_tpl<gui_component_t*>::iterator iter = item_list.begin(); iter != item_list.end(); ++iter) {
@@ -215,6 +213,10 @@ void gui_scrolled_list_t::set_size(scr_size new_size)
 	if (container.get_size()!=new_size) {
 		container.gui_component_t::set_size(new_size);
 	}
+#endif
+	// reset sliders
+	recalc_sliders_visible(size);
+	recalc_sliders(size);
 }
 
 
@@ -343,14 +345,30 @@ void gui_scrolled_list_t::draw(scr_coord offset)
 	}
 
 	gui_scrollpane_t::draw(offset);
-	// find actual height and reset positions in case of height changes
+
+	// find actual height and reset positions in case of size changes (as the final size is only know after redraws)
+	scr_coord_val w = 0;
 	scr_coord_val h = 0;
 	for (vector_tpl<gui_component_t*>::iterator iter = item_list.begin(); iter != item_list.end(); ++iter) {
 		(*iter)->set_pos(scr_coord(D_H_SPACE, h));
 		h += (*iter)->get_size().h;
+		w = max(w, (*iter)->get_min_size().w);
+	}
+	scr_size new_size(w + D_H_SPACE * 2, h);
+	bool has_vscroll = new_size.h > size.h || (new_size.w > size.w && h + new_size.h > size.h);
+	scr_coord_val client_width = size.w - 2 * D_H_SPACE - has_vscroll * D_SCROLLBAR_WIDTH;
+	if (w < client_width) {
+		w = client_width;
+		new_size.w = client_width + 2 * D_H_SPACE;
+	}
+	for (vector_tpl<gui_component_t*>::iterator iter = item_list.begin(); iter != item_list.end(); ++iter) {
+		(*iter)->set_size(scr_size(w, (*iter)->get_size().h));
 	}
 	// now reset the positions in case of height changes
-	if (container.get_size().h != h) {
-		container.gui_component_t::set_size(scr_size(container.get_size().w, h));
+	if (container.get_size() != new_size) {
+		container.gui_component_t::set_size(new_size);
+		// reset sliders
+		recalc_sliders_visible(size);
+		recalc_sliders(size);
 	}
 }

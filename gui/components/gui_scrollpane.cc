@@ -100,16 +100,24 @@ void gui_scrollpane_t::recalc_sliders(scr_size size)
 }
 
 
+// just hide or show then sliders
+void gui_scrollpane_t::recalc_sliders_visible(scr_size size)
+{
+	scr_coord k = comp->get_size() + comp->get_pos();
+	scroll_x.set_visible((k.x > size.w) && b_show_scroll_x);
+	scroll_y.set_visible((k.y > size.h) && b_show_scroll_y);
+}
+
+
 /**
  * Scrollpanes _must_ be used in this method to set the size
  */
 void gui_scrollpane_t::set_size(scr_size size)
 {
 	gui_component_t::set_size(size);
+	recalc_sliders_visible(size);
+
 	// automatically increase/decrease slider area
-	scr_coord k = comp->get_size()+comp->get_pos();
-	scroll_x.set_visible( (k.x > size.w)  &&  b_show_scroll_x  );
-	scroll_y.set_visible(  (k.y > size.h)  &&  b_show_scroll_y  );
 
 	scr_size c_size = size - comp->get_pos();
 	// resize scrolled component

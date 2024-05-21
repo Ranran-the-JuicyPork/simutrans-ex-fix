@@ -501,6 +501,11 @@ bool chat_frame_t::action_triggered(gui_action_creator_t* comp, value_t v)
 		nwc_chat_t* nwchat = new nwc_chat_t(ibuf, sender_company_nr, (sint8)channel, env_t::nickname.c_str(), dest.c_str(), bt_send_pos.pressed ? world()->get_viewport()->get_world_position() : koord::invalid);
 		network_send_server(nwchat);
 
+		// FIXME?: Once the destination and sender clients are closed, those comments will not be left anywhere...
+		// visible messages you sent
+		if(tabs.get_active_tab_index() == CH_WHISPER) {
+			world()->get_chat_message()->add_chat_message(ibuf, channel, sender_company_nr, env_t::nickname.c_str(), dest, bt_send_pos.pressed ? world()->get_viewport()->get_world_position() : koord::invalid);
+		}
 
 		ibuf[0] = 0;
 	}

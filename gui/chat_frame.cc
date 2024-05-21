@@ -397,11 +397,8 @@ void chat_frame_t::fill_list()
 				// other company's message
 				continue;
 			}
-			if (player_locked && i->player_nr == current_player->get_player_nr()) {
-				// no permission
-				continue;
-			}
-			if (i->player_nr != current_player->get_player_nr() && !strcmp(env_t::nickname.c_str(), i->sender.c_str())) {
+			if (player_locked && strcmp(env_t::nickname.c_str(), i->sender.c_str())!=0) {
+				// no permission but visible messages you sent
 				continue;
 			}
 
@@ -493,6 +490,7 @@ bool chat_frame_t::action_triggered(gui_action_creator_t* comp, value_t v)
 {
 	if (comp == &input && ibuf[0] != 0) {
 		const sint8 channel = tabs.get_active_tab_index() == CH_COMPANY ? (sint8)world()->get_active_player_nr() : -1;
+		const sint8 sender_company_nr = welt->get_active_player()->is_locked() ? -1 : welt->get_active_player()->get_player_nr();
 		plainstring dest = tabs.get_active_tab_index() == CH_WHISPER ? ibuf_name : 0;
 
 		if (dest != 0 && strcmp(dest.c_str(), env_t::nickname.c_str()) == 0) {
@@ -500,7 +498,7 @@ bool chat_frame_t::action_triggered(gui_action_creator_t* comp, value_t v)
 		}
 
 		// Send chat message to server for distribution
-		nwc_chat_t* nwchat = new nwc_chat_t(ibuf, welt->get_active_player()->get_player_nr(), (sint8)channel, env_t::nickname.c_str(), dest.c_str(), bt_send_pos.pressed ? world()->get_viewport()->get_world_position() : koord::invalid);
+		nwc_chat_t* nwchat = new nwc_chat_t(ibuf, sender_company_nr, (sint8)channel, env_t::nickname.c_str(), dest.c_str(), bt_send_pos.pressed ? world()->get_viewport()->get_world_position() : koord::invalid);
 		network_send_server(nwchat);
 
 

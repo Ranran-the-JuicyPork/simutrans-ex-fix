@@ -42,33 +42,26 @@ class gui_chat_owner_t :
 private:
 	plainstring sender;
 	button_t bt_whisper_to;
-	gui_label_buf_t name;
+	cbuffer_t buf;
 
 public:
 	gui_chat_owner_t(const chat_message_t::chat_node* m)
 	{
 		sender = m->sender;
+		set_table_layout(2, 1);
+		set_margin(scr_size(D_H_SPACE, 0), scr_size(D_H_SPACE, 0));
 		if (player_t* p = world()->get_player(m->player_nr)) {
-			set_table_layout(2, 1);
 			bt_whisper_to.init(button_t::arrowright, NULL);
 			bt_whisper_to.set_focusable(false);
 			bt_whisper_to.add_listener(this);
 			add_component(&bt_whisper_to);
-
-			name.init(color_idx_to_rgb(p->get_player_color1() + env_t::gui_player_color_dark));
-			name.buf().append(sender.c_str());
-			name.buf().printf(" <%s>", p->get_name());
-			name.update();
-			components.append(&name);
-
+			buf.printf("%s <%s>", sender.c_str(), p->get_name());
+			new_component<gui_label_t>(buf.get_str(), color_idx_to_rgb(p->get_player_color1() + env_t::gui_player_color_dark) );
 		}
 		else {
-			set_table_layout(1, 1);
-			name.init(color_idx_to_rgb(SYSCOL_TEXT));
-			name.buf().append(sender.c_str());
-			name.update();
+			new_component_span<gui_label_t>(sender.c_str(),2);
 		}
-		name.set_size(name.get_min_size());
+		set_size(get_min_size());
 	}
 
 	char const* get_text() const { return ""; }
@@ -195,13 +188,7 @@ public:
 
 		bt_pos.set_typ(button_t::posbutton_automatic);
 		bt_pos.set_targetpos(m->pos);
-		if (m->pos == koord::invalid) {
-			bt_pos.set_visible(false);
-			bt_pos.set_size(scr_size(1, 0));
-		}
-		else {
-			bt_pos.set_visible(true);
-		}
+		bt_pos.set_visible(m->pos != koord::invalid);
 
 		const bool is_dark_theme = (env_t::gui_player_color_dark >= env_t::gui_player_color_bright);
 		const int base_blend_percent = tail_dir == tail_right ? 60 : 80;
@@ -307,6 +294,7 @@ public:
 		lb_local_time.draw(offset);
 		lb_date.draw(offset);
 		lb_time_diff.draw(offset);
+		bt_pos.draw(offset);
 		if (old_h != message.get_size().h) {
 			gui_component_t::set_size(scr_size(get_size().w, max(lb_time_diff.get_size().h, message.get_size().h + 4) + D_V_SPACE));
 		}
@@ -375,7 +363,7 @@ chat_frame_t::chat_frame_t() :
 
 	set_resizemode(diagonal_resize);
 
-	fill_list();
+	last_count = 0;
 	reset_min_windowsize();
 }
 
@@ -383,7 +371,6 @@ chat_frame_t::chat_frame_t() :
 void chat_frame_t::fill_list()
 {
 	uint8 chat_mode = tabs.get_active_tab_index();
-	// scrolly[chat_mode];
 
 	player_t* current_player = world()->get_active_player();
 	const scr_coord_val width = get_windowsize().w;
@@ -495,8 +482,6 @@ void chat_frame_t::fill_list()
 	}
 
 	cont_chat_log[chat_mode].set_maximize(true);
-//	cont_chat_log[chat_mode].sort(0);
-	cont_chat_log[chat_mode].set_size(cont_chat_log[chat_mode].get_size());
 }
 
 

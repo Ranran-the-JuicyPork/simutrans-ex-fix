@@ -540,6 +540,7 @@ bool chat_frame_t::action_triggered(gui_action_creator_t* comp, value_t v)
 			lb_channel.set_visible(true);
 			lb_channel.update();
 		}
+		resize(scr_size(0,0));
 	}
 	return true;
 }

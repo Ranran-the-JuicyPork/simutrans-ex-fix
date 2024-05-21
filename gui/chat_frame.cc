@@ -64,7 +64,7 @@ public:
 		set_size(get_min_size());
 	}
 
-	char const* get_text() const { return ""; }
+	char const* get_text() const OVERRIDE { return ""; }
 
 	bool action_triggered(gui_action_creator_t* comp, value_t ) {
 		if (comp == &bt_whisper_to) {

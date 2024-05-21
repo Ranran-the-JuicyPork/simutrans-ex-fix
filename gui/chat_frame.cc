@@ -442,8 +442,11 @@ void chat_frame_t::fill_list()
 			break;
 		}
 
-		const bool continuous = strcmp(i->sender.c_str(), prev_poster.c_str()) == 0 && (i->player_nr == prev_company);
-		if (!continuous) {
+		// Name display is omitted for unnamed system messages,
+		//  self-messages, or consecutive messages by the same client from same company.
+		const bool skip_name = i->sender == "" || (strcmp(i->sender, env_t::nickname.c_str())==0)
+			|| (strcmp(i->sender.c_str(), prev_poster.c_str())==0  &&  (i->player_nr == prev_company));
+		if (!skip_name) {
 			// new chat owner element
 			cont_chat_log[chat_mode].new_component<gui_chat_owner_t>(i);
 		}

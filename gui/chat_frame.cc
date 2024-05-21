@@ -223,7 +223,7 @@ public:
 
 	void set_size(scr_size new_size) OVERRIDE {
 		width = new_size.w;
-		scr_coord_val labelwidth = max(lb_date.get_size().w, lb_local_time.get_size().w);
+		scr_coord_val labelwidth = max(lb_date.get_size().w + bt_pos.is_visible()*D_POS_BUTTON_WIDTH, lb_time_diff.get_size().w);
 		message.set_width(max(new_size.w - (D_MARGIN_LEFT+D_MARGIN_RIGHT+D_H_SPACE*2+LINESPACE/2+4+labelwidth), lb_time_diff.get_size().w));
 		new_size.h = max(message.get_size().h+lb_time_diff.get_size().h + 4 + D_V_SPACE, lb_date.get_size().h+lb_local_time.get_size().h + D_V_SPACE);
 		new_size.w = message.get_size().w + labelwidth + D_MARGINS_X + D_H_SPACE;
@@ -254,21 +254,21 @@ public:
 			}
 		}
 
-		scr_coord_val labelwidth = max(lb_date.get_size().w, lb_local_time.get_size().w);
+		scr_coord_val labelwidth = max(lb_date.get_size().w + bt_pos.is_visible() * D_POS_BUTTON_WIDTH, lb_time_diff.get_size().w);
 		scr_size bsize = get_size() - scr_size(D_MARGIN_LEFT + D_MARGIN_RIGHT + D_H_SPACE*2 + LINESPACE/2 + labelwidth, D_V_SPACE);
 		scr_coord_val off_w = D_H_SPACE;
 
 		if (tail_dir == tail_left) {
 			message.set_pos(scr_coord(off_w+2, 2));
-			bt_pos.set_pos(scr_coord(bsize.w + LINESPACE/2, 0));
-			lb_date.set_pos(scr_coord(bt_pos.get_pos().x + bt_pos.get_size().w, 0));
+			bt_pos.set_pos(scr_coord(bsize.w + LINESPACE / 2, (lb_date.get_size().h- D_POS_BUTTON_HEIGHT)/2));
+			lb_date.set_pos(scr_coord(bsize.w + LINESPACE/2 + bt_pos.is_visible() * D_POS_BUTTON_WIDTH, 0));
 			lb_local_time.set_pos(scr_coord(bsize.w + LINESPACE/2, lb_date.get_size().h));
 			lb_time_diff.set_pos(scr_coord(message.get_size().w - lb_time_diff.get_size().w-D_MARGIN_RIGHT, message.get_size().h + D_V_SPACE));
 		}
 		else {
 			off_w = labelwidth;
-			bt_pos.set_pos(scr_coord(0, 0));
-			lb_date.set_pos(scr_coord(bt_pos.get_size().w, 0));
+			bt_pos.set_pos(scr_coord(0, (lb_date.get_size().h - D_POS_BUTTON_HEIGHT) / 2));
+			lb_date.set_pos(scr_coord(bt_pos.is_visible() * D_POS_BUTTON_WIDTH, 0));
 			lb_local_time.set_pos(scr_coord(0, lb_date.get_size().h));
 			lb_time_diff.set_pos(scr_coord(get_size().w - lb_time_diff.get_size().w - D_MARGIN_RIGHT - LINESPACE/2 - D_H_SPACE*3, message.get_size().h + D_V_SPACE));
 			message.set_pos(scr_coord(off_w + 2, 2));
@@ -281,12 +281,14 @@ public:
 			scr_coord_val h = LINESPACE / 2;
 			for (scr_coord_val x = 0; x < h; x++) {
 				if (tail_dir==tail_right) {
-					display_vline_wh_clip_rgb(offset.x + off_w + bsize.w + h - x - 1, offset.y + bsize.h - 10 - h, x, bgcolor, true);
-					display_vline_wh_clip_rgb(offset.x + off_w + bsize.w + x, offset.y + bsize.h - 10 - x, 1, display_blend_colors(bgcolor, SYSCOL_SHADOW, 75), true);
+					display_vline_wh_clip_rgb(offset.x + off_w + bsize.w + x, offset.y + bsize.h - 10 - h + x, h-x, bgcolor, true);
 				}
 				else {
 					display_vline_wh_clip_rgb(offset.x + off_w - x, offset.y + h, h-x, bgcolor, true);
 				}
+			}
+			if (tail_dir == tail_right) {
+				display_fillbox_wh_clip_rgb(offset.x + off_w + bsize.w, offset.y + bsize.h - 10, h, 1, display_blend_colors(bgcolor, SYSCOL_SHADOW, 75), true);
 			}
 		}
 		scr_coord_val old_h = message.get_size().h;
@@ -326,10 +328,13 @@ chat_frame_t::chat_frame_t() :
 	}
 	end_table();
 
-	// add tabs for classifying messages
-	tabs.add_tab(cont_chat_log, translator::translate(tab_strings[CH_PUBLIC]));
-	tabs.add_tab(cont_chat_log+1, translator::translate(tab_strings[CH_COMPANY]));
-	tabs.add_tab(cont_chat_log+2, translator::translate(tab_strings[CH_WHISPER]));
+	for (int i = 0; i < MAX_CHAT_TABS; i++) {
+		cont_chat_log[i].set_show_scroll_x(false);
+		cont_chat_log[i].set_scroll_amount_y(LINESPACE*3);
+		cont_chat_log[i].set_maximize(true);
+		// add tabs for classifying messages
+		tabs.add_tab(cont_chat_log+i, translator::translate(tab_strings[i]));
+	}
 
 	tabs.add_listener(this);
 	add_component(&tabs);
@@ -354,13 +359,6 @@ chat_frame_t::chat_frame_t() :
 	}
 	end_table();
 
-	cont_chat_log[0].set_show_scroll_x(false);
-	cont_chat_log[1].set_show_scroll_x(false);
-	cont_chat_log[2].set_show_scroll_x(false);
-	cont_chat_log[0].set_maximize(true);
-	cont_chat_log[1].set_maximize(true);
-	cont_chat_log[2].set_maximize(true);
-
 	set_resizemode(diagonal_resize);
 
 	last_count = 0;
@@ -381,7 +379,8 @@ void chat_frame_t::fill_list()
 	lb_now_online.update();
 
 	old_player_nr = current_player->get_player_nr();
-	//scr_coord_val current_posy_from_buttom = cont_chat_log.get_size().h-scrolly.get_scroll_y();
+	scr_coord_val old_scroll_y = cont_chat_log[chat_mode].get_scroll_y();
+	scr_coord_val old_log_h = cont_chat_log[chat_mode].get_size().h;
 
 	cont_chat_log[chat_mode].clear_elements();
 	last_count = welt->get_chat_message()->get_list().get_count();
@@ -481,6 +480,7 @@ void chat_frame_t::fill_list()
 		break;
 	}
 
+	cont_chat_log[chat_mode].set_scroll_position(0, old_scroll_y- old_log_h + cont_chat_log[chat_mode].get_size().h);
 	cont_chat_log[chat_mode].set_maximize(true);
 }
 

@@ -112,6 +112,7 @@ private:
 	PIXVAL highlight_color;
 
 	bool maximize; // true if to expand to bottom right corner
+	bool sliders_dirty; // true if sliders need attention during next redraw
 
 	item_compare_func compare;
 

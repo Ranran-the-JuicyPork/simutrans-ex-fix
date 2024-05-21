@@ -40,12 +40,7 @@ scr_size gui_scrolled_list_t::const_text_scrollitem_t::get_min_size() const
 
 scr_size gui_scrolled_list_t::const_text_scrollitem_t::get_max_size() const
 {
-//	if (!is_editable()) {
-//		return get_min_size();
-//	}
-//	else {
 		return scr_size(scr_size::inf.w, LINESPACE);
-//	}
 }
 
 // draws a single line of text
@@ -97,6 +92,7 @@ gui_scrolled_list_t::gui_scrolled_list_t(enum type type, item_compare_func cmp) 
 	pos = scr_coord(0,0);
 	multiple_selection = false;
 	maximize = false;
+	sliders_dirty = true;
 }
 
 
@@ -186,37 +182,12 @@ void gui_scrolled_list_t::set_size(scr_size new_size)
 	// smaller margins
 	container.set_margin(scr_size(D_H_SPACE, 0), scr_size(D_H_SPACE, 0));
 	container.set_spacing(scr_size(D_H_SPACE, 0));
-	gui_component_t::set_size(new_size); // just the outer dimensions of the scrollpane
-#if 0
-	// set all elements in list to same width
-	scr_coord_val width = new_size.w - D_H_SPACE * 2 - scrollbar_w;
-	if (new_size.w == 0 || new_size.h == 0 || new_size.w != get_size().w) {
-		for(  vector_tpl<gui_component_t*>::iterator iter = item_list.begin();  iter != item_list.end();  ++iter) {
-			width = max( (*iter)->get_min_size().w, width);
-		}
-	}
-	if (width < new_size.w - D_H_SPACE * 2- scrollbar_w) {
-		width = new_size.w - D_H_SPACE * 2- scrollbar_w;
-	}
-	for (vector_tpl<gui_component_t*>::iterator iter = item_list.begin(); iter != item_list.end(); ++iter) {
-		(*iter)->set_size(scr_size(width, (*iter)->get_size().h));
-	}
-
-	// reset positions and recalculate height
-	scr_coord_val h = 0;
-	for (vector_tpl<gui_component_t*>::iterator iter = item_list.begin(); iter != item_list.end(); ++iter) {
-		(*iter)->set_pos(scr_coord(D_H_SPACE, h));
-		h += (*iter)->get_size().h;
-	}
-	// now reset the positions in case of height changes
-	new_size = scr_size(width + D_H_SPACE * 2, h);
-	if (container.get_size()!=new_size) {
-		container.gui_component_t::set_size(new_size);
-	}
-#endif
+	scr_size csize = container.get_size()+new_size-size; // shrink similar to scrollpane, so slider stay the same
+	container.gui_component_t::set_size(csize);
+	gui_component_t::set_size(new_size);
 	// reset sliders
-	recalc_sliders_visible(size);
 	recalc_sliders(size);
+	sliders_dirty = true;	// we can only recalculate the need for sliders after draw since element size may be incorrect before
 }
 
 
@@ -367,8 +338,11 @@ void gui_scrolled_list_t::draw(scr_coord offset)
 	// now reset the positions in case of height changes
 	if (container.get_size() != new_size) {
 		container.gui_component_t::set_size(new_size);
+	}
+	if(sliders_dirty) {
 		// reset sliders
 		recalc_sliders_visible(size);
 		recalc_sliders(size);
+		sliders_dirty = false; // to avoid flicker
 	}
 }

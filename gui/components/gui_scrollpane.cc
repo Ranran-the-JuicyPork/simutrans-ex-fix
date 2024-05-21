@@ -315,7 +315,7 @@ void gui_scrollpane_t::draw(scr_coord pos)
 	scr_rect client = get_client() + pos;
 
 	PUSH_CLIP_FIT( client.x, client.y, client.w, client.h )
-		comp->draw( client.get_pos()-scr_coord(scroll_x.get_knob_offset(), scroll_y.get_knob_offset()) );
+	comp->draw( client.get_pos()-scr_coord(scroll_x.get_knob_offset(), scroll_y.get_knob_offset()) );
 	POP_CLIP()
 
 	// sliding bar background color is now handled by the scrollbar!

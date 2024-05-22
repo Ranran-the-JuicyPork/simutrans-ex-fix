@@ -348,10 +348,12 @@ chat_frame_t::chat_frame_t() :
 		bt_send_pos.add_listener(this);
 		add_component(&bt_send_pos);
 
+		lb_channel.set_visible(tabs.get_active_tab_index() != CH_PUBLIC);
 		lb_channel.set_rigid(false);
 		add_component(&lb_channel);
 
 		inp_destination.set_text(ibuf_name, lengthof(ibuf_name));
+		inp_destination.set_visible(tabs.get_active_tab_index() == CH_WHISPER);
 		inp_destination.add_listener(this);
 		add_component(&inp_destination);
 

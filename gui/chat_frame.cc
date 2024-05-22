@@ -76,36 +76,6 @@ public:
 };
 
 
-
-/* could copy textarea to clipboard ... (todo)
-bool gui_chat_balloon_t::infowin_event(const event_t* ev)
-{
-	bool swallowed = gui_aligned_container_t::infowin_event(ev);
-	if (!swallowed && IS_LEFTRELEASE(ev)) {
-		cbuffer_t clipboard;
-		// add them to clipboard
-		char msg_no_break[258];
-		for (int j = 0; j < 256; j++) {
-			msg_no_break[j] = text[j] == '\n' ? ' ' : text[j];
-			if (msg_no_break[j] == 0) {
-				msg_no_break[j++] = '\n';
-				msg_no_break[j] = 0;
-				break;
-			}
-		}
-		clipboard.append(msg_no_break);
-		// copy, if there was anything ...
-		if (clipboard.len() > 0) {
-			dr_copy(clipboard, clipboard.len());
-		}
-
-		create_win(new news_img("Copied."), w_time_delete, magic_none);
-		swallowed = true;
-	}
-	return false;
-}
-*/
-
 class gui_chat_balloon_t :
 	public gui_scrolled_list_t::scrollitem_t
 //	public action_listener_t
@@ -304,6 +274,38 @@ public:
 		}
 	}
 
+	bool infowin_event(const event_t* ev)
+	{
+		bool swallowed = gui_scrolled_list_t::scrollitem_t::infowin_event(ev);
+		if (!swallowed && IS_LEFTRELEASE(ev)) {
+			event_t ev2 = *ev;
+			ev2.move_origin(scr_coord(D_MARGIN_LEFT, 0));
+			if(message.getroffen(ev2.click_pos) ) {
+				// add them to clipboard
+				char msg_no_break[258];
+				int j;
+				for( j = 0; j < 256  &&  text[j]; j++) {
+					msg_no_break[j] = text[j] == '\n' ? ' ' : text[j];
+					if (msg_no_break[j] == 0) {
+						msg_no_break[j++] = '\n';
+						break;
+					}
+				}
+				msg_no_break[j] = 0;
+				// copy, if there was anything ...
+				if (j) {
+					dr_copy(msg_no_break, j);
+				}
+				create_win(new news_img("Copied."), w_time_delete, magic_none);
+				swallowed = true;
+			}
+			else if(bt_pos.getroffen(ev2.click_pos)) {
+				ev2.move_origin(bt_pos.get_pos());
+				swallowed = bt_pos.infowin_event(&ev2);
+			}
+		}
+		return swallowed;
+	}
 };
 
 
@@ -574,13 +576,6 @@ void chat_frame_t::rdwr(loadsave_t* file)
 
 	tabs.rdwr(file);
 	file->rdwr_str(ibuf, lengthof(ibuf));
-
-	if (file->is_loading()) {
-		fill_list();
-
-		reset_min_windowsize();
-		set_windowsize(size);
-	}
 }
 
 void chat_frame_t::activate_whisper_to(const char* recipient)

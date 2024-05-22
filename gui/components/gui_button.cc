@@ -276,7 +276,7 @@ void button_t::set_tooltip(const char * t)
 bool button_t::getroffen(scr_coord p)
 {
 	bool hit=gui_component_t::getroffen(p);
-	if(  pressed  &&  !hit  &&  ( (type & STATE_BIT) == 0)  ) {
+	if(  pressed  &&  !hit  &&  ( (type & STATE_BIT) == 0)  &&  is_visible()    ) {
 		// moved away
 		pressed = 0;
 	}

@@ -287,6 +287,13 @@ void gui_scrolled_list_t::cleanup_elements(bool resize)
 }
 
 
+
+void gui_scrolled_list_t::show_bottom()
+{
+	scroll_y.set_sticky_bottom();;
+}
+
+
 void gui_scrolled_list_t::draw(scr_coord offset)
 {
 	// set focus
@@ -314,6 +321,10 @@ void gui_scrolled_list_t::draw(scr_coord offset)
 				break;
 
 		}
+	}
+
+	if (sliders_dirty) {
+		recalc_sliders_visible(size);
 	}
 
 	gui_scrollpane_t::draw(offset);
@@ -344,6 +355,6 @@ void gui_scrolled_list_t::draw(scr_coord offset)
 		// reset sliders
 		recalc_sliders_visible(size);
 		recalc_sliders(size);
-		sliders_dirty = false; // to avoid flicker
 	}
+	sliders_dirty = false;	// to avoid flicker
 }

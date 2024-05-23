@@ -419,6 +419,23 @@ void chat_message_t::add_chat_message(const char* text, sint8 channel, sint8 sen
 	}
 }
 
+void chat_message_t::delete_message_at(uint message_idx, bool by_admin)
+{
+	if( message_idx>=list.get_count() ) return;
+
+	chat_node* del_msg = list.at(message_idx);
+	char deleted_text[128];
+	if (by_admin) {
+		sprintf(deleted_text, translator::translate("-- deleted by admin --"));
+	}
+	else {
+		sprintf(deleted_text, translator::translate("-- deleted --"));
+	}
+	tstrncpy(del_msg->msg, deleted_text, lengthof(del_msg->msg));
+	del_msg->pos = koord::koord::invalid;
+	del_msg->flags = do_not_rdwr_flag|deleted;
+}
+
 void chat_message_t::rename_client(plainstring old_name, plainstring new_name)
 {
 	for (chat_node* i : list) {

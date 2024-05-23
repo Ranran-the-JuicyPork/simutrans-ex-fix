@@ -118,11 +118,14 @@ public:
 	enum {
 		none = 0,
 		do_not_log_flag  = 1<<1, // send system message via tool, but not logged chat window, send only ticker
-		do_not_rdwr_flag = 1<<2  // send system message via tool, logged but not saved
+		do_not_rdwr_flag = 1<<2,  // send system message via tool, logged but not saved
+		deleted = 1<<3
 		// TODO: We can consider flags such as messages pinned to the top by an admin, messages that remain for a certain amount of time, etc.
 	};
 
 	void add_chat_message(const char* text, sint8 channel=-1, sint8 sender_player_nr=1 /*PUBLIC_PLAYER_NR*/, plainstring sender=NULL, plainstring recipient=NULL, koord pos = koord::invalid, uint8 flags=chat_message_t::none);
+
+	void delete_message_at(uint message_idx, bool by_admin);
 
 	chat_message_t() {};
 	~chat_message_t();

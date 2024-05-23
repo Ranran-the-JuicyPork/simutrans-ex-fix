@@ -169,11 +169,9 @@ public:
 			update_time_diff(time(NULL));
 			char date[18];
 			// add the time too
-			struct tm tm_event;
-			time_t t = time(&msg_time);
-			localtime_s(&tm_event, &t);
-			if (msg_time) {
-				strftime(date, 18, "%m-%d %H:%M", &tm_event);
+			struct tm* tm_event = localtime(&msg_time);
+			if (tm_event) {
+				strftime(date, 18, "%m-%d %H:%M", tm_event);
 			}
 			lb_local_time.buf().append(date);
 			lb_local_time.update();

@@ -13,7 +13,7 @@
 
 #include "../dataobj/translator.h"
 #include "../dataobj/environment.h"
-#include "../dataobj/gameinfo.h"
+#include "../network/network_socket_list.h"
 #include "../network/network_cmd_ingame.h"
 #include "../player/simplay.h"
 #include "../display/viewport.h"
@@ -379,9 +379,8 @@ void chat_frame_t::fill_list()
 	player_t* current_player = world()->get_active_player();
 	const scr_coord_val width = get_windowsize().w;
 
-	gameinfo_t gi(world());
-
-	lb_now_online.buf().printf(translator::translate("%u Client(s)\n"), (unsigned)gi.get_clients());
+	// TODO: update flag
+	lb_now_online.buf().printf(translator::translate("Online: playing %u, watching %u"), socket_list_t::get_playing_clients(), socket_list_t::get_connected_clients());
 	lb_now_online.update();
 
 	old_player_nr = current_player->get_player_nr();

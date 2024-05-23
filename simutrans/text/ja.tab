@@ -476,7 +476,9 @@ is reserved by:
 %s\nwas liquidated.
 %s社は\n破産しました。\n資産はすべて清算されました。
 %u Client(s)\n
-%u 名のクライアント\n
+オンライン中 %u 人\n
+Online: playing %u, watching %u
+プレイ中 %u人／観戦中 %u人
 %u Player (%u locked)\n
 %u のプレーヤー (%u はロック済み)\n
 <clear schedule>

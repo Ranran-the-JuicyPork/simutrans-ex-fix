@@ -56,17 +56,17 @@ public:
 			bt_whisper_to.add_listener(this);
 			add_component(&bt_whisper_to);
 			buf.printf("%s <%s>", sender.c_str(), p->get_name());
-			new_component<gui_label_t>(buf.get_str(), color_idx_to_rgb(p->get_player_color1() + env_t::gui_player_color_dark) );
+			new_component<gui_label_t>(buf.get_str(), color_idx_to_rgb(p->get_player_color1() + env_t::gui_player_color_dark));
 		}
 		else {
-			new_component_span<gui_label_t>(sender.c_str(),2);
+			new_component_span<gui_label_t>(sender.c_str(), 2);
 		}
 		set_size(get_min_size());
 	}
 
 	char const* get_text() const OVERRIDE { return ""; }
 
-	bool action_triggered(gui_action_creator_t* comp, value_t ) {
+	bool action_triggered(gui_action_creator_t* comp, value_t) {
 		if (comp == &bt_whisper_to) {
 			chat_frame_t* win = dynamic_cast<chat_frame_t*>(win_get_magic(magic_chatframe));
 			win->activate_whisper_to(sender.c_str());
@@ -78,17 +78,17 @@ public:
 
 class gui_chat_balloon_t :
 	public gui_scrolled_list_t::scrollitem_t
-//	public action_listener_t
+	//	public action_listener_t
 {
 private:
 	enum {
-		no_tail    = 0, // for system message
-		tail_left  = 1, // for others post
+		no_tail = 0, // for system message
+		tail_left = 1, // for others post
 		tail_right = 2  // for own post
 	};
 	uint8 tail_dir;
 
-	sint64 msg_time;
+	time_t msg_time;
 	sint8 player_nr;
 	PIXVAL bgcolor;
 	cbuffer_t text;
@@ -102,8 +102,8 @@ private:
 
 	void update_time_diff(time_t now)
 	{
+		lb_time_diff.init(SYSCOL_BUTTON_TEXT_DISABLED, gui_label_t::right);
 		lb_time_diff.buf().append(" (");
-		lb_time_diff.set_color(SYSCOL_BUTTON_TEXT_DISABLED);
 		int diff = difftime(now, msg_time);
 		if (diff > 31536000) {
 			uint8 years = (uint8)(diff / 31536000);
@@ -145,7 +145,7 @@ private:
 
 
 public:
-	gui_chat_balloon_t(const chat_message_t::chat_node* m,scr_coord_val w) :
+	gui_chat_balloon_t(const chat_message_t::chat_node* m, scr_coord_val w) :
 		text(m->msg),
 		width(w),
 		message(&text, 0)
@@ -164,7 +164,7 @@ public:
 		const int base_blend_percent = tail_dir == tail_right ? 60 : 80;
 		player_t* player = world()->get_player(player_nr);
 		const PIXVAL base_color = color_idx_to_rgb(player ? player->get_player_color1() + env_t::gui_player_color_bright : COL_GREY4);
-		bgcolor=display_blend_colors(base_color,color_idx_to_rgb(COL_WHITE),is_dark_theme ? (95 - base_blend_percent) : base_blend_percent);
+		bgcolor = display_blend_colors(base_color, color_idx_to_rgb(COL_WHITE), is_dark_theme ? (95 - base_blend_percent) : base_blend_percent);
 		if (msg_time) { // old save messages does not have date
 			update_time_diff(time(NULL));
 			char date[18];
@@ -191,26 +191,30 @@ public:
 		set_size(scr_size(width, 1));
 	}
 
-	void set_size(scr_size new_size) OVERRIDE {
+	void set_size(scr_size new_size) OVERRIDE
+	{
+		scr_coord_val labelwidth = max(lb_date.get_size().w + bt_pos.is_visible() * D_POS_BUTTON_WIDTH, lb_local_time.get_size().w);
 		width = new_size.w;
-		scr_coord_val labelwidth = max(lb_date.get_size().w + bt_pos.is_visible()*D_POS_BUTTON_WIDTH, lb_time_diff.get_size().w);
-		message.set_width(max(new_size.w - (D_MARGIN_LEFT+D_MARGIN_RIGHT+D_H_SPACE*2+LINESPACE/2+4+labelwidth), lb_time_diff.get_size().w));
-		new_size.h = max(message.get_size().h+lb_time_diff.get_size().h + 4 + D_V_SPACE, lb_date.get_size().h+lb_local_time.get_size().h + D_V_SPACE);
-		new_size.w = message.get_size().w + labelwidth + D_MARGINS_X + D_H_SPACE;
-		gui_component_t::set_size( new_size );
+		message.set_width(new_size.w - (D_MARGIN_LEFT + D_MARGIN_RIGHT + D_H_SPACE * 2 + LINESPACE / 2 + 4 + labelwidth));
+		new_size.h = max(message.get_size().h + 4 + D_V_SPACE + lb_time_diff.get_size().h, lb_date.get_size().h + D_V_SPACE + lb_local_time.get_size().h);
+		gui_component_t::set_size(new_size);
 	}
 
-	scr_size get_min_size() const OVERRIDE {
-		return scr_size(100+lb_time_diff.get_size().w, size.h);
+	scr_size get_min_size() const OVERRIDE
+	{
+		return scr_size(100 + lb_time_diff.get_size().w, message.get_min_size().h + 4 + D_V_SPACE + lb_time_diff.get_size().h);
+//		return scr_size(100 + lb_time_diff.get_size().w, size.h);
 	}
 
-	scr_size get_max_size() const OVERRIDE {
-		return scr_size(scr_size::inf.w, message.get_size().h+4 + D_V_SPACE);
+	scr_size get_max_size() const OVERRIDE
+	{
+		return scr_size(scr_size::inf.w, message.get_size().h + 4 + D_V_SPACE + lb_time_diff.get_size().h);
 	}
 
 	char const* get_text() const { return ""; }
 
-	void draw(scr_coord offset) OVERRIDE {
+	void draw(scr_coord offset) OVERRIDE
+	{
 		offset += pos;
 		offset.x += D_MARGIN_LEFT;
 
@@ -224,37 +228,36 @@ public:
 			}
 		}
 
-		scr_coord_val labelwidth = max(lb_date.get_size().w + bt_pos.is_visible() * D_POS_BUTTON_WIDTH, lb_time_diff.get_size().w);
-		scr_size bsize = get_size() - scr_size(D_MARGIN_LEFT + D_MARGIN_RIGHT + D_H_SPACE*2 + LINESPACE/2 + labelwidth, D_V_SPACE);
+		scr_coord_val labelwidth = max(lb_date.get_size().w + bt_pos.is_visible() * D_POS_BUTTON_WIDTH, lb_local_time.get_size().w);
+		scr_size bsize = get_size() - scr_size(D_MARGIN_LEFT + D_MARGIN_RIGHT + D_H_SPACE * 2 + LINESPACE / 2 + labelwidth, D_V_SPACE);
 		scr_coord_val off_w = D_H_SPACE;
 
 		if (tail_dir == tail_left) {
-			message.set_pos(scr_coord(off_w+2, 2));
-			bt_pos.set_pos(scr_coord(bsize.w + LINESPACE / 2, (lb_date.get_size().h- D_POS_BUTTON_HEIGHT)/2));
-			lb_date.set_pos(scr_coord(bsize.w + LINESPACE/2 + bt_pos.is_visible() * D_POS_BUTTON_WIDTH, 0));
-			lb_local_time.set_pos(scr_coord(bsize.w + LINESPACE/2, lb_date.get_size().h));
-			lb_time_diff.set_pos(scr_coord(message.get_size().w - lb_time_diff.get_size().w-D_MARGIN_RIGHT, message.get_size().h + D_V_SPACE));
+			message.set_pos(scr_coord(off_w + 2, 2));
+			bt_pos.set_pos(scr_coord(bsize.w + LINESPACE / 2, (lb_date.get_size().h - D_POS_BUTTON_HEIGHT) / 2));
+			lb_date.set_pos(scr_coord(bsize.w + LINESPACE / 2 + bt_pos.is_visible() * D_POS_BUTTON_WIDTH, 0));
+			lb_local_time.set_pos(scr_coord(bsize.w + LINESPACE / 2, lb_date.get_size().h));
 		}
 		else {
 			off_w = labelwidth;
 			bt_pos.set_pos(scr_coord(0, (lb_date.get_size().h - D_POS_BUTTON_HEIGHT) / 2));
 			lb_date.set_pos(scr_coord(bt_pos.is_visible() * D_POS_BUTTON_WIDTH, 0));
 			lb_local_time.set_pos(scr_coord(0, lb_date.get_size().h));
-			lb_time_diff.set_pos(scr_coord(get_size().w - lb_time_diff.get_size().w - D_MARGIN_RIGHT - LINESPACE/2 - D_H_SPACE*3, message.get_size().h + D_V_SPACE));
 			message.set_pos(scr_coord(off_w + 2, 2));
 		}
+		lb_time_diff.set_pos(message.get_pos()+scr_size(bsize.w-D_MARGIN_RIGHT-lb_time_diff.get_size().w-2, message.get_size().h));
 
 		// draw ballon
 		display_filled_roundbox_clip(offset.x + off_w + 1, offset.y + 1, bsize.w, bsize.h, display_blend_colors(bgcolor, SYSCOL_SHADOW, 75), false);
 		display_filled_roundbox_clip(offset.x + off_w, offset.y, bsize.w, bsize.h, bgcolor, false);
-		if(tail_dir) {
+		if (tail_dir) {
 			scr_coord_val h = LINESPACE / 2;
 			for (scr_coord_val x = 0; x < h; x++) {
-				if (tail_dir==tail_right) {
-					display_vline_wh_clip_rgb(offset.x + off_w + bsize.w + x, offset.y + bsize.h - 10 - h + x, h-x, bgcolor, true);
+				if (tail_dir == tail_right) {
+					display_vline_wh_clip_rgb(offset.x + off_w + bsize.w + x, offset.y + bsize.h - 10 - h + x, h - x, bgcolor, true);
 				}
 				else {
-					display_vline_wh_clip_rgb(offset.x + off_w - x, offset.y + h, h-x, bgcolor, true);
+					display_vline_wh_clip_rgb(offset.x + off_w - x, offset.y + h, h - x, bgcolor, true);
 				}
 			}
 			if (tail_dir == tail_right) {
@@ -268,7 +271,7 @@ public:
 		lb_time_diff.draw(offset);
 		bt_pos.draw(offset);
 		if (old_h != message.get_size().h) {
-			gui_component_t::set_size(scr_size(get_size().w, max(lb_time_diff.get_size().h, message.get_size().h + 4) + D_V_SPACE));
+			gui_component_t::set_size(scr_size(get_size().w, lb_time_diff.get_size().h + message.get_size().h + 4 + D_V_SPACE));
 		}
 	}
 
@@ -278,11 +281,11 @@ public:
 		if (!swallowed && IS_LEFTRELEASE(ev)) {
 			event_t ev2 = *ev;
 			ev2.move_origin(scr_coord(D_MARGIN_LEFT, 0));
-			if(message.getroffen(ev2.click_pos) ) {
+			if (message.getroffen(ev2.click_pos)) {
 				// add them to clipboard
 				char msg_no_break[258];
 				int j;
-				for( j = 0; j < 256  &&  text[j]; j++) {
+				for (j = 0; j < 256 && text[j]; j++) {
 					msg_no_break[j] = text[j] == '\n' ? ' ' : text[j];
 					if (msg_no_break[j] == 0) {
 						msg_no_break[j++] = '\n';
@@ -297,7 +300,7 @@ public:
 				create_win(new news_img("Copied."), w_time_delete, magic_none);
 				swallowed = true;
 			}
-			else if(bt_pos.getroffen(ev2.click_pos)) {
+			else if (bt_pos.getroffen(ev2.click_pos)) {
 				ev2.move_origin(bt_pos.get_pos());
 				swallowed = bt_pos.infowin_event(&ev2);
 			}
@@ -332,10 +335,10 @@ chat_frame_t::chat_frame_t() :
 
 	for (int i = 0; i < MAX_CHAT_TABS; i++) {
 		cont_chat_log[i].set_show_scroll_x(false);
-		cont_chat_log[i].set_scroll_amount_y(LINESPACE*3);
+		cont_chat_log[i].set_scroll_amount_y(LINESPACE * 3);
 		cont_chat_log[i].set_maximize(true);
 		// add tabs for classifying messages
-		tabs.add_tab(cont_chat_log+i, translator::translate(tab_strings[i]));
+		tabs.add_tab(cont_chat_log + i, translator::translate(tab_strings[i]));
 	}
 
 	tabs.add_listener(this);
@@ -354,6 +357,7 @@ chat_frame_t::chat_frame_t() :
 
 		inp_destination.set_text(ibuf_name, lengthof(ibuf_name));
 		inp_destination.set_visible(tabs.get_active_tab_index() == CH_WHISPER);
+		inp_destination.set_notify_all_changes_delay(1000);
 		inp_destination.add_listener(this);
 		add_component(&inp_destination);
 
@@ -401,7 +405,7 @@ void chat_frame_t::fill_list()
 				// other company's message
 				continue;
 			}
-			if (player_locked && strcmp(env_t::nickname.c_str(), i->sender.c_str())!=0) {
+			if (player_locked && strcmp(env_t::nickname.c_str(), i->sender.c_str()) != 0) {
 				// no permission but visible messages you sent
 				continue;
 			}
@@ -445,13 +449,13 @@ void chat_frame_t::fill_list()
 
 		// Name display is omitted for unnamed system messages,
 		//  self-messages, or consecutive messages by the same client from same company.
-		const bool skip_name = i->sender == "" || (strcmp(i->sender, env_t::nickname.c_str())==0)
-			|| (strcmp(i->sender.c_str(), prev_poster.c_str())==0  &&  (i->player_nr == prev_company));
+		const bool skip_name = i->sender == "" || (strcmp(i->sender, env_t::nickname.c_str()) == 0)
+			|| (strcmp(i->sender.c_str(), prev_poster.c_str()) == 0 && (i->player_nr == prev_company));
 		if (!skip_name) {
 			// new chat owner element
 			cont_chat_log[chat_mode].new_component<gui_chat_owner_t>(i);
 		}
-		cont_chat_log[chat_mode].new_component<gui_chat_balloon_t>(i,width);
+		cont_chat_log[chat_mode].new_component<gui_chat_balloon_t>(i, width);
 		prev_poster = i->sender;
 		prev_company = i->player_nr;
 	}
@@ -483,8 +487,7 @@ void chat_frame_t::fill_list()
 		env_t::chat_unread_whisper = 0;
 		break;
 	}
-
-	cont_chat_log[chat_mode].set_scroll_position(0, old_scroll_y- old_log_h + cont_chat_log[chat_mode].get_size().h);
+	cont_chat_log[chat_mode].show_bottom();
 	cont_chat_log[chat_mode].set_maximize(true);
 }
 
@@ -507,7 +510,7 @@ bool chat_frame_t::action_triggered(gui_action_creator_t* comp, value_t v)
 
 		// FIXME?: Once the destination and sender clients are closed, those comments will not be left anywhere...
 		// visible messages you sent
-		if(tabs.get_active_tab_index() == CH_WHISPER) {
+		if (tabs.get_active_tab_index() == CH_WHISPER) {
 			world()->get_chat_message()->add_chat_message(ibuf, channel, sender_company_nr, env_t::nickname.c_str(), dest, bt_send_pos.pressed ? world()->get_viewport()->get_world_position() : koord::invalid);
 		}
 
@@ -550,7 +553,7 @@ bool chat_frame_t::action_triggered(gui_action_creator_t* comp, value_t v)
 			lb_channel.set_visible(true);
 			lb_channel.update();
 		}
-		resize(scr_size(0,0));
+		resize(scr_size(0, 0));
 	}
 	return true;
 }

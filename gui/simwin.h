@@ -115,6 +115,7 @@ enum magic_numbers {
 	magic_edit_groundobj,
 	magic_chatframe,
 	magic_signal_connector_gui_t,
+	magic_player_ranking,
 
 	// magic numbers with big jumps between them
 	magic_convoi_info,

@@ -40,7 +40,7 @@ scr_size gui_scrolled_list_t::const_text_scrollitem_t::get_min_size() const
 
 scr_size gui_scrolled_list_t::const_text_scrollitem_t::get_max_size() const
 {
-		return scr_size(scr_size::inf.w, LINESPACE);
+	return scr_size(scr_size::inf.w, LINESPACE);
 }
 
 // draws a single line of text

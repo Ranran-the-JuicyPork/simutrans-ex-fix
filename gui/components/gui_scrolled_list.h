@@ -128,7 +128,7 @@ protected:
 	void reset_container_size();
 
 	/// deletes invalid elements from list
-	void cleanup_elements(bool resize = true);
+	void cleanup_elements(bool resize=true);
 
 public:
 	virtual void set_skin_type(enum type t) { this->type = t; }

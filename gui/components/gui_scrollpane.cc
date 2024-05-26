@@ -41,7 +41,7 @@ gui_scrollpane_t::gui_scrollpane_t(gui_component_t *comp, bool b_scroll_x, bool 
 scr_size gui_scrollpane_t::get_min_size() const
 {
 	scr_size csize = comp->get_min_scroll_size();
-	if (csize.w > 0 || csize.h > 0) {
+	if (csize.w > 0  ||  csize.h > 0) {
 		// the component does not have a minimum scroll size
 		// use min_size and limit it with max_width/height
 		csize = comp->get_min_size();
@@ -109,6 +109,7 @@ void gui_scrollpane_t::recalc_sliders_visible(scr_size size)
 }
 
 
+
 /**
  * Scrollpanes _must_ be used in this method to set the size
  */
@@ -118,7 +119,6 @@ void gui_scrollpane_t::set_size(scr_size size)
 	recalc_sliders_visible(size);
 
 	// automatically increase/decrease slider area
-
 	scr_size c_size = size - comp->get_pos();
 	// resize scrolled component
 	if (scroll_x.is_visible()) {
@@ -154,17 +154,17 @@ scr_size gui_scrollpane_t::request_size(scr_size request)
 
 
 /**
- * Events are notified to GUI components via this method gemeldet
+ * Events are notified to GUI components via this method
  */
 bool gui_scrollpane_t::infowin_event(const event_t *ev)
 {
 	bool swallow = false;
-	if(   (b_show_scroll_y  &&  scroll_y.is_visible())  &&  ev->ev_class!=EVENT_KEYBOARD  &&  (scroll_y.getroffen(ev->mouse_pos) || scroll_y.getroffen( ev->click_pos)) ) {
+	if(   (b_show_scroll_y  &&  scroll_y.is_visible())  &&  ev->ev_class!=EVENT_KEYBOARD  &&  (scroll_y.getroffen(ev->mouse_pos) || scroll_y.getroffen(ev->click_pos)) ) {
 		event_t ev2 = *ev;
 		ev2.move_origin(scroll_y.get_pos());
 		return scroll_y.infowin_event(&ev2);
 	}
-	else if(  (b_show_scroll_x  &&  scroll_x.is_visible())  &&  ev->ev_class!=EVENT_KEYBOARD  &&  (scroll_x.getroffen(ev->mouse_pos) || scroll_x.getroffen( ev->click_pos))) {
+	else if(  (b_show_scroll_x  &&  scroll_x.is_visible())  &&  ev->ev_class!=EVENT_KEYBOARD  &&  (scroll_x.getroffen(ev->mouse_pos) || scroll_x.getroffen(ev->click_pos))) {
 		event_t ev2 = *ev;
 		ev2.move_origin(scroll_x.get_pos());
 		return scroll_x.infowin_event(&ev2);
@@ -173,7 +173,7 @@ bool gui_scrollpane_t::infowin_event(const event_t *ev)
 		// since we get can grab the focus to get keyboard events, we must make sure to handle mouse events only if we are hit
 
 		// we will handle dragging ourselves inf not prevented
-		if( b_is_dragging && ev->ev_class < INFOWIN ) {
+		if(  b_is_dragging  &&  ev->ev_class < INFOWIN  ) {
 			// now drag: scrollbars are not in pixel, but we will scroll one unit per pixels ...
 			scroll_x.set_knob_offset(scroll_x.get_knob_offset() - (ev->mouse_pos.x - origin.x));
 			scroll_y.set_knob_offset(scroll_y.get_knob_offset() - (ev->mouse_pos.y - origin.y));
@@ -187,7 +187,7 @@ bool gui_scrollpane_t::infowin_event(const event_t *ev)
 				}
 			}
 			else {
-				// continue dragging, swallow clikcs
+				// continue dragging, swallow other events
 				return true;
 			}
 		}
@@ -231,6 +231,7 @@ bool gui_scrollpane_t::infowin_event(const event_t *ev)
 		if(  old_comp_size!=comp->get_size()  ) {
 			recalc_sliders(get_size());
 		}
+
 	}
 	return swallow;
 }

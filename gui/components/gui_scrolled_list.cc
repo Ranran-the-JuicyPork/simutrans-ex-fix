@@ -178,11 +178,12 @@ void gui_scrolled_list_t::sort( int offset )
 
 void gui_scrolled_list_t::set_size(scr_size new_size)
 {
-	cleanup_elements(false);
-
 	// smaller margins
 	container.set_margin(scr_size(D_H_SPACE, 0), scr_size(D_H_SPACE, 0));
 	container.set_spacing(scr_size(D_H_SPACE, 0));
+
+	cleanup_elements(false);
+
 	scr_size csize = container.get_size()+new_size-size; // shrink similar to scrollpane, so slider stay the same
 	container.gui_component_t::set_size(csize);
 	gui_component_t::set_size(new_size);
@@ -194,8 +195,11 @@ void gui_scrolled_list_t::set_size(scr_size new_size)
 
 void gui_scrolled_list_t::reset_container_size()
 {
+	container.set_margin(scr_size(D_H_SPACE, 0), scr_size(D_H_SPACE, 0));
+	container.set_spacing(scr_size(D_H_SPACE, 0));
 	scr_size csize = container.get_min_size();
 	container.set_size( csize );
+	sliders_dirty = true;
 }
 
 

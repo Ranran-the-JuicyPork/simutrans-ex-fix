@@ -60,8 +60,7 @@ void gui_container_t::remove_all()
 
 
 /**
- * Events werden hiermit an die GUI-components
- * gemeldet
+ * Events are notified to GUI components via this method
  */
 bool gui_container_t::infowin_event(const event_t *ev)
 {
@@ -145,7 +144,7 @@ bool gui_container_t::infowin_event(const event_t *ev)
 
 			// set focus for component, if component allows focus
 			gui_component_t *const focus = comp->get_focus() ? comp : NULL;
-			if(  focus  &&  IS_LEFTCLICK(ev)  &&  comp->getroffen( ev->click_pos)  ) {
+			if(  focus  &&  IS_LEFTCLICK(ev)  &&  comp->getroffen(ev->click_pos)  ) {
 				/* the focus swallow all following events;
 				 * due to the activation action
 				 */
@@ -156,7 +155,7 @@ bool gui_container_t::infowin_event(const event_t *ev)
 		if(  !swallowed  ) {
 
 			vector_tpl<gui_component_t *>handle_mouseover;
-			for(gui_component_t* const comp : components ) {
+			for(gui_component_t* const comp :  components  ) {
 
 				if(  list_dirty  ) {
 					break;
@@ -187,7 +186,7 @@ bool gui_container_t::infowin_event(const event_t *ev)
 			/* since the last drawn are overlaid over all others
 			 * the event-handling must go reverse too
 			 */
-			for(gui_component_t* const comp : handle_mouseover ) {
+			for(gui_component_t* const comp :  handle_mouseover  ) {
 
 				if (list_dirty) {
 					break;
@@ -209,7 +208,7 @@ bool gui_container_t::infowin_event(const event_t *ev)
 				gui_component_t *focus = comp->get_focus() ? comp : NULL;
 
 				// set focus for component, if component allows focus
-				if(  focus  &&  IS_LEFTRELEASE(ev)  &&  comp->getroffen( ev->click_pos)  ) {
+				if(  focus  &&  IS_LEFTRELEASE(ev)  &&  comp->getroffen(ev->click_pos)  ) {
 					/* the focus swallow all following events;
 					 * due to the activation action
 					 */
@@ -249,7 +248,6 @@ bool gui_container_t::infowin_event(const event_t *ev)
 /**
  * Draw the component
  */
-#define shorten(d) clamp(d, 0, 0x4fff)
 void gui_container_t::draw(scr_coord offset)
 {
 	const scr_coord screen_pos = pos + offset;
@@ -258,6 +256,11 @@ void gui_container_t::draw(scr_coord offset)
 	clip_dimension cd = display_get_clip_wh();
 	scr_rect clip_rect(cd.x, cd.y, cd.w, cd.h);
 
+	// For debug purpose, draw the container's boundary
+#ifdef SHOW_BBOX
+#define shorten(d) clamp(d, 0, 0x4fff)
+	display_ddd_box_clip_rgb(shorten(screen_pos.x), shorten(screen_pos.y), shorten(get_size().w), shorten(get_size().h), color_idx_to_rgb(COL_RED), color_idx_to_rgb(COL_RED));
+#endif
 	// iterate backwards
 	int checker_count = 0;
 	for(  uint32 iter = components.get_count(); iter > 0; iter--) {
@@ -291,10 +294,6 @@ void gui_container_t::draw(scr_coord offset)
 			c->draw(screen_pos);
 		}
 	}
-	// For debug purpose, draw the container's boundary
-#ifdef SHOW_BBOX
-	display_ddd_box_clip_rgb(shorten(screen_pos.x), shorten(screen_pos.y), shorten(get_size().w), shorten(get_size().h), color_idx_to_rgb(COL_RED), color_idx_to_rgb(COL_RED));
-#endif
 	// this allows focussed (selected) components to overlay other components; but focus may subcomponent!
 	if(  redraw_focus  ) {
 		comp_focus->draw(screen_pos);

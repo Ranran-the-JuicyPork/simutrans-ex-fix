@@ -32,7 +32,7 @@ protected:
 	bool checkered : 1;
 
 	// true, while infowin_event is processed
-	bool inside_infowin_event:1;
+	bool inside_infowin_event : 1;
 
 public:
 	gui_container_t();

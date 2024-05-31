@@ -86,7 +86,7 @@ void gui_factory_operation_status_t::draw(scr_coord offset)
 {
 	const uint8 avtivity_score = min(6, (uint8)((fab->get_stat(0, FAB_PRODUCTION) + 1999) / 2000));
 	const PIXVAL producing_status_color = color_idx_to_rgb(severity_color[avtivity_score]);
-	set_color((!avtivity_score && fab->is_staff_shortage()) ? COL_STAFF_SHORTAGE : producing_status_color);
+	set_color((!avtivity_score && fab->is_staff_shortage()) ? SYSCOL_STAFF_SHORTAGE : producing_status_color);
 	if (avtivity_score) {
 		set_status(gui_operation_status_t::operation_ok);
 	}
@@ -254,7 +254,7 @@ void gui_factory_product_item_t::draw(scr_coord offset)
 		if (!shipping_score) {
 			if (!ware->get_stat(0, FAB_GOODS_STORAGE)) {
 				operation_status.set_status(gui_operation_status_t::operation_stop);
-				operation_status.set_color(fab->is_staff_shortage() ? COL_STAFF_SHORTAGE : SYSCOL_TEXT_WEAK);
+				operation_status.set_color(fab->is_staff_shortage() ? SYSCOL_STAFF_SHORTAGE : SYSCOL_TEXT_WEAK);
 			}
 			else {
 				// Stopped due to demand/connection issue

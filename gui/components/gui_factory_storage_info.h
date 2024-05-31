@@ -10,6 +10,7 @@
 #include "gui_container.h"
 #include "gui_scrollpane.h"
 #include "gui_speedbar.h"
+#include "gui_label.h"
 
 #include "../../simfab.h"
 #include "../simwin.h"

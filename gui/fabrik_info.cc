@@ -166,7 +166,7 @@ public:
 					}
 					if (!forwarding_score) {
 						if (target_fab->is_staff_shortage()) {
-							connection_status.set_color(COL_STAFF_SHORTAGE);
+							connection_status.set_color(SYSCOL_STAFF_SHORTAGE);
 							connection_status.set_status(gui_operation_status_t::operation_stop);
 						}
 						else {
@@ -202,7 +202,7 @@ public:
 							if (!shipping_score) {
 								if (!product.get_stat(0, FAB_GOODS_STORAGE)) {
 									connection_status.set_status(gui_operation_status_t::operation_stop);
-									connection_status.set_color(fab->is_staff_shortage() ? COL_STAFF_SHORTAGE : SYSCOL_TEXT_WEAK);
+									connection_status.set_color(fab->is_staff_shortage() ? SYSCOL_STAFF_SHORTAGE : SYSCOL_TEXT_WEAK);
 								}
 								else {
 									// Stopped due to demand issue
@@ -421,7 +421,7 @@ void fabrik_info_t::init(fabrik_t* fab_, const gebaeude_t* gb)
 									lb_staff_shortage.set_image(skinverwaltung_t::alerts->get_image_id(2));
 								}
 								lb_staff_shortage.set_visible(false);
-								lb_staff_shortage.set_color(COL_STAFF_SHORTAGE);
+								lb_staff_shortage.set_color(SYSCOL_STAFF_SHORTAGE);
 								add_component(&lb_staff_shortage);
 							}
 							end_table();
@@ -429,7 +429,7 @@ void fabrik_info_t::init(fabrik_t* fab_, const gebaeude_t* gb)
 							{
 								staffing_bar.add_color_value(&staff_shortage_factor, COL_CAUTION);
 								staffing_bar.add_color_value(&staffing_level, color_idx_to_rgb(COL_COMMUTER));
-								staffing_bar.add_color_value(&staffing_level2, COL_STAFF_SHORTAGE);
+								staffing_bar.add_color_value(&staffing_level2, SYSCOL_STAFF_SHORTAGE);
 								add_component(&staffing_bar);
 								new_component<gui_fill_t>();
 							}

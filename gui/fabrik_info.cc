@@ -180,7 +180,7 @@ public:
 								if (!shipping_score) {
 									if (!product.get_stat(0, FAB_GOODS_STORAGE)) {
 										connection_status.set_status(gui_operation_status_t::operation_stop);
-										connection_status.set_color(fab->is_staff_shortage() ? COL_STAFF_SHORTAGE : SYSCOL_TEXT_WEAK);
+										connection_status.set_color(fab->is_staff_shortage() ? SYSCOL_STAFF_SHORTAGE : SYSCOL_TEXT_WEAK);
 									}
 									else {
 										// Stopped due to demand issue

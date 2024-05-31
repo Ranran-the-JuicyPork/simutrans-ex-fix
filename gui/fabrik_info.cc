@@ -292,7 +292,7 @@ void gui_factory_connection_container_t::update_table()
 		//gui_factory_product_item_t *goods_label =
 		new_component<gui_factory_product_item_t>(fab, &material, is_supplier_display);
 		if ( ware->is_available() ) {
-			FOR(vector_tpl<koord>, target_pos, is_supplier_display ? fab->get_suppliers() : fab->get_consumers()) {
+			for (koord const& target_pos : is_supplier_display ? fab->get_suppliers(ware) : fab->get_consumers(ware)) {
 				const fabrik_t * fab2 = fabrik_t::get_fab(target_pos);
 				if (is_supplier_display) {
 					if(!fab2->get_produced_goods()->is_contained(ware)) continue;

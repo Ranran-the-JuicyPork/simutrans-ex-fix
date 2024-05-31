@@ -564,7 +564,6 @@ void fabrik_info_t::init(fabrik_t* fab_, const gebaeude_t* gb)
 		}
 	}
 	container_details.add_component(&txt);
-	fab->info_conn(info_buf);
 
 	set_windowsize(get_min_windowsize());
 	set_resizemode(gui_frame_t::diagonal_resize);

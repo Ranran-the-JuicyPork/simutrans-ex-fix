@@ -60,7 +60,7 @@ class fabrik_info_t : public gui_frame_t, public action_listener_t
 private:
 	fabrik_t *fab;
 
-	cbuffer_t info_buf, details_buf;
+	cbuffer_t details_buf;
 
 	//static sint16 tabstate;
 

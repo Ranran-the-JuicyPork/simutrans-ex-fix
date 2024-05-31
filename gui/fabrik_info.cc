@@ -335,7 +335,6 @@ fabrik_info_t::fabrik_info_t(fabrik_t* fab_, const gebaeude_t* gb) :
 	fab(fab_),
 	chart(NULL),
 	view(scr_size( max(64, get_base_tile_raster_width()), max(56, (get_base_tile_raster_width()*7)/8) )),
-	txt(&info_buf),
 	lb_staff_shortage(translator::translate("staff_shortage")),
 	container_details(gb, get_titlecolor()),
 	scroll_info(&container_info),
@@ -563,7 +562,6 @@ void fabrik_info_t::init(fabrik_t* fab_, const gebaeude_t* gb)
 			f->set_text( (const char*)details_buf);
 		}
 	}
-	container_details.add_component(&txt);
 
 	set_windowsize(get_min_windowsize());
 	set_resizemode(gui_frame_t::diagonal_resize);
@@ -684,9 +682,6 @@ void fabrik_info_t::update_info()
 // update all buffers
 void fabrik_info_t::update_components()
 {
-	// update texts
-	fab->info_conn( info_buf );
-
 	// update labels
 	if (fab->get_base_production()) {
 		lb_operation_rate.buf().printf(": %.1f%% (%s: %.1f%%)", fab->get_stat(0,FAB_PRODUCTION)/100.0, translator::translate("Last Month"), fab->get_stat(1,FAB_PRODUCTION)/100.0);

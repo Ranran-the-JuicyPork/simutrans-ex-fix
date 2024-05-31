@@ -108,7 +108,6 @@ class gui_factory_monthly_prod_label_t : public gui_label_buf_t
 	fabrik_t *fab;
 	const goods_desc_t* goods;
 	uint32 pfactor;
-	sint32 old_prod = -1;
 	bool is_input_item;
 
 public:

@@ -24,9 +24,6 @@
 
 #define STORAGE_INDICATOR_WIDTH (50)
 
-// Half a display unit (0.5).
-static const sint64 FAB_DISPLAY_UNIT_HALF = ((sint64)1 << (fabrik_t::precision_bits + DEFAULT_PRODUCTION_FACTOR_BITS - 1));
-
 
 gui_operation_status_t::gui_operation_status_t(PIXVAL c)
 {

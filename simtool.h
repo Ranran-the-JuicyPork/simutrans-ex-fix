@@ -166,7 +166,12 @@ public:
 /* slope tool definitions */
 class tool_setslope_t : public tool_t {
 public:
-	tool_setslope_t() : tool_t(TOOL_SETSLOPE | GENERAL_TOOL) {}
+	tool_setslope_t() : tool_t(TOOL_SETSLOPE | GENERAL_TOOL), old_slope_compatibility_mode(true) {}
+
+	// if true then slope by default_param will be translated to new double-height system
+	// true by default, can be set to false (used for scripts)
+	bool old_slope_compatibility_mode;
+
 	/**
 	 * Create an artificial slope
 	 * @param player the player doing the task
@@ -412,7 +417,7 @@ private:
 		bool check_next_tile(const grund_t *) const override;
 		waytype_t get_waytype() const override {return invalid_wt;}
 		ribi_t::ribi get_ribi(const grund_t *) const override {return ribi_t::all;}
-		int get_cost(const grund_t *, const sint32, koord from_pos) override;
+		int get_cost(const grund_t *, const sint32, ribi_t::ribi from) override;
 		bool is_target(const grund_t *, const grund_t *) override;
 	};
 
@@ -841,6 +846,7 @@ public:
 	char const* work(player_t*, koord3d) OVERRIDE { return default_param ? default_param : ""; }
 };
 
+
 /********************* one click tools ****************************/
 
 class tool_pause_t : public tool_t {
@@ -944,7 +950,7 @@ public:
 		return factor>0 ? translator::translate("Accelerate time") : translator::translate("Deccelerate time");
 	}
 	bool init( player_t *player ) OVERRIDE {
-		if(  !env_t::networkmode  ||  player->get_player_nr()==1  ) {
+		if(  !env_t::networkmode  ||  player->is_public_service()  ) {
 			// in networkmode only for public player
 			welt->change_time_multiplier( atoi(default_param) );
 		}

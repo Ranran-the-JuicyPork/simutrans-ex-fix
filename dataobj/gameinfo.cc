@@ -23,7 +23,8 @@
 #include "../simversion.h"
 
 
-#define MINIMAP_SIZE (64)
+#define MINIMAP_SIZE (192)
+#define MINIMAP_SIZE_OLD (64)
 
 
 gameinfo_t::gameinfo_t(karte_t *welt) :
@@ -49,12 +50,19 @@ gameinfo_t::gameinfo_t(karte_t *welt) :
 
 	const int gr_x = welt->get_size().x;
 	const int gr_y = welt->get_size().y;
+	const int koord_max=max(gr_x, gr_y);
 	for( uint16 i = 0; i < MINIMAP_SIZE; i++ ) {
 		for( uint16 j = 0; j < MINIMAP_SIZE; j++ ) {
-			const koord pos(i * gr_x / MINIMAP_SIZE, j * gr_y / MINIMAP_SIZE);
-			const grund_t* gr = welt->lookup_kartenboden(pos);
-			map_rgb.at(i,j) = minimap_t::calc_ground_color(gr);
-			map_idx.at(i,j) = color_rgb_to_idx( map_rgb.at(i,j) );
+			if (i * koord_max / MINIMAP_SIZE>= gr_x || j * koord_max / MINIMAP_SIZE >= gr_y) {
+				map_rgb.at(i, j) = 0;
+				map_idx.at(i, j) = COL_BLACK;
+			}
+			else {
+				const koord pos(i * koord_max / MINIMAP_SIZE, j * koord_max / MINIMAP_SIZE);
+				const grund_t* gr = welt->lookup_kartenboden(pos);
+				map_rgb.at(i,j) = minimap_t::calc_ground_color(gr);
+				map_idx.at(i,j) = color_rgb_to_idx( map_rgb.at(i,j) );
+			}
 		}
 	}
 
@@ -131,6 +139,10 @@ void gameinfo_t::rdwr(loadsave_t *file)
 	file->rdwr_long( size_y );
 	for( int y=0;  y<MINIMAP_SIZE;  y++  ) {
 		for( int x=0;  x<MINIMAP_SIZE;  x++  ) {
+			if (file->is_version_ex_less(14, 66) && ( y>=MINIMAP_SIZE_OLD || x>=MINIMAP_SIZE_OLD )) {
+				map_rgb.at(x, y) = 0;
+				continue;
+			}
 			if( file->is_version_ex_atleast(14, 32) ) {
 				file->rdwr_short(map_idx.at(x, y));
 				if (file->is_loading()) {

@@ -1407,8 +1407,8 @@ static void resize_win(int win, event_t *ev)
 	wev.ev_class = WINDOW_RESIZE;
 	wev.ev_code = 0;
 
-	const scr_coord mouse_from( wev.click_pos.x, wev.click_pos.y );
-	const scr_coord mouse_to( wev.mouse_pos.x, wev.mouse_pos.y );
+	const scr_coord mouse_from = wev.click_pos;
+	const scr_coord mouse_to = wev.mouse_pos;
 
 	const scr_coord from_pos = wins[win].pos;
 	const scr_coord from_size = scr_coord(wins[win].gui->get_windowsize().w,wins[win].gui->get_windowsize().h);

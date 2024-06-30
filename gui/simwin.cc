@@ -195,6 +195,7 @@ static int display_gadget_box(sint8 code,
 
 		// Max Kielland: This center the gadget image and compensates for any left/top margins within the image to be backward compatible with older PAK sets.
 		display_img_aligned(img->imageid, scr_rect(x, y, D_GADGET_WIDTH, D_TITLEBAR_HEIGHT), ALIGN_CENTER_H | ALIGN_CENTER_V, false);
+
 	}
 	else {
 		const char *gadget_text = "#";
@@ -763,7 +764,6 @@ void win_clamp_xywh_position( scr_coord &pos, scr_size wh, bool move_topleft )
 	pos.x = max(pos.x, clip_rr.x);
 	pos.y = max(pos.y, clip_rr.y);
 }
-
 
 int create_win(gui_frame_t* const gui, wintype const wt, ptrdiff_t const magic)
 {
@@ -1391,6 +1391,7 @@ static void move_win(int win, event_t *ev)
 	// need to mark all of old and new positions dirty. -1, +2 for env_t::window_frame_active
 	mark_rect_dirty_wc( from_pos.x - 1, from_pos.y - 1, from_pos.x + from_size.x + 2, from_pos.y + from_size.y + 2 );
 	wins[win].dirty = true;
+
 	// set dirty flag to refill background
 	if(wl) {
 		wl->set_background_dirty();
@@ -1544,7 +1545,7 @@ bool check_pos_win(event_t *ev)
 		wev.move_origin(menuoffset);
 
 		inside_event_handling = tool_t::toolbar_tool[0];
-		tool_t::toolbar_tool[0]->get_tool_selector()->infowin_event( &wev );
+		tool_t::toolbar_tool[0]->get_tool_selector()->infowin_event(&wev);
 		inside_event_handling = NULL;
 
 		is_dragging = ev->ev_class != EVENT_RELEASE  &&  ev->button_state>1;
@@ -1885,7 +1886,7 @@ void win_display_flush(double konto)
 				const sint16 width = proportional_string_width(static_tooltip_text.c_str())+(LINESPACE/2);
 				scr_coord pos = get_mouse_pos();
 				win_clamp_xywh_position(pos, scr_size(width, (LINESPACE*9)/7), true);
-				display_ddd_proportional_clip( pos.x, pos.y, env_t::tooltip_color, env_t::tooltip_textcolor, static_tooltip_text.c_str(), true);
+				display_ddd_proportional_clip(pos.x, pos.y, env_t::tooltip_color, env_t::tooltip_textcolor, static_tooltip_text.c_str(), true);
 				if(wl) {
 					wl->set_background_dirty();
 				}
@@ -2167,10 +2168,11 @@ void modal_dialogue(gui_frame_t* gui, ptrdiff_t magic, karte_t* welt, bool (*qui
 	// switch off autosave
 	sint32 old_autosave = env_t::autosave;
 	env_t::autosave = 0;
-	create_win(scr_coord(0,0), gui, w_info, magic);
+
 	event_t ev;
+	create_win(scr_coord(0,0), gui, w_info, magic);
 	scr_coord pos{
-		(display_get_width()  - gui->get_windowsize().w) / 2,
+		(display_get_width() - gui->get_windowsize().w) / 2,
 		(display_get_height() - gui->get_windowsize().h) / 2
 	};
 	win_clamp_xywh_position(pos, gui->get_windowsize(), true);

@@ -159,7 +159,7 @@ enum {
 //	SKIN_GADGET_BUTTON,
 	SKIN_GADGET_NOTLOCKED,
 	SKIN_GADGET_LOCKED,
-	SKIN_GADGET_COUNT,// maximum number, NOT AN IMAGE
+	SKIN_GADGET_COUNT, // maximum number, NOT AN IMAGE
 
 	// scrollbars horizontal
 	SKIN_BUTTON_ARROW_LEFT = 0,

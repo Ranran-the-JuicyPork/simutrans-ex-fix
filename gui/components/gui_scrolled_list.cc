@@ -203,7 +203,7 @@ void gui_scrolled_list_t::reset_container_size()
 {
 	// reset element positioning
 	container.set_margin( scr_size( D_H_SPACE, 0 ), scr_size( D_H_SPACE, 0 ) );
-	container.set_spacing( scr_size( D_H_SPACE, 0 ) );
+	container.set_spacing( NO_SPACING ); // Spaces between components create spaces that do not accept clicks
 
 	scr_size csize = container.get_min_size();
 

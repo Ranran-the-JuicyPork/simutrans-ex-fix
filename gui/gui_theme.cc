@@ -250,7 +250,7 @@ void gui_theme_t::init_gui_defaults()
 	gui_color_text_left_col                = gui_color_statusbar_text;
 	gui_color_text_table_cell_selected     = gui_color_colored_button_text_selected;
 
-	gui_color_class_insignia_dots          = 65024; // marigold yellow
+	gui_color_class_insignia_dots          = color_idx_to_rgb(COL_YELLOW);
 
 
 	env_t::gui_player_color_bright = 4;

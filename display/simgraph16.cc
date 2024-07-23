@@ -255,6 +255,7 @@ static font_t bold_font;
 // needed for resizing gui
 int default_font_ascent = 0;
 int default_font_linespace = 0;
+int default_font_underline_pos = 0;
 
 
 #define RGBMAPSIZE (0x8000+LIGHT_COUNT+MAX_PLAYER_COUNT+1024 /* 343 transparent */)
@@ -3750,6 +3751,7 @@ bool display_load_font(const char *fname, bool reload)
 		default_font = loaded_fnt;
 		default_font_ascent    = default_font.get_ascent();
 		default_font_linespace = default_font.get_linespace();
+		default_font_underline_pos = default_font.get_underline_pos();
 
 		env_t::fontname = fname;
 		bold_font.load_from_file(fname,true);
@@ -4089,7 +4091,7 @@ void display_proportional_ellipsis_rgb( scr_rect r, const char *text, int align,
 	}
 	display_text_proportional_len_clip_rgb( r.x, r.y, text, ALIGN_LEFT | DT_CLIP, color, dirty, -1  CLIP_NUM_DEFAULT);
 	if (underlined){
-		display_fillbox_wh_clip_rgb( r.x-1, r.y + LINEASCENT - 1, proportional_string_width(text) + 2, 1, color, dirty);
+		display_fillbox_wh_clip_rgb( r.x-1, r.y + LINEASCENT - default_font_underline_pos, proportional_string_width(text) + 2, 1, color, dirty);
 	}
 }
 

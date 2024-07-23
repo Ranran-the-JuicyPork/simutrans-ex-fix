@@ -34,7 +34,8 @@ font_t::glyph_t::glyph_t() :
 
 font_t::font_t() :
 	linespace (0),
-	descent(0)
+	descent(0),
+	underline_position(0)
 {
 	fname[0] = 0;
 }
@@ -227,6 +228,7 @@ bool font_t::load_from_bdf(FILE *bdf_file)
 
 	linespace = f_height;
 	descent   = f_desc;
+	underline_position = linespace+1;
 
 	// Use only needed amount
 	glyphs.resize( (uint32)max_glyph+1 );
@@ -293,6 +295,7 @@ bool font_t::load_from_freetype(const char *fname, int pixel_height, bool embold
 	ascent    = face->size->metrics.ascender/64;
 	linespace = face->size->metrics.height/64;
 	descent   = face->size->metrics.descender/64;
+	underline_position= face->underline_position/64;
 	if (face->face_flags & FT_FACE_FLAG_VERTICAL) {
 		// There are usually two sets of metrics for a single glyph:
 		// Those used to represent glyphs in horizontal text layouts (Latin, Cyrillic, Arabic, Hebrew, etc.),

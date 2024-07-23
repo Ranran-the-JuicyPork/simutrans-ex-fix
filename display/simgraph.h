@@ -18,6 +18,7 @@
 
 extern int default_font_ascent;
 extern int default_font_linespace;
+extern int default_font_underline_pos;
 
 #  define LINEASCENT (default_font_ascent)
 #  define LINESPACE  (default_font_linespace)

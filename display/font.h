@@ -51,6 +51,7 @@ public:
 	const char *get_fname() const { return fname; }
 	sint16 get_linespace() const { return linespace; }
 	sint16 get_ascent() const { return ascent; }
+	sint16 get_underline_pos() const { return underline_position; }
 
 	/// @returns true if this is a valid (defined) glyph
 	bool is_valid_glyph(utf32 c) const { return  is_loaded()  &&  c < get_num_glyphs()  &&  glyphs[c].advance != 0xFF;  }
@@ -76,6 +77,7 @@ private:
 	sint16 linespace;
 	sint16 ascent;
 	sint16 descent;
+	sint16 underline_position;
 public:	// for simgraph has_character()
 	std::vector<glyph_t> glyphs;
 };

@@ -8,22 +8,67 @@
 
 
 #include "gui_frame.h"
+#include "../simsignalbox.h"
 #include "components/gui_scrolled_list.h"
 #include "components/gui_label.h"
 #include "components/gui_image.h"
-#include "components/gui_combobox.h"
+#include "components/sortable_table.h"
+#include "components/sortable_table_header.h"
 
 class signalbox_t;
+
+class signalbox_radius_cell_t : public value_cell_t
+{
+public:
+	signalbox_radius_cell_t(uint32 radius);
+
+	void set_value(sint64 value) OVERRIDE;
+};
+
+
+class signalboxlist_row_t : public gui_sort_table_row_t
+{
+public:
+	enum sort_mode_t {
+		SB_NAME,
+		SB_CONNECTED,
+		SB_CAPACITY,
+		SB_RANGE,
+		SB_COORD,
+		SB_REGION,
+		SB_CITY,
+		SB_MAINTENANCE,
+		SB_BUILT_DATE,
+		MAX_COLS
+	};
+	static int sort_mode;
+	static bool sortreverse;
+
+private:
+	signalbox_t* sb;
+	// update flag
+	uint32 old_connected;
+
+public:
+	signalboxlist_row_t(signalbox_t* sb);
+	char const* get_text() const OVERRIDE { return sb->get_name(); }
+	void show_info() const { sb->show_info(); }
+	bool infowin_event(event_t const* ev) OVERRIDE;
+	void draw(scr_coord offset) OVERRIDE;
+	static bool compare(const gui_component_t* aa, const gui_component_t* bb);
+};
 
 
 class signalboxlist_frame_t : public gui_frame_t, private action_listener_t
 {
 private:
 	static bool filter_has_vacant_slot;
+	button_t filter_vacant_slot;
 
-	gui_combobox_t sortedby;
-	button_t sort_order, filter_vacant_slot;
+	gui_sort_table_header_t table_header;
+	gui_aligned_container_t cont_sortable;
 	gui_scrolled_list_t scrolly;
+	gui_scrollpane_t scroll_sortable;
 
 	uint32 last_signalbox_count;
 
@@ -39,32 +84,6 @@ public:
 	bool action_triggered(gui_action_creator_t*, value_t) OVERRIDE;
 
 	void draw(scr_coord pos, scr_size size) OVERRIDE;
-};
-
-class signalboxlist_stats_t : public gui_aligned_container_t, public gui_scrolled_list_t::scrollitem_t
-{
-private:
-	signalbox_t *sb;
-	gui_label_buf_t label, lb_connected, lb_radius, lb_region;
-	button_t	gotopos;
-
-	void update_label();
-
-public:
-	static int sort_mode;
-	static bool reverse;
-
-	signalboxlist_stats_t(signalbox_t *);
-	static uint16 name_width;
-
-	void draw( scr_coord pos) OVERRIDE;
-
-	char const* get_text() const OVERRIDE { return ""; /* label.buf().get_str(); */ }
-	bool infowin_event(const event_t *) OVERRIDE;
-	bool is_valid() const OVERRIDE;
-	void set_size(scr_size size) OVERRIDE;
-
-	static bool compare(const gui_component_t *a, const gui_component_t *b );
 };
 
 #endif

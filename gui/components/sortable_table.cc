@@ -221,6 +221,10 @@ void value_cell_t::set_value(sint64 value_)
 			buf.printf("%.1fkm", (float)(value*world()->get_settings().get_meters_per_tile()/1000.0));
 			break;
 		}
+		case gui_chart_t::INDEX:
+			// for Way wear factor 
+			buf.printf("%.4f", (float)value / 10000.0);
+			break;
 		case gui_chart_t::STANDARD:
 		default:
 			buf.append(value);

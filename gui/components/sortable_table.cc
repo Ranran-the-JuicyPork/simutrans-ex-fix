@@ -222,7 +222,7 @@ void value_cell_t::set_value(sint64 value_)
 			break;
 		}
 		case gui_chart_t::INDEX:
-			// for Way wear factor 
+			// for Way wear factor
 			buf.printf("%.4f", (float)value / 10000.0);
 			break;
 		case gui_chart_t::STANDARD:

@@ -84,9 +84,10 @@ public:
 class coord_cell_t : public table_cell_item_t
 {
 	koord coord;
-	cbuffer_t buf;
 	bool show_posicon=false;
 
+protected:
+	cbuffer_t buf;
 public:
 	coord_cell_t(const char* alt_text = NULL, koord coord=koord::invalid, align_t align = left);
 	coord_cell_t(koord coord = koord::invalid, align_t align = left);

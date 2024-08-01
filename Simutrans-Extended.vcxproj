@@ -2349,6 +2349,7 @@
     <ClCompile Include="gui\components\gui_vehicle_cargoinfo.cc" />
     <ClCompile Include="gui\components\sortable_table.cc" />
     <ClCompile Include="gui\components\sortable_table_header.cc" />
+    <ClCompile Include="gui\components\sortable_table_halt.cc" />
     <ClCompile Include="gui\components\sortable_table_vehicle.cc" />
     <ClCompile Include="gui\components\gui_waytype_image_box.cc" />
     <ClCompile Include="gui\components\gui_waytype_tab_panel.cc" />
@@ -2841,6 +2842,7 @@
     <ClInclude Include="gui\components\gui_vehicle_cargoinfo.h" />
     <ClInclude Include="gui\components\sortable_table.h" />
     <ClInclude Include="gui\components\sortable_table_header.h" />
+    <ClInclude Include="gui\components\sortable_table_halt.h" />
     <ClInclude Include="gui\components\sortable_table_vehicle.h" />
     <ClInclude Include="gui\components\gui_waytype_image_box.h" />
     <ClInclude Include="gui\components\gui_waytype_tab_panel.h" />

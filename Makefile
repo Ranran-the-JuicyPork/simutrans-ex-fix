@@ -410,6 +410,7 @@ SOURCES += gui/components/gui_waytype_tab_panel.cc
 SOURCES += gui/components/gui_world_view_t.cc
 SOURCES += gui/components/sortable_table.cc
 SOURCES += gui/components/sortable_table_header.cc
+SOURCES += gui/components/sortable_table_halt.cc
 SOURCES += gui/components/sortable_table_vehicle.cc
 SOURCES += gui/convoi_detail_t.cc
 SOURCES += gui/convoi_filter_frame.cc

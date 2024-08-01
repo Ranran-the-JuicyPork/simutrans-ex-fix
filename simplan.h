@@ -212,6 +212,12 @@ public:
 	const nearby_halt_t *get_haltlist() const { return halt_list; }
 	uint8 get_haltlist_count() const { return halt_list_count; }
 
+	// UI Purpose
+	// to display the nearest representative station to an attraction building, return the most popular station within walking distance
+	// For passengers, specify visitor or commuter as a parameter
+	halthandle_t get_best_halt_for_passenger(bool for_commuter=false) const;
+	halthandle_t get_best_halt_for_mail() const;
+
 	void rdwr(loadsave_t *file, koord pos );
 
 	/**

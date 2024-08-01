@@ -881,6 +881,68 @@ uint8 planquadrat_t::get_connected(halthandle_t halt) const
 	return 255;
 }
 
+
+halthandle_t planquadrat_t::get_best_halt_for_passenger(bool for_commuter) const
+{
+	halthandle_t best_halt= halthandle_t();
+	uint8 best_halt_distance=0;
+	for (uint8 i = 0; i < halt_list_count; i++) {
+		if (halt_list[i].halt->get_pax_enabled()) {
+			if( best_halt.is_null() ) {
+				best_halt = halt_list[i].halt;
+				best_halt_distance = halt_list[i].distance;
+				continue;
+			}
+			// Compare which station is more popular
+			sint64 cmp=0;
+			for (uint m=1; m < MAX_MONTHS; m++) {
+				cmp = best_halt->get_finance_history(m, for_commuter ? HALT_COMMUTERS : HALT_VISITORS) - halt_list[i].halt->get_finance_history(m, for_commuter ? HALT_COMMUTERS : HALT_VISITORS);
+				if( cmp != 0 ) break;
+			}
+
+			if (cmp==0) {
+				// The closer station is better
+				cmp = halt_list[i].distance - best_halt_distance;
+			}
+
+			if (cmp<0) best_halt=halt_list[i].halt; best_halt_distance=halt_list[i].distance; continue;
+		}
+	}
+
+	return best_halt;
+}
+
+halthandle_t planquadrat_t::get_best_halt_for_mail() const
+{
+	halthandle_t best_halt = halthandle_t();
+	uint8 best_halt_distance = 0;
+	for (uint8 i = 0; i < halt_list_count; i++) {
+		if (halt_list[i].halt->get_mail_enabled()) {
+			if (best_halt.is_null()) {
+				best_halt = halt_list[i].halt;
+				best_halt_distance = halt_list[i].distance;
+				continue;
+			}
+			// Compare which station is more popular
+			sint64 cmp = 0;
+			for (uint m = 1; m < MAX_MONTHS; m++) {
+				cmp = best_halt->get_finance_history(m, HALT_MAIL_HANDLING_VOLUME) - halt_list[i].halt->get_finance_history(m, HALT_MAIL_HANDLING_VOLUME);
+				if (cmp != 0) break;
+			}
+
+			if (cmp == 0) {
+				// The closer station is better
+				cmp = halt_list[i].distance - best_halt_distance;
+			}
+
+			if (cmp < 0) best_halt = halt_list[i].halt; best_halt_distance = halt_list[i].distance; continue;
+		}
+	}
+
+	return best_halt;
+}
+
+
 void planquadrat_t::update_underground() const
 {
 	get_kartenboden()->check_update_underground();
